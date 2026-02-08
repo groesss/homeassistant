@@ -1,0 +1,121 @@
+-== Watchman Report ==- 
+
+-== Missing 3 action(s) from 10 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Action ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| notify.sm_g991b                | missing | automations.yaml:202                                         |
+| valve.open                     | missing | automations.yaml:221                                         |
+| valve.close                    | missing | automations.yaml:226                                         |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Missing 46 entity(ies) from 125 found in your config:
++--------------------------------+---------+--------------------------------------------------------------+
+| Entity ID                      | State   | Location                                                     |
++--------------------------------+---------+--------------------------------------------------------------+
+| sensor.kueche_geschirrspueler_ | missing | template_old.yaml:3                                          |
+| status_text                    |         |                                                              |
+| sensor.kueche_geschirrspueler_ | unavail | template_old.yaml:23                                         |
+| aktives_programm_text ('Kueche |         |                                                              |
+| Geschirrspueler Aktives        |         |                                                              |
+| Programm Text')                |         |                                                              |
+| sensor.kueche_backofen_active_ | unavail | template_old.yaml:67                                         |
+| program ('Bosch Backofen -     |         |                                                              |
+| Active Program')               |         |                                                              |
+| binary_sensor.pumpe_lauft      | unavail | recorder.yaml:3                                              |
+| ('Pumpe läuft')                |         |                                                              |
+| input_number.tv_minute_count_h | missing | automations.yaml:69,70,122                                   |
+| dmi                            |         |                                                              |
+| input_number.tv_minute_count_n | missing | automations.yaml:82,83,126                                   |
+| etflix                         |         |                                                              |
+| input_number.tv_minute_count_y | missing | automations.yaml:95,96,142                                   |
+| outube                         |         |                                                              |
+| input_number.tv_minute_        | missing | automations.yaml:108                                         |
+| input_number.tv_minute_count_d | missing | automations.yaml:118                                         |
+| isney                          |         |                                                              |
+| input_number.tv_minute_count_p | missing | automations.yaml:130                                         |
+| lex                            |         |                                                              |
+| input_number.tv_minute_count_p | missing | automations.yaml:134                                         |
+| rime                           |         |                                                              |
+| notify.sm_g991b                | missing | automations.yaml:202                                         |
+| input_datetime.gardena_morgen_ | missing | automations.yaml:208                                         |
+| start                          |         |                                                              |
+| input_datetime.gardena_abend_s | missing | automations.yaml:210                                         |
+| tart                           |         |                                                              |
+| input_boolean.gardena_mo       | missing | automations.yaml:214                                         |
+| input_boolean.gardena_di       | missing | automations.yaml:215                                         |
+| input_boolean.gardena_mi       | missing | automations.yaml:215                                         |
+| input_boolean.gardena_do       | missing | automations.yaml:215                                         |
+| input_boolean.gardena_fr       | missing | automations.yaml:216                                         |
+| input_boolean.gardena_sa       | missing | automations.yaml:216                                         |
+| input_boolean.gardena_so       | missing | automations.yaml:216                                         |
+| valve.open                     | missing | automations.yaml:221                                         |
+| valve.close                    | missing | automations.yaml:226                                         |
+| binary_sensor.garten_shelly_gr | missing | automations.yaml:232                                         |
+| undwasser                      |         |                                                              |
+| sensor.kueche_geschirrspueler_ | missing | geschirrspueler.backup.yaml:12                               |
+| status_doorstate               |         |                                                              |
+| sensor.kueche_backofen_status_ | missing | templates/backofen.yaml:6,13                                 |
+| doorstate                      |         |                                                              |
+| binary_sensor.waschkeller_troc | missing | templates/trockner.yaml:8,14                                 |
+| kner_door                      |         |                                                              |
+| sensor.waschkeller_trockner_st | missing | templates/trockner.yaml:11                                   |
+| atus_text                      |         |                                                              |
+| sensor.waschkeller_trockner_ak | missing | templates/trockner.yaml:36                                   |
+| tives_programm_text            |         |                                                              |
+| sensor.irgendein_error_sensor  | missing | .storage/lovelace:15,21,21                                   |
+| sensor.wohnzimmer_temperature  | missing | .storage/lovelace:100,121                                    |
+| light.wohnzimmer_group_stahltr | unavail | .storage/lovelace:100                                        |
+| ager ('Licht-Gruppe            |         |                                                              |
+| Stahlträger')                  |         |                                                              |
+| sensor.kueche_backofen_option_ | unavail | .storage/lovelace:437                                        |
+| duration ('Bosch Backofen -    |         |                                                              |
+| Adjust the duration')          |         |                                                              |
+| input_datetime.backofen_alarmz | missing | .storage/lovelace:448                                        |
+| eit                            |         |                                                              |
+| sensor.kueche_geschirrspueler_ | unavail | .storage/lovelace:481,481,483                                |
+| option_programprogress ('Bosch |         |                                                              |
+| Geschirrspüler - Current       |         |                                                              |
+| programme progress')           |         |                                                              |
+| sensor.waschkeller_trockner_op | unavail | .storage/lovelace:620                                        |
+| tion_duration ('Bosch Trockner |         |                                                              |
+| - Adjust the duration')        |         |                                                              |
+| sensor.waschkeller_trockner_op | unavail | .storage/lovelace:648                                        |
+| tion_loadrecommendation        |         |                                                              |
+| ('Bosch Trockner - Load        |         |                                                              |
+| recommendation')               |         |                                                              |
+| sensor.garten_gardena_ventil_1 | unavail | .storage/lovelace:797,835                                    |
+| _moisture ('Gardena            |         |                                                              |
+| Bewässerungsventil 1           |         |                                                              |
+| Moisture')                     |         |                                                              |
+| number.garten_gardena_ventil_1 | unknown | .storage/lovelace:811                                        |
+| _open_for ('Gardena            |         |                                                              |
+| Bewässerungsventil 1 Open      |         |                                                              |
+| for')                          |         |                                                              |
+| number.garten_gardena_ventil_1 | unavail | .storage/lovelace:827                                        |
+| _sensor_threshold ('Gardena    |         |                                                              |
+| Bewässerungsventil 1 Sensor    |         |                                                              |
+| threshold')                    |         |                                                              |
+| sensor.garten_gardena_ventil_1 | unavail | .storage/lovelace:839                                        |
+| _sensor_battery ('Gardena      |         |                                                              |
+| Bewässerungsventil 1 Sensor    |         |                                                              |
+| battery')                      |         |                                                              |
+| sensor.garten_gardena_ventil_1 | unavail | .storage/lovelace:843                                        |
+| _sensor_timestamp ('Gardena    |         |                                                              |
+| Bewässerungsventil 1 Sensor    |         |                                                              |
+| timestamp')                    |         |                                                              |
+| script.wohnzimmer_tv_timer_res | missing | .storage/lovelace.dashboard_test2:189,514                    |
+| et                             |         |                                                              |
+| input_boolean.tv_timer_enabled | missing | .storage/lovelace.dashboard_test2:276                        |
+| media_player.wohnzimmer_tv_sam | unavail | .storage/lovelace.dashboard_test2:289,289                    |
+| sung_q90_series_75_2 ('wohnzim |         |                                                              |
+| mer_tv_samsung_q90_series_75_2 |         |                                                              |
+| ')                             |         |                                                              |
+| sensor.geschirrspuler_anzeige_ | unavail | .storage/lovelace.dashboard_test2:596                        |
+| debug ('Geschirrspüler Anzeige |         |                                                              |
+| Debug')                        |         |                                                              |
++--------------------------------+---------+--------------------------------------------------------------+
+
+-== Report created on 22 Sep 2025 15:26:46
+-== Parsed 27 files in 9.04s., ignored 12 files 
+-== Generated in: 0.41s. Validated in: 0.00s.

@@ -1,0 +1,10 @@
+wohnzimmer_terrarium_warmup_active:
+  name: "Wohnzimmer Terrarium Warmup aktiv"
+  initial: off
+wohnzimmer_terrarium_cooldown_active:
+  name: "Wohnzimmer Terrarium Cooldown aktiv"
+  initial: off
+wohnzimmer_terrarium_timer_active:
+  name: "Terrarium Zeitschaltuhr aktiv"
+  icon: mdi:clock-outline
+  initial: true

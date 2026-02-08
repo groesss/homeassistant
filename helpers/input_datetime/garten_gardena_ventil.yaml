@@ -1,0 +1,9 @@
+gardena_morgen_start:
+    name: "Gardena Morgen Start"
+    has_date: false
+    has_time: true
+
+gardena_abend_start:
+    name: "Gardena Abend Start"
+    has_date: false
+    has_time: true

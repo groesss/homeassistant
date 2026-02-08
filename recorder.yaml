@@ -1,0 +1,7 @@
+include:
+  entities:
+    - binary_sensor.pumpe_lauft
+    - sensor.garten_smartplug_pumpe_power
+    - sensor.garten_smartplug_pumpe_current
+    - sensor.garten_smartplug_pumpe_voltage
+

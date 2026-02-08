@@ -1,0 +1,25 @@
+# Home Assistant sensitive/local data
+secrets.yaml
+.storage/
+.storage-backup/
+.ha_run.lock
+
+# Databases and WAL/SHM
+*.db
+*.db-shm
+*.db-wal
+*.db.corrupt*
+*.db-shm.corrupt*
+*.db-wal.corrupt*
+
+# Logs
+home-assistant.log
+home-assistant.log.*
+*.log
+*.log.*
+
+# Backups
+backups/
+
+# Local deps/cache
+/deps/

@@ -1,0 +1,70 @@
+# Datei: templates/backofen.yaml
+# Template-Sensoren für den Backofen
+
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.kueche_backofen_status_operationstate
+        - binary_sensor.kueche_backofen_status_doorstate
+        - sensor.kueche_backofen_active_program
+
+  sensor:
+    - name: "Kueche Backofen Status Text"
+      unique_id: kueche_backofen_status_text
+      state: >-
+        {% set op = states('sensor.kueche_backofen_status_operationstate') %}
+        {% set door = states('binary_sensor.kueche_backofen_status_doorstate') %}
+        {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
+
+        {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
+          Läuft
+        {% elif op == 'BSH.Common.EnumType.OperationState.Pause' %}
+          Pausiert
+        {% elif op == 'BSH.Common.EnumType.OperationState.Ready' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Bereit
+          {% endif %}
+        {% elif op == 'BSH.Common.EnumType.OperationState.Finished' %}
+          Fertig
+        {% elif op == 'BSH.Common.EnumType.OperationState.Stopped' %}
+          Gestoppt
+        {% elif op == 'BSH.Common.EnumType.OperationState.Inactive' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Ausgeschaltet
+          {% endif %}
+        {% else %}
+          {{ op }}
+        {% endif %}
+
+    - name: "Kueche Backofen Aktives Programm Text"
+      unique_id: kueche_backofen_aktives_programm_text
+      state: >-
+        {% set op = states('sensor.kueche_backofen_active_program') %}
+        {% set program_map = {
+          'Cooking.Oven.Program.HeatingMode.HotAir': 'Heißluft',
+          'Cooking.Oven.Program.HeatingMode.TopBottomHeating': 'Ober-/Unterhitze',
+          'Cooking.Oven.Program.HeatingMode.HotAirGentle': 'Sanfte Heißluft',
+          'Cooking.Oven.Program.HeatingMode.TopBottomHeatingEco': 'Sanfte Ober-/Unterhitze',
+          'Cooking.Oven.Program.HeatingMode.AirFry': 'AirFry',
+          'Cooking.Oven.Program.HeatingMode.HotAirGrilling': 'Heißluftgrill',
+          'Cooking.Oven.Program.HeatingMode.GrillLargeArea': 'Grill (Großfläche)',
+          'Cooking.Oven.Program.HeatingMode.GrillSmallArea': 'Grill (Kleinfläche)',
+          'Cooking.Oven.Program.HeatingMode.PizzaSetting': 'Pizzastufe',
+          'Cooking.Oven.Program.HeatingMode.SlowCook': 'Langsamgaren',
+          'Cooking.Oven.Program.HeatingMode.Defrost': 'Auftauen',
+          'Cooking.Oven.Program.HeatingMode.BottomHeating': 'Unterhitze',
+          'Cooking.Oven.Program.HeatingMode.KeepWarm': 'Warmhalten',
+          'Cooking.Oven.Program.HeatingMode.PreheatOvenware': 'Geschirr vorwärmen',
+          'Cooking.Oven.Program.SubsequentMode.ContinueCooking': 'Programm verlängert'
+        } %}
+
+        {% if op in ['unknown', 'unavailable', '', None] %}
+          –
+        {% else %}
+          {{ program_map.get(op, op) }}
+        {% endif %}
+

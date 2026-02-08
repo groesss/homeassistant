@@ -1,0 +1,66 @@
+# Datei: templates/wohnzimmer_terrarium.yaml
+# Template-Sensor für Warmup & Cooldown mit automatischer Aktualisierung
+
+template:
+  - sensor:
+      - name: "Wohnzimmer Terrarium Warmup/Cooldown Info"
+        unique_id: wohnzimmer_terrarium_warmup_cooldown_info
+        state: >
+          {% set step_hours = 1 %}
+          {% set max_hours = 14 %}
+
+          {% set lampe1_on = states('input_datetime.wohnzimmer_terrarium_lampe1_on') %}
+          {% set lampe1_off = states('input_datetime.wohnzimmer_terrarium_lampe1_off') %}
+          {% set lampe2_on = states('input_datetime.wohnzimmer_terrarium_lampe2_on') %}
+          {% set lampe2_off = states('input_datetime.wohnzimmer_terrarium_lampe2_off') %}
+
+          {% set warmup = is_state('input_boolean.wohnzimmer_terrarium_warmup_active','on') %}
+          {% set cooldown = is_state('input_boolean.wohnzimmer_terrarium_cooldown_active','on') %}
+
+          {% if lampe1_on not in ['unknown','unavailable',''] and lampe1_off not in ['unknown','unavailable',''] %}
+            {% set fmt = '%H:%M:%S' %}
+            {% set lampe1_on_dt = strptime(lampe1_on, fmt) %}
+            {% set lampe1_off_dt = strptime(lampe1_off, fmt) %}
+            {% set duration = ((lampe1_off_dt - lampe1_on_dt).seconds / 3600) | round(1) %}
+
+            {# --- Warmup aktiv --- #}
+            {% if warmup %}
+              {% set target = max_hours %}
+              {% set days = (max_hours - duration) | round(0) %}
+              {% set start_date = now().strftime('%d.%m.%Y') %}
+              {% set end_date = (now() + timedelta(days=days)).strftime('%d.%m.%Y') %}
+              **Warmup aktiv:**  
+              Die Beleuchtungszeit wird **jeden Tag um +{{step_hours}} h** erhöht.  
+              Ziel: {{target}} h Beleuchtung  
+              Zeitraum: {{start_date}} bis {{end_date}}  
+              (**noch {{days}} Tage**)
+
+            {# --- Warmup abgeschlossen --- #}
+            {% elif not warmup and duration >= max_hours %}
+              🔔 **Warmup abgeschlossen: Maximaldauer erreicht!**
+
+            {# --- Cooldown aktiv --- #}
+            {% elif cooldown %}
+              {% set target = 0 %}
+              {% set days = duration | round(0) %}
+              {% set start_date = now().strftime('%d.%m.%Y') %}
+              {% set end_date = (now() + timedelta(days=days)).strftime('%d.%m.%Y') %}
+              **Cooldown aktiv:**  
+              Die Beleuchtungszeit wird **jeden Tag um -{{step_hours}} h** reduziert.  
+              Ziel: {{target}} h Beleuchtung  
+              Zeitraum: {{start_date}} bis {{end_date}}  
+              (**noch {{days}} Tage**)
+
+            {# --- Cooldown abgeschlossen / Winterschlaf --- #}
+            {% elif not cooldown and duration <= 0 %}
+              ❄️ **Cooldown abgeschlossen: Winterschlaf erreicht!**
+
+            {# --- Normalbetrieb --- #}
+            {% else %}
+              Normaler Betrieb!  
+              Wärmelampen sind **{{ duration }} h pro Tag** aktiv.
+            {% endif %}
+
+          {% else %}
+            Kein Warmup/Cooldown aktiv
+          {% endif %}

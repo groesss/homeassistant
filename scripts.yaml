@@ -1,0 +1,110 @@
+wohnzimmer_terrarium_cooldown:
+  alias: Wohnzimmer_Terrarium_Cooldown
+  sequence:
+  - sequence:
+    - repeat:
+        while:
+        - condition: state
+          entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+          state: 'on'
+        sequence:
+        - data:
+            entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
+            time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_on')
+              %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  08:00:00\n{%
+              else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+              minute=parts[1]|int)\n      + timedelta(minutes=30)).strftime('%H:%M:%S')
+              }}\n{% endif %}"
+          action: input_datetime.set_datetime
+        - data:
+            entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
+            time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_off')
+              %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  20:00:00\n{%
+              else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+              minute=parts[1]|int)\n      - timedelta(minutes=30)).strftime('%H:%M:%S')
+              }}\n{% endif %}"
+          action: input_datetime.set_datetime
+        - data:
+            entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
+            time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_on')
+              %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  08:30:00\n{%
+              else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+              minute=parts[1]|int)\n      + timedelta(minutes=30)).strftime('%H:%M:%S')
+              }}\n{% endif %}"
+          action: input_datetime.set_datetime
+        - data:
+            entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
+            time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_off')
+              %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  20:30:00\n{%
+              else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+              minute=parts[1]|int)\n      - timedelta(minutes=30)).strftime('%H:%M:%S')
+              }}\n{% endif %}"
+          action: input_datetime.set_datetime
+        - choose:
+          - conditions:
+            - condition: template
+              value_template: '{% set on = states(''input_datetime.wohnzimmer_terrarium_lampe1_on'')
+                | as_datetime %} {% set off = states(''input_datetime.wohnzimmer_terrarium_lampe1_off'')
+                | as_datetime %} {{ (off - on).total_seconds() / 3600 < 1 }}
+
+                '
+            sequence:
+            - target:
+                entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+              action: input_boolean.turn_off
+            - target:
+                entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+              action: input_boolean.turn_off
+        - delay: '24:00:00'
+  description: 'Reduziert täglich die Beleuchtungsdauer um 1 h, indem beide Lampen
+    30 min später eingeschaltet und 30 min früher ausgeschaltet werden.
+
+    '
+  icon: mdi:cactus
+terrarium_warmup:
+  alias: Wohnzimmer_Terrarium_Warmup
+  sequence:
+  - repeat:
+      while:
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+        state: 'on'
+      sequence:
+      - data:
+          entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
+          time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_on')
+            %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  08:00:00\n{%
+            else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+            minute=parts[1]|int)\n      - timedelta(minutes=30)).strftime('%H:%M:%S')
+            }}\n{% endif %}"
+        action: input_datetime.set_datetime
+      - data:
+          entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
+          time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_off')
+            %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  20:00:00\n{%
+            else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+            minute=parts[1]|int)\n      + timedelta(minutes=30)).strftime('%H:%M:%S')
+            }}\n{% endif %}"
+        action: input_datetime.set_datetime
+      - data:
+          entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
+          time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_on')
+            %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  08:30:00\n{%
+            else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+            minute=parts[1]|int)\n      - timedelta(minutes=30)).strftime('%H:%M:%S')
+            }}\n{% endif %}"
+        action: input_datetime.set_datetime
+      - data:
+          entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
+          time: "{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_off')
+            %} {% if t in ['unknown', 'unavailable', 'none', ''] %}\n  20:30:00\n{%
+            else %}\n  {% set parts = t.split(':') %}\n  {{ (now().replace(hour=parts[0]|int,
+            minute=parts[1]|int)\n      + timedelta(minutes=30)).strftime('%H:%M:%S')
+            }}\n{% endif %}"
+        action: input_datetime.set_datetime
+      - delay: '24:00:00'
+  description: 'Erhöht täglich die Beleuchtungsdauer um 1 h, indem beide Lampen 30
+    min früher eingeschaltet und 30 min später ausgeschaltet werden.
+
+    '
+  icon: mdi:radiator

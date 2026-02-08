@@ -1,0 +1,8 @@
+binary_sensor:
+  - name: "Pumpe läuft"
+    unique_id: "garten_smartplug_pumpe_status"
+    device_class: power
+    state: >
+      {{ states('sensor.garten_smartplug_pumpe_power')|float > 5 }}
+    availability: >
+      {{ states('sensor.garten_smartplug_pumpe_power') not in ['unknown', 'unavailable', 'None'] }}

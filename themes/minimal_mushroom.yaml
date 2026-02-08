@@ -1,0 +1,43 @@
+Minimal Mushroom:
+  # Setze das Theme in der UI als aktiv über dein Benutzerprofil
+  card-mod-theme: Minimal Mushroom
+
+  # Globales Card Styling
+  card-mod-card: |
+    mushroom-template-card,
+    mushroom-entity-card,
+    mushroom-title-card,
+    mushroom-light-card,
+    mushroom-climate-card,
+    mushroom-cover-card,
+    mushroom-person-card,
+    mushroom-alarm-control-panel-card,
+    mushroom-fan-card,
+    mushroom-media-player-card,
+    mushroom-vacuum-card {
+      box-shadow: none !important;
+      border: none !important;
+      background: none !important;
+      padding: 0 !important;
+      margin: 0 !important;
+    }
+
+    ha-card {
+      box-shadow: none !important;
+      border: none !important;
+      background: none !important;
+      padding: 0 !important;
+    }
+
+  # Optional: Button Card + Markdown ohne Schatten
+  card-mod-root: |
+    ha-app-layout {
+      --ha-card-box-shadow: none;
+      --ha-card-border-radius: 0;
+    }
+
+  # Optional: Farben anpassen (dezent, hell)
+  primary-background-color: "#f6f7f9"
+  card-background-color: "#ffffff00"  # transparent cards
+  primary-text-color: "#1c1c1c"
+  secondary-text-color: "#666"

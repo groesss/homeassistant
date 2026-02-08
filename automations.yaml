@@ -1,0 +1,541 @@
+- id: '1714417689648'
+  alias: Wohnzimmer TV AmbiLights ein
+  description: Schaltet das Schranklicht bei Fernseher ein, nur nachts.
+  triggers:
+  - device_id: abfc6f43b455bcd3e650dcf12b20f75e
+    domain: media_player
+    entity_id: media_player.wohnzimmer_tv
+    type: turned_on
+    trigger: device
+  conditions:
+  - condition: template
+    value_template: '{% set now_time = now() %} {% set dusk = states(''sensor.sun_next_dusk'')
+      | as_datetime %} {% set dawn = states(''sensor.sun_next_dawn'') | as_datetime
+      %} {{ now_time >= dusk or now_time <= dawn }}
+
+      '
+  actions:
+  - type: turn_on
+    device_id: 5c4d9055d0e5249831140c78549fbe47
+    entity_id: light.schranklicht
+    domain: light
+    flash: short
+  mode: single
+- id: '1753078468164'
+  alias: Wohnzimmer_TV_Nutzungsdauer_zählen
+  description: Zählt die Minuten, die der Fernseher eingeschaltet ist.
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    state: 'on'
+  actions:
+  - target:
+      entity_id: counter.wohnzimmer_tv_watch_minutes
+    action: counter.increment
+  mode: single
+- id: '1753078838414'
+  alias: Wohnzimmer_TV_Steckdose_aus_nach_Zeitlimit
+  description: Schaltet die Steckdose aus, wenn das TV-Zeitlimit erreicht ist
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_tv_kindersicherung
+    state: 'on'
+  - condition: template
+    value_template: "{{ states('counter.wohnzimmer_tv_watch_minutes') | int >\n   states('input_number.wohnzimmer_tv_timer_number')
+      | int }}\n"
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_tv
+    action: switch.turn_off
+  mode: single
+- id: '1753081050526'
+  alias: Wohnzimmer_TV_Zeit_zählen_Quelle
+  description: Zählt die Minuten je nach aktiver TV-Quelle
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''HDMI'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.tv_minute_count_hdmi
+        data:
+          value: '{{ states(''input_number.tv_minute_count_hdmi'') | int + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Netflix'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.tv_minute_count_netflix
+        data:
+          value: '{{ states(''input_number.tv_minute_count_netflix'') | int + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''YouTube'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.tv_minute_count_youtube
+        data:
+          value: '{{ states(''input_number.tv_minute_count_youtube'') | int + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Prime Video'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.tv_minute_count_prime
+        data:
+          value: '{{ states(''input_number.tv_minute_count_prime'') | int + 1 }}'
+        action: input_number.set_value
+  mode: single
+- id: '1753082518657'
+  alias: TV Quell-Zähler zurücksetzen
+  description: ''
+  triggers:
+  - at: 00:00:00
+    trigger: time
+  actions:
+  - data:
+      entity_id: input_number.tv_minute_count_disney
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.tv_minute_count_hdmi
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.tv_minute_count_netflix
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.tv_minute_count_plex
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.tv_minute_count_prime
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.wohnzimmer_tv_minute_count_tv
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: input_number.tv_minute_count_youtube
+      value: 0
+    action: input_number.set_value
+  - data:
+      entity_id: counter.wohnzimmer_tv_watch_minutes
+    action: counter.reset
+- id: '1754902740359'
+  alias: wohnzimmer_tv_kindersicherung_toggle
+  description: Schaltet die Steckdose ein, wenn die Kindersicherung deaktiviert wird
+  triggers:
+  - entity_id: input_boolean.wohnzimmer_tv_kindersicherung
+    from: 'on'
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_tv
+    action: switch.turn_on
+  mode: single
+- id: '1755459782243'
+  alias: Wohnzimmer TV AmbiLights aus
+  description: Schaltet die AmbiLights im Wohnzimmer aus, wenn der Fernseher ausgeschaltet
+    wird.
+  triggers:
+  - device_id: abfc6f43b455bcd3e650dcf12b20f75e
+    domain: media_player
+    entity_id: media_player.wohnzimmer_tv
+    type: turned_off
+    trigger: device
+  conditions: []
+  actions:
+  - type: turn_off
+    device_id: 5c4d9055d0e5249831140c78549fbe47
+    entity_id: light.ambilight_wohnzimmer
+    domain: light
+    flash: short
+  mode: single
+- id: '1756481008405'
+  alias: Gardena Zeitplan Bewässerung
+  description: Öffnet das Gardena Ventil morgens oder abends nach Zeitplan, nur an
+    aktivierten Wochentagen.
+  triggers:
+  - at: input_datetime.gardena_morgen_start
+    trigger: time
+  - at: input_datetime.gardena_abend_start
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: "{% set day = now().weekday() %} {% set booleans = [\n  'input_boolean.gardena_mo',\n
+      \ 'input_boolean.gardena_di',\n  'input_boolean.gardena_mi',\n  'input_boolean.gardena_do',\n
+      \ 'input_boolean.gardena_fr',\n  'input_boolean.gardena_sa',\n  'input_boolean.gardena_so']
+      %}\n{{ is_state(booleans[day], 'on') }}\n"
+  actions:
+  - target:
+      entity_id: valve.garten_gardena_ventil_1
+    action: valve.open
+  - data:
+      message: 'Gardena Ventil geöffnet um {{ now().strftime(''%H:%M'') }} für  {{
+        states(''input_number.gardena_dauer'') | int(5) }} Minuten.
+
+        '
+      level: info
+    action: system_log.write
+  - delay:
+      minutes: '{{ states(''input_number.gardena_dauer'') | int(5) }}'
+  - target:
+      entity_id: valve.garten_gardena_ventil_1
+    action: valve.close
+  - data:
+      message: Gardena Ventil geschlossen um {{ now().strftime('%H:%M') }}
+      level: info
+    action: system_log.write
+  mode: restart
+- id: '1758805020047'
+  alias: Messages_Notification
+  description: Triggert eine Notification, wenn eine der Messages auf true geht.
+  triggers:
+  - entity_id:
+    - sensor.kueche_geschirrspueler_message
+    - sensor.kueche_backofen_message
+    - sensor.waschkeller_trockner_message
+    - sensor.garten_grundwasser_message
+    - sensor.oelkeller_flutsensor_message
+    - sensor.oelkeller_flutsensor_batterie_message
+    to: 'True'
+    trigger: state
+  actions:
+  - data:
+      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
+        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
+        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
+        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
+        }}\n"
+      message: '{{ state_attr(msg_sensor,''message'') }}'
+      data:
+        ttl: 0
+        priority: high
+    action: notify.mobile_app_sm_g991b
+  - data:
+      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
+        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
+        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
+        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
+        }}\n"
+      message: '{{ state_attr(msg_sensor,''message'') }}'
+      data:
+        ttl: 0
+        priority: high
+    action: notify.mobile_app_rmx3085
+  variables:
+    msg_sensor: '{{ trigger.entity_id }}'
+  mode: single
+- id: '1760956184095'
+  alias: wohnzimmer_terrarium_lampe1_einschalten
+  description: Schaltet die Lampe 1 (Bright Sun) zur geplanten Zeit ein.
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe1_on
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_1
+    action: switch.turn_on
+  - data:
+      message: '[Terrarium] Lampe ''Bright Sun'' eingeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+    action: system_log.write
+  mode: single
+- id: '1760956227580'
+  alias: Wohnzimmer_Terrarium_Lampe1_Ausschalten
+  description: Schaltet die Lampe 1 (Bright Sun) zur geplanten Zeit aus.
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe1_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_1
+    action: switch.turn_off
+  - data:
+      message: '[Terrarium] Lampe ''Bright Sun'' ausgeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+    action: system_log.write
+  mode: single
+- id: '1760956254550'
+  alias: wohnzimmer_terrarium_lampe2_einschalten
+  description: Schaltet die Lampe 2 (Halogenlampe) zur geplanten Zeit ein.
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe2_on
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_2
+    action: switch.turn_on
+  - action: system_log.write
+    data:
+      message: '[Terrarium] Lampe ''Halogenlampe'' eingeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+  mode: single
+- id: '1760956279817'
+  alias: wohnzimmer_terrarium_lampe2_ausschalten
+  description: Schaltet die Lampe 2 (Halogenlampe) zur geplanten Zeit aus.
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe2_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_2
+    action: switch.turn_off
+  - action: system_log.write
+    data:
+      message: '[Terrarium] Lampe ''Halogenlampe'' ausgeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+  mode: single
+- id: '1760963587057'
+  alias: Wohnzimmer_Terrarium_Warmup_Cooldown_Konsistenz
+  description: Stellt sicher, dass immer nur Warmup oder Cooldown gleichzeitig aktiviert
+    ist.
+  triggers:
+  - entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+    to: 'on'
+    trigger: state
+  - entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+    to: 'on'
+    trigger: state
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+        action: input_boolean.turn_off
+      - data:
+          message: '[Terrarium] Cooldown deaktiviert, da Warmup aktiviert wurde.'
+          level: info
+        action: system_log.write
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+        state: 'on'
+      sequence:
+      - target:
+          entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+        action: input_boolean.turn_off
+      - data:
+          message: '[Terrarium] Warmup deaktiviert, da Cooldown aktiviert wurde.'
+          level: info
+        action: system_log.write
+  mode: single
+- id: '1769877256193'
+  alias: Wohnzimmer_Terrarium_Warmup
+  description: Täglicher Warmup bis 14h
+  triggers:
+  - at: 00:01:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+    state: 'on'
+  actions:
+  - data:
+      level: warning
+      message: '[WARMUP] Started'
+    action: system_log.write
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "\n{% set on = states('input_datetime.wohnzimmer_terrarium_lampe1_on')
+          %} {% set off = states('input_datetime.wohnzimmer_terrarium_lampe1_off')
+          %}\n{% if on in ['unknown','unavailable',''] or off in ['unknown','unavailable','']
+          %}\n  false\n{% else %}\n  {% set on_dt = strptime(on,'%H:%M:%S') %}\n  {%
+          set off_dt = strptime(off,'%H:%M:%S') %}\n  {{ ((off_dt-on_dt).seconds/3600)
+          >= 14 }}\n{% endif %}\n"
+      sequence:
+      - data:
+          level: warning
+          message: '[WARMUP] Max reached → stop'
+        action: system_log.write
+      - target:
+          entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+        action: input_boolean.turn_off
+    default:
+    - data:
+        level: warning
+        message: '[WARMUP] Applying +1h'
+      action: system_log.write
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
+        time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_on')
+          %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
+          - timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
+          endif %}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
+        time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_off')
+          %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
+          + timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
+          endif %}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
+        time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_on')
+          %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
+          - timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
+          endif %}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
+        time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_off')
+          %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
+          + timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
+          endif %}\n"
+      action: input_datetime.set_datetime
+- id: '1769878981192'
+  alias: Wohnzimmer_Terrarium_Cooldown
+  description: 'Täglicher Cooldown: Beleuchtungsdauer um 1h verkürzen bis 0. Danach
+    Timer & Cooldown aus (Winterschlaf).
+
+    '
+  triggers:
+  - at: 00:01:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+    state: 'off'
+  actions:
+  - data:
+      level: info
+      message: '[COOLDOWN] Started'
+    action: system_log.write
+  - variables:
+      l1_on: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_on'') }}'
+      l1_off: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_off'') }}'
+      l2_on: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe2_on'') }}'
+      l2_off: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe2_off'') }}'
+  - variables:
+      d1: "{{ (as_timestamp('1970-01-01 ' ~ l1_off) -\n    as_timestamp('1970-01-01
+        ' ~ l1_on)) / 3600 }}\n"
+      d2: "{{ (as_timestamp('1970-01-01 ' ~ l2_off) -\n    as_timestamp('1970-01-01
+        ' ~ l2_on)) / 3600 }}\n"
+      min_current: '{{ [d1, d2] | min }}'
+  - data:
+      level: info
+      message: '[COOLDOWN] Current hours: {{ min_current }}
+
+        '
+    action: system_log.write
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ min_current <= 1 }}'
+      sequence:
+      - data:
+          level: info
+          message: '[COOLDOWN] Finished → Winter mode'
+        action: system_log.write
+      - target:
+          entity_id:
+          - input_boolean.wohnzimmer_terrarium_cooldown_active
+          - input_boolean.wohnzimmer_terrarium_timer_active
+        action: input_boolean.turn_off
+    default:
+    - data:
+        level: info
+        message: '[COOLDOWN] Applying -1h'
+      action: system_log.write
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
+        time: "{{ (strptime(l1_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
+        time: "{{ (strptime(l1_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
+        time: "{{ (strptime(l2_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
+        time: "{{ (strptime(l2_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+- id: '1769945515058'
+  alias: Wohnzimmer_Terrarium_Timer_Guard
+  description: Schaltet Lampen aus, wenn Timer deaktiviert wird
+  triggers:
+  - entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    to: 'off'
+    trigger: state
+  actions:
+  - target:
+      entity_id:
+      - switch.wohnzimmer_smartplug_terrarium_1
+      - switch.wohnzimmer_smartplug_terrarium_2
+    action: switch.turn_off
+  - data:
+      message: '[Timer Guard] Timer deaktiviert – Lampen ausgeschaltet'
+      level: info
+    action: system_log.write
+  mode: single

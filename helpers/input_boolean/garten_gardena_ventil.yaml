@@ -1,0 +1,15 @@
+# Statt multiple-Select → 7 Input Booleans
+gardena_mo:
+  name: Montag
+gardena_di:
+  name: Dienstag
+gardena_mi:
+  name: Mittwoch
+gardena_do:
+  name: Donnerstag
+gardena_fr:
+  name: Freitag
+gardena_sa:
+  name: Samstag
+gardena_so:
+  name: Sonntag

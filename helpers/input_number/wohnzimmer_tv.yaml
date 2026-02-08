@@ -1,0 +1,7 @@
+wohnzimmer_tv_timer_number:
+    name: Tägliches Zeitlimit
+    min: 15
+    max: 300
+    step: 15
+    unit_of_measurement: min
+    mode: box

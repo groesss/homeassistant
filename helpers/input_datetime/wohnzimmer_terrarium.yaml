@@ -1,0 +1,16 @@
+wohnzimmer_terrarium_lampe1_on:
+  name: "Wohnzimmer Terrarium Lampe 1 An"
+  has_date: false
+  has_time: true
+wohnzimmer_terrarium_lampe1_off:
+  name: "Wohnzimmer Terrarium Lampe 1 Aus"
+  has_date: false
+  has_time: true
+wohnzimmer_terrarium_lampe2_on:
+  name: "Wohnzimmer Terrarium Lampe 2 An"
+  has_date: false
+  has_time: true
+wohnzimmer_terrarium_lampe2_off:
+  name: "Wohnzimmer Terrarium Lampe 2 Aus"
+  has_date: false
+  has_time: true

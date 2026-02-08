@@ -1,0 +1,55 @@
+# Datei: templates/geschirrspueler.yaml
+# Template-Sensoren für den Geschirrspüler
+
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.kueche_geschirrspueler_status_operationstate
+        - binary_sensor.kueche_geschirrspueler_status_doorstate
+        # Optional: Wenn der Aktive Programm Sensor sofort reagieren soll
+        - sensor.kueche_geschirrspueler_selected_program
+
+  sensor:
+    - name: "Kueche Geschirrspueler Status Text"
+      unique_id: kueche_geschirrspueler_status_text
+      state: >
+        {% set op = states('sensor.kueche_geschirrspueler_status_operationstate') %}
+        {% set door = states('binary_sensor.kueche_geschirrspueler_status_doorstate') %}
+        {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
+
+        {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
+          Läuft
+        {% elif op == 'BSH.Common.EnumType.OperationState.Pause' %}
+          Pausiert
+        {% elif op == 'BSH.Common.EnumType.OperationState.Ready' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Bereit
+          {% endif %}
+        {% elif op == 'BSH.Common.EnumType.OperationState.Finished' %}
+          Fertig
+        {% elif op == 'BSH.Common.EnumType.OperationState.Stopped' %}
+          Gestoppt
+        {% elif op == 'BSH.Common.EnumType.OperationState.Inactive' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Ausgeschaltet
+          {% endif %}
+        {% else %}
+          {{ op }}
+        {% endif %}
+
+    - name: "Kueche Geschirrspueler Aktives Programm Text"
+      unique_id: kueche_geschirrspueler_aktives_programm_text
+      state: >
+        {% set op = states('sensor.kueche_geschirrspueler_selected_program') %}
+        {% set program_map = {
+          'Dishcare.Dishwasher.Program.Eco50': 'Eco 50 °C',
+          'Dishcare.Dishwasher.Program.Auto2': 'Auto',
+          'Dishcare.Dishwasher.Program.Intensiv70': 'Intensiv 70 °C',
+          'Dishcare.Dishwasher.Program.Schnell65': 'Schnell 65 °C',
+          'Dishcare.Dishwasher.Program.Silent': 'Leise'
+        } %}
+        {{ program_map.get(op, op) }}

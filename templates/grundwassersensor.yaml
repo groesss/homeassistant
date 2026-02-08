@@ -1,0 +1,9 @@
+- sensor:
+    - name: "Garten Grundwasser Status"
+      unique_id: "sensor.garten_grundwasser_status"
+      state: >
+        {% if is_state('switch.garten_shelly_grundwassersensor', 'on') %}
+          Schwimmerschalter ausgelöst!
+        {% else %}
+          Alles im grünen Bereich
+        {% endif %}

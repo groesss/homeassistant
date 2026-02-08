@@ -1,0 +1,91 @@
+- id: '1714418363820'
+  name: Fernsehstimmung
+  entities:
+    light.esstisch:
+      min_color_temp_kelvin: 2202
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 454
+      supported_color_modes:
+      - color_temp
+      color_mode: color_temp
+      brightness: 133
+      color_temp_kelvin: 2732
+      color_temp: 366
+      hs_color:
+      - 28.327
+      - 64.71
+      rgb_color:
+      - 255
+      - 167
+      - 89
+      xy_color:
+      - 0.524
+      - 0.387
+      is_hue_group: true
+      hue_scenes: []
+      hue_type: room
+      lights:
+      - Esstisch 2
+      - Esstisch 3
+      - Esstisch 1
+      dynamics: false
+      icon: mdi:lightbulb-group
+      friendly_name: Esstisch
+      supported_features: 40
+      state: 'on'
+    light.stahltrager:
+      supported_color_modes:
+      - brightness
+      color_mode: brightness
+      brightness: 72
+      is_hue_group: true
+      hue_scenes: []
+      hue_type: room
+      lights:
+      - Stahlträger kurz
+      - Stahlträger lang
+      dynamics: false
+      icon: mdi:lightbulb-group
+      friendly_name: Stahlträger
+      supported_features: 40
+      state: 'on'
+    light.wohnzimmer:
+      min_color_temp_kelvin: 2000
+      max_color_temp_kelvin: 6535
+      min_mireds: 153
+      max_mireds: 500
+      supported_color_modes:
+      - color_temp
+      - xy
+      color_mode: xy
+      brightness: 150
+      hs_color:
+      - 38.667
+      - 52.941
+      rgb_color:
+      - 255
+      - 207
+      - 120
+      xy_color:
+      - 0.4574
+      - 0.41
+      is_hue_group: true
+      hue_scenes:
+      - Hell
+      - Galaxie
+      hue_type: room
+      lights:
+      - Esstisch Rund
+      - Spot 4
+      - Spot 3
+      - Spot 2
+      - Klavier
+      - Spot 1
+      dynamics: false
+      icon: mdi:lightbulb-group
+      friendly_name: Wohnzimmer
+      supported_features: 40
+      state: 'on'
+  icon: mdi:ceiling-light-multiple
+  metadata: {}

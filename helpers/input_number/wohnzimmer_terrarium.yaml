@@ -1,0 +1,7 @@
+wohnzimmer_terrarium_max_time:
+  name: "Wohnzimmer Terrarium Max Beleuchtungszeit"
+  min: 0
+  max: 14
+  step: 1
+  unit_of_measurement: h
+  initial: 14

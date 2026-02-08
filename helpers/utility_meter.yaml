@@ -1,0 +1,7 @@
+garten_smartplug_pumpe_laufzeit_tag:
+  source: binary_sensor.pumpe_lauft
+  cycle: daily
+
+garten_smartplug_pumpe_laufzeit_woche:
+  source: binary_sensor.pumpe_lauft
+  cycle: weekly

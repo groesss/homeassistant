@@ -1,0 +1,61 @@
+# messages.yaml
+# Alle Meldungen zentral pflegen
+# state: true/false (automatisch via value_template)
+# message: Text für Dashboard/Notification
+# message_type: info, warning, error
+
+- sensor:
+    - name: "Kueche Geschirrspueler Message"
+      unique_id: kueche_geschirrspueler_message
+      state: "{{ states('sensor.kueche_geschirrspueler_status_text') == 'Fertig' }}"
+      icon: mdi:dishwasher
+      attributes:
+        message_title: "Geschirrspüler Fertig"
+        message: "Der Geschirrspüler ist fertig und kann ausgeräumt werden!"
+        message_type: "info"
+
+    - name: "Kueche Backofen Message"
+      unique_id: kueche_backofen_message
+      state: "{{ states('sensor.kueche_backofen_status_text') in ['Fertig','Abkühlen'] }}"
+      icon: mdi:stove
+      attributes:
+        message_title: "Backofen Fertig"
+        message: "Der Backofen hat sein Programm beendet!"
+        message_type: "info"
+
+    - name: "Waschkeller Trockner Message"
+      unique_id: waschkeller_trockner_message
+      state: "{{ states('sensor.waschkeller_trockner_status_text') == 'Fertig' }}"
+      icon: mdi:tumble-dryer
+      attributes:
+        message_title: "Wäschetrockner fertig"
+        message: "Die Wäsche ist fertig und kann entnommen werden!"
+        message_type: "info"
+
+    - name: "Garten Grundwasser Message"
+      unique_id: garten_grundwasser_message
+      state: "{{ is_state('switch.garten_shelly_grundwassersensor', 'True') }}"
+      icon: mdi:water-opacity
+      attributes:
+        message_title: "Grundwasser Sensor angeschlagen"
+        message: "Achtung: Der Grundwasser-Sensor im Garten hat ausgelöst! Bitte prüfe, ob die Pumpe noch funktioniert!"
+        message_type: "warning"
+
+    - name: "Oelkeller Flutsensor Message"
+      unique_id: oelkeller_flutsensor_message
+      state: "{{ is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') }}"
+      icon: mdi:water-opacity
+      attributes:
+        message_title: "Überflutungs-Sensor Ölkeller angeschlagen"
+        message: "Achtung: Der Flutsensor hat Wasser erkannt. Das Hauswasserwerk verliert Wasser! Bitte überprüfe, ob der Ölkeller überschwemmt ist!"
+        message_type: "warning"
+   
+    - name: "Oelkeller Flutsensor Batterie Message"
+      unique_id: oelkeller_flutsensor_batterie_message
+      state: "{{ states('sensor.oelkeller_shellyflood_battery')|int < 20 }}"
+      icon: mdi:battery
+      attributes:
+        message_title: "Überflutungs-Sensor Batterie gering"
+        message: " Die Batterie des Oelkeller Flutsensors beträgt nur noch {{ states('sensor.oelkeller_shellyflood_battery') }} %. Bitte tausche sie zeitnah aus, damit der Sensor weiterhin funktioniert."
+        message_type: "info"
+

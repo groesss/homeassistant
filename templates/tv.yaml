@@ -1,0 +1,14 @@
+sensor:
+  - platform: template
+    sensors:
+      wohnzimmer_tv_timer_text:
+        friendly_name: "TV Timer"
+        value_template: >
+          {% set m = states('input_number.wohnzimmer_tv_timer_number') | int %}
+          {% set h = m // 60 %}
+          {% set min = m % 60 %}
+          {% if h > 0 %}
+            {{ h }} h{% if min > 0 %} {{ min }} min{% endif %}
+          {% else %}
+            {{ min }} min
+          {% endif %}

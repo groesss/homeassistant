@@ -1,0 +1,69 @@
+# Datei: config/templates/trockner.yaml
+# Template-Sensoren für den Wäschetrockner
+
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.waschkeller_trockner_status_operationstate
+        - binary_sensor.waschkeller_trockner_status_doorstate
+        - sensor.waschkeller_trockner_active_program
+
+  sensor:
+    - name: "Waschkeller Trockner Status Text"
+      unique_id: waschkeller_trockner_status_text
+      state: >-
+        {% set op = states('sensor.waschkeller_trockner_status_operationstate') %}
+        {% set door = states('binary_sensor.waschkeller_trockner_status_doorstate') %}
+        {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
+
+        {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
+          Läuft
+        {% elif op == 'BSH.Common.EnumType.OperationState.Pause' %}
+          Pausiert
+        {% elif op == 'BSH.Common.EnumType.OperationState.Ready' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Bereit
+          {% endif %}
+        {% elif op == 'BSH.Common.EnumType.OperationState.Finished' %}
+          Fertig
+        {% elif op == 'BSH.Common.EnumType.Stopped' %}
+          Gestoppt
+        {% elif op == 'BSH.Common.EnumType.OperationState.Inactive' %}
+          {% if old == 'Fertig' and door == 'off' %}
+            Fertig
+          {% else %}
+            Ausgeschaltet
+          {% endif %}
+        {% else %}
+          {{ op }}
+        {% endif %}
+
+    - name: "Waschkeller Trockner Aktives Programm Text"
+      unique_id: waschkeller_trockner_aktives_programm_text
+      state: >-
+        {% set op = states('sensor.waschkeller_trockner_active_program') %}
+        {% set program_map = {
+          'LaundryCare.Dryer.Program.Cotton': 'Baumwolle',
+          'LaundryCare.Dryer.Program.Synthetic': 'Pflegeleicht',
+          'LaundryCare.Dryer.Program.Mix': 'Mix',
+          'LaundryCare.Dryer.Program.Towels': 'Handtücher',
+          'LaundryCare.Dryer.Program.Bedding': 'Bettwäsche',
+          'LaundryCare.Dryer.Program.WoolFinish': 'Wolle',
+          'LaundryCare.Dryer.Program.Shirts': 'Hemden',
+          'LaundryCare.Dryer.Program.Super40': 'Super 40\'',
+          'LaundryCare.Dryer.Program.Hygiene': 'Hygiene',
+          'LaundryCare.Dryer.Program.Sportswear': 'Sportkleidung',
+          'LaundryCare.Dryer.Program.DownWear': 'Daunen',
+          'LaundryCare.Dryer.Program.Silent': 'Leise',
+          'LaundryCare.Dryer.Program.AutoDry': 'Automatisch Trocknen',
+          'Dry: Timed Program Warm': 'Warmhalten'
+        } %}
+
+        {% if op in ['unknown', 'unavailable', '', None] %}
+          –
+        {% else %}
+          {{ program_map.get(op, op) }}
+        {% endif %}
+

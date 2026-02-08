@@ -1,0 +1,56 @@
+version: 5
+mqtt:
+  base_topic: zigbee2mqtt
+  server: mqtt://core-mosquitto:1883
+  user: addons
+  password: liePhielefeiViephaifugai5aiz0ooph6Bai5Eehiem5uGithahv7quohlooKoo
+serial:
+  baudrate: 115200
+  rtscts: false
+  port: >-
+    /dev/serial/by-id/usb-ITead_Sonoff_Zigbee_3.0_USB_Dongle_Plus_647e0d1ded9bef11a0eab79061ce3355-if00-port0
+  adapter: zstack
+advanced:
+  log_level: debug
+  channel: 11
+  network_key:
+    - 30
+    - 142
+    - 217
+    - 174
+    - 127
+    - 62
+    - 237
+    - 147
+    - 211
+    - 229
+    - 145
+    - 190
+    - 191
+    - 222
+    - 22
+    - 122
+  pan_id: 37739
+  ext_pan_id:
+    - 50
+    - 203
+    - 58
+    - 92
+    - 147
+    - 97
+    - 227
+    - 96
+frontend:
+  enabled: true
+  port: 8099
+homeassistant:
+  enabled: true
+devices:
+  '0x20a716fffef5eb3c':
+    friendly_name: '0x20a716fffef5eb3c'
+  '0xc09b9efffe4a8803':
+    friendly_name: '0xc09b9efffe4a8803'
+  '0xc09b9efffe4a8250':
+    friendly_name: '0xc09b9efffe4a8250'
+  '0xc09b9efffe4a46bf':
+    friendly_name: '0xc09b9efffe4a46bf'
