@@ -1,0 +1,106 @@
+title: Home
+cards:
+  - !include /config/ui/shared/messages.yaml
+  - type: weather-forecast
+    entity: weather.forecast_zuhause
+  - type: markdown
+    content: '## 1. Obergeschoss'
+    text_only: true
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: custom:button-card
+        name: Wohnzimmer
+        icon: mdi:sofa
+        show_state: true
+        state_display: |
+          [[[ 
+            const lights = [
+              'light.wohnzimmer_group_esstisch',
+              'light.wohnzimmer_group_wohnzimmer',
+              'light.wohnzimmer_group_stahltrager',
+              'light.wohnzimmer_group_schrank'
+            ];
+            const onCount = lights.filter(eid => states[eid]?.state === 'on').length;
+            return onCount ? `💡 ${onCount} an` : '💤 Aus';
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: view_wohnzimmer
+        styles:
+          card:
+            - height: 90px
+            - font-size: 13px
+            - border-radius: 16px
+      - type: custom:button-card
+        name: Küche
+        icon: mdi:faucet
+        show_state: true
+        state_display: |
+          [[[ 
+            const oven = states['sensor.kueche_backofen_status_text']?.state === 'Läuft';
+            const dish = states['sensor.kueche_geschirrspueler_status_text']?.state;
+            let status = '💤 Aus';
+            if (oven) status = '🔥 Backofen';
+            else if (dish === 'Läuft') status = '🍽️ Spüler';
+            else if (dish === 'Fertig') status = '✅ Fertig';
+            return status;
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: view_kueche
+        styles:
+          card:
+            - height: 90px
+            - font-size: 13px
+            - border-radius: 16px
+  - type: markdown
+    content: '## Erdgeschoss'
+    text_only: true
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: custom:button-card
+        name: Garten
+        icon: mdi:flower-outline
+        tap_action:
+          action: navigate
+          navigation_path: view_garten
+        styles:
+          card:
+            - height: 90px
+            - border-radius: 16px
+  - type: markdown
+    content: '## Keller'
+    text_only: true
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: custom:button-card
+        name: Waschkeller
+        icon: mdi:washing-machine
+        tap_action:
+          action: navigate
+          navigation_path: view_waschkeller
+        styles:
+          card:
+            - height: 90px
+            - border-radius: 16px
+      - type: custom:button-card
+        name: Ölkeller
+        icon: mdi:oil
+        show_state: true
+        state_display: >
+          [[[ return
+          states['sensor.oelkeller_shellyflood_temperature'].state + ' °C';
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: view_oelkeller
+        styles:
+          card:
+            - height: 90px
+            - border-radius: 16px

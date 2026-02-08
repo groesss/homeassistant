@@ -1,0 +1,14 @@
+type: sections
+max_columns: 4
+title: Wohnzimmer
+path: view_wohnzimmer
+subview: true
+icon: mdi:sofa-outline
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - !include /config/ui/wohnzimmer/beleuchtung.yaml
+  - !include /config/ui/wohnzimmer/tv.yaml
+  - !include /config/ui/wohnzimmer/terrarium.yaml
+  - !include /config/ui/wohnzimmer/thermostat.yaml

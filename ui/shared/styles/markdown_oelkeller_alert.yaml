@@ -1,0 +1,12 @@
+style: |
+  ha-card {
+    border-radius: 12px;
+    padding: 16px;
+    {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+    background: #f5b7b1;
+    color: #922b21;
+    {% else %}
+    background: #d5f5e3;
+    color: #196f3d;
+    {% endif %}
+  }

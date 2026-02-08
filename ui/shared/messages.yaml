@@ -1,0 +1,276 @@
+type: vertical-stack
+cards:
+  - type: conditional
+    conditions:
+      - entity: sensor.oelkeller_flutsensor_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.oelkeller_flutsensor_message','message_type')
+        %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.oelkeller_flutsensor_message','message_title')
+        }}**  
+
+        {{ state_attr('sensor.oelkeller_flutsensor_message','message')
+        }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.oelkeller_flutsensor_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.garten_grundwasser_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.garten_grundwasser_message','message_type')
+        %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.garten_grundwasser_message','message_title')
+        }}**  
+
+        {{ state_attr('sensor.garten_grundwasser_message','message') }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.garten_grundwasser_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.oelkeller_flutsensor_batterie_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.oelkeller_flutsensor_batterie_message','message_type')
+        %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.oelkeller_flutsensor_batterie_message','message_title')
+        }}**  
+
+        {{
+        state_attr('sensor.oelkeller_flutsensor_batterie_message','message')
+        }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.oelkeller_flutsensor_batterie_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.kueche_geschirrspueler_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.kueche_geschirrspueler_message','message_type')
+        %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.kueche_geschirrspueler_message','message_title')
+        }}**  
+
+        {{ state_attr('sensor.kueche_geschirrspueler_message','message')
+        }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.kueche_geschirrspueler_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.kueche_backofen_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.kueche_backofen_message','message_type') %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.kueche_backofen_message','message_title')
+        }}**  
+
+        {{ state_attr('sensor.kueche_backofen_message','message') }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.kueche_backofen_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }
+  - type: conditional
+    conditions:
+      - entity: sensor.waschkeller_trockner_message
+        state: 'True'
+    card:
+      type: markdown
+      content: >
+        {% set type =
+        state_attr('sensor.waschkeller_trockner_message','message_type')
+        %}
+
+        {% set emoji = '🔔' %}
+
+        {% if type == 'info' %}{% set emoji = '💡' %}
+
+        {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+        {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+        **{{ emoji }} {{
+        state_attr('sensor.waschkeller_trockner_message','message_title')
+        }}**  
+
+        {{ state_attr('sensor.waschkeller_trockner_message','message')
+        }}
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            {% set type = state_attr('sensor.waschkeller_trockner_message','message_type') %}
+            {% if type == 'info' %}
+              border: 2px solid var(--info-color);
+              background: rgba(0, 128, 0, 0.1);
+              color: var(--info-color);
+            {% elif type == 'warning' %}
+              border: 2px solid var(--warning-color);
+              background: rgba(255, 165, 0, 0.1);
+              color: var(--warning-color);
+            {% elif type == 'error' %}
+              border: 2px solid var(--error-color);
+              background: rgba(255, 0, 0, 0.1);
+              color: var(--error-color);
+            {% endif %}
+          }

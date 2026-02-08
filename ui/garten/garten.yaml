@@ -1,0 +1,166 @@
+type: sections
+max_columns: 4
+subview: true
+path: view_garten
+title: Garden
+icon: mdi:flower
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - type: grid
+    cards:
+      - type: heading
+        icon: mdi:water-opacity
+        heading: Grundwasserschacht
+        heading_style: title
+      - type: vertical-stack
+        cards:
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Wasserstandssensor
+              icon: mdi:water-alert-outline
+              icon_color: >
+                {% if is_state('binary_sensor.garten_shelly_grundwasser',
+                'off') %}
+                  green
+                {% elif is_state('binary_sensor.garten_shelly_grundwasser',
+                'on') %}
+                  red
+                {% else %}
+                  grey
+                {% endif %}
+            entities:
+              - type: custom:mushroom-template-card
+                primary: >
+                  {% if is_state('switch.garten_shelly_grundwassersensor',
+                  'on') %}
+                    ⚠️ Grundwasser-Warnung!
+                  {% else %}
+                    ✅ Alles in Ordnung
+                  {% endif %}
+                secondary: >
+                  {% if is_state('switch.garten_shelly_grundwassersensor',
+                  'on') %}
+                    Der Sensor im Grundwasserschacht hat ausgelöst.  
+                    Bitte überprüfe, ob die Pumpe noch läuft!
+                  {% else %}
+                    Der Grundwassersensor zeigt keine Probleme.
+                  {% endif %}
+                card_mod:
+                  !include /config/ui/shared/styles/flat_card.yaml
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Pumpe
+              icon: mdi:pump
+              icon_color: |
+                {% if is_state('binary_sensor.pumpe_lauft', 'on') %}
+                  orange
+                {% else %}
+                  grey
+                {% endif %}
+            entities:
+              - type: custom:stack-in-card
+                mode: vertical
+                cards:
+                  - type: entities
+                    entities:
+                      - entity: binary_sensor.pumpe_lauft
+                        name: Pumpe Status
+                      - type: custom:fold-entity-row
+                        head:
+                          type: section
+                          label: Leistungsdaten
+                        entities:
+                          - entity: sensor.garten_smartplug_pumpe_current
+                            name: Strom (A)
+                          - entity: sensor.garten_smartplug_pumpe_voltage
+                            name: Spannung (V)
+                          - entity: sensor.garten_smartplug_pumpe_power
+                            name: Leistung (W)
+                      - entity: sensor.garten_smartplug_pumpe_laufzeit_tag
+                        name: Laufzeit heute
+                      - entity: sensor.garten_smartplug_pumpe_laufzeit_woche
+                        name: Laufzeit diese Woche
+                  - type: history-graph
+                    name: Pumpenlauf Historie (7 Tage)
+                    entities:
+                      - binary_sensor.pumpe_lauft
+                    hours_to_show: 168
+                    refresh_interval: 60
+  - type: grid
+    cards:
+      - type: heading
+        icon: mdi:watering-can-outline
+        heading: Bewässerung
+        heading_style: title
+      - type: vertical-stack
+        cards:
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Gardena Ventil 1
+              secondary: >
+                {% set batt =
+                states('sensor.garten_gardena_ventil_1_battery') %} {% set
+                moist = states('sensor.garten_gardena_ventil_1_moisture') %}
+                Batterie: {{ batt if batt != 'unknown' else '-' }}% ·
+                Feuchtigkeit: {{ moist if moist != 'unknown' else '-' }}%
+              icon: mdi:water
+              icon_color: |
+                {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
+                  blue
+                {% else %}
+                  grey
+                {% endif %}
+            entities:
+              - entity: valve.garten_gardena_ventil_1
+                name: Ventil Steuerung
+              - entity: number.garten_gardena_ventil_1_manual_watering_time
+                name: Manuelle Bewässerungszeit (min)
+              - entity: number.garten_gardena_ventil_1_open_for
+                name: Geöffnet für (min)
+              - entity: number.garten_gardena_ventil_1_rain_pause
+                name: Regenpause (h)
+              - entity: number.garten_gardena_ventil_1_remaining_open_time
+                name: Verbleibende Zeit (min)
+              - entity: number.garten_gardena_ventil_1_seasonal_adjust
+                name: Saisonale Anpassung (%)
+              - entity: number.garten_gardena_ventil_1_sensor_threshold
+                name: Sensor Schwelle
+              - entity: sensor.garten_gardena_ventil_1_battery
+                name: Ventil Batterie
+              - entity: sensor.garten_gardena_ventil_1_moisture
+                name: Bodenfeuchtigkeit
+              - entity: sensor.garten_gardena_ventil_1_sensor_battery
+                name: Sensor Batterie
+              - entity: sensor.garten_gardena_ventil_1_sensor_timestamp
+                name: Letzte Sensor-Aktualisierung
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Zeitplan
+                entities:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: entities
+                        entities:
+                          - entity: input_boolean.gardena_mo
+                            name: Mo
+                          - entity: input_boolean.gardena_di
+                            name: Di
+                          - entity: input_boolean.gardena_mi
+                            name: Mi
+                      - type: entities
+                        entities:
+                          - entity: input_boolean.gardena_do
+                            name: Do
+                          - entity: input_boolean.gardena_fr
+                            name: Fr
+                          - entity: input_boolean.gardena_sa
+                            name: Sa
+                          - entity: input_boolean.gardena_so
+                            name: So

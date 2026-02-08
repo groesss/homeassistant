@@ -1,0 +1,33 @@
+type: sections
+max_columns: 4
+title: Ölkeller
+path: view_oelkeller
+icon: mdi:oil
+subview: true
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - type: grid
+    cards:
+      - type: heading
+        heading: New section
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: >
+              {% if is_state('binary_sensor.oelkeller_shellyflood_flood',
+              'on') %} ## ⚠️ Warnung! 
+
+              Der Flutsensor hat Wasser erkannt. Das Hauswasserwerk verliert
+              Wasser!
+
+              Bitte überprüfe, ob der Ölkeller überschwemmt ist!    {% else
+              %}  ## ✅ Alles in Ordnung 
+
+              Der Flut-Sensor im Ölkeller für das Hauswasserwerk meldet
+              keine Überflutung.    (Batteriezustand: %)
+
+              {% endif %}
+            card_mod:
+              card_mod: !include /config/ui/shared/styles/markdown_oelkeller_alert.yaml

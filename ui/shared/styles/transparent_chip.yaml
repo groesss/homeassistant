@@ -1,0 +1,11 @@
+ha-card {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}
+/* falls das chip-inner noch eigene ha-card hat */
+ha-card ha-card {
+  box-shadow: none !important;
+  border: none !important;
+  background: transparent !important;
+}

@@ -1,0 +1,7 @@
+type: grid
+cards:
+  - type: tile
+    entity: sensor.0xc09b9efffe4a46bf_local_temperature
+    card_mod:
+      style: !include /config/ui/shared/styles/transparent_card.yaml
+title: wohnzimmer_thermostat_1
