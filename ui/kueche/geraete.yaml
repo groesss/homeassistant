@@ -1,0 +1,204 @@
+type: grid
+cards:
+  - type: heading
+    heading: Küchengeräte
+    heading_style: title
+    icon: mdi:devices
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              entity: sensor.kueche_backofen_status_text
+              primary: 🍽️ Backofen
+              icon: mdi:stove
+              icon_color: >
+                {% set status =
+                states('sensor.kueche_backofen_status_text') %} {% if
+                status in ['Läuft', 'Abkühlen'] %}
+                  orange
+                {% elif status in ['Fertig', 'Bereit'] %}
+                  green
+                {% elif status == 'Pausiert' %}
+                  yellow
+                {% elif status == 'Gestoppt' %}
+                  red
+                {% elif status == 'Ausgeschaltet' %}
+                  grey
+                {% else %}
+                  blue
+                {% endif %}
+              layout: horizontal
+              tap_action: none
+              hold_action: none
+              secondary: >
+                {% set temp =
+                states('sensor.kueche_backofen_status_currentcavitytemperature')
+                %} {% set status =
+                states('sensor.kueche_backofen_status_text') %} {% set
+                prog =
+                states('sensor.kueche_backofen_option_programprogress')
+                %} {% set t_raw =
+                states('sensor.kueche_backofen_option_remainingprogramtime')
+                %}
+
+                {% set temp_str = temp if temp not in
+                ['unknown','unavailable',''] else '-' %}
+
+                {% if t_raw not in ['unknown','unavailable',''] %}
+                  {% set t_dt = t_raw | as_datetime %}
+                  {% set t_str = t_dt.strftime('%H:%M') %}
+                  {{ status }} ({{ temp_str }} °C) - Fertig um {{ t_str }} ({{ prog }}%)
+                {% else %}
+                  {{ status }} ({{ temp_str }} °C)
+                {% endif %}
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              - type: custom:mushroom-template-card
+                primary: >-
+                  Status: {{
+                  states('sensor.kueche_backofen_status_text') }}
+                secondary: >-
+                  {% set temp =
+                  states('sensor.kueche_backofen_status_currentcavitytemperature')
+                  %} {% set setpoint =
+                  states('sensor.kueche_backofen_option_setpointtemperature')
+                  %} {% set temp_str = temp if temp not in
+                  ['unknown','unavailable',''] else '-' %} Temperatur:
+                  {{ temp_str }} °C {% if setpoint not in
+                  ['unknown','unavailable',''] %}
+                    (Ziel: {{ setpoint }} °C)
+                  {% endif %}
+                icon: mdi:stove
+                icon_color: >
+                  {% set status =
+                  states('sensor.kueche_backofen_status_text') %} {% if
+                  status in ['Läuft', 'Abkühlen'] %}
+                    orange
+                  {% elif status in ['Fertig', 'Bereit'] %}
+                    green
+                  {% elif status == 'Pausiert' %}
+                    yellow
+                  {% elif status == 'Gestoppt' %}
+                    red
+                  {% elif status == 'Ausgeschaltet' %}
+                    grey
+                  {% else %}
+                    blue
+                  {% endif %}
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-template-card
+                primary: Programm
+                secondary: >
+                  {{
+                  states('sensor.kueche_backofen_aktives_programm_text')
+                  }}
+                icon: mdi:chef-hat
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-template-card
+                primary: Zeit
+                secondary: >
+                  {% set remaining =
+                  states('sensor.kueche_backofen_option_remainingprogramtime')
+                  %}
+
+
+                  {% if remaining not in ['unknown','unavailable',''] %}
+                    {% set t_remaining = remaining | as_datetime %}
+                    {% set remaining_minutes = ((t_remaining - now()).total_seconds() / 60) | round(0) %}
+                    {% if remaining_minutes < 0 %}
+                      {% set remaining_minutes = 0 %}
+                    {% endif %}
+                    {% set finish_time = (now() + timedelta(minutes=remaining_minutes)).strftime('%H:%M') %}
+                    Noch {{ remaining_minutes }} Minuten (Fertig um {{ finish_time }})
+                  {% else %}
+                    -
+                  {% endif %}
+                icon: mdi:timelapse
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-template-card
+                entity: input_datetime.backofen_alarmzeit
+                primary: Alarmzeit einstellen
+                icon: mdi:alarm
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              entity: sensor.kueche_geschirrspueler_status_text
+              primary: 🧼 Geschirrspüler
+              icon: mdi:dishwasher
+              icon_color: >
+                {% set status =
+                states('sensor.kueche_geschirrspueler_status_text') %}
+                {% if status == 'Läuft' %}
+                  orange
+                {% elif status in ['Fertig', 'Bereit'] %}
+                  green
+                {% elif status == 'Pausiert' %}
+                  yellow
+                {% elif status == 'Gestoppt' %}
+                  red
+                {% elif status == 'Ausgeschaltet' %}
+                  grey
+                {% else %}
+                  blue
+                {% endif %}
+              layout: horizontal
+              secondary: >-
+                {{ states('sensor.kueche_geschirrspueler_status_text')
+                }}
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              - type: custom:mushroom-template-card
+                primary: >-
+                  Status: {{
+                  states('sensor.kueche_geschirrspueler_status_text') }}
+                secondary: >
+                  Fertig um:  {% set time =
+                  states('sensor.kueche_geschirrspueler_option_remainingprogramtime')
+                  %} {% if time in ['unknown', 'unavailable', '', None]
+                  %}
+                    -
+                  {% else %}
+                    {{ as_timestamp(time) | timestamp_custom('%H:%M') }}
+                  {% endif %}
+                icon: mdi:dishwasher
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-template-card
+                primary: Fortschritt
+                secondary: >
+                  {% set progress =
+
+                  states('sensor.kueche_geschirrspueler_option_programprogress')
+                  |
+
+                  float(0) %} {% if progress < 1 %}
+                    -
+                  {% else %}
+                    {{ states('sensor.kueche_geschirrspueler_option_programprogress') }}%
+                  {% endif %}
+                icon: mdi:progress-clock
+                icon_color: >
+                  {% set progress =
+                  states('sensor.kueche_geschirrspueler_option_programprogress')
+                  | float(0) %} {% if progress < 1 %}
+                    grey
+                  {% elif progress < 25 %}
+                    red
+                  {% elif progress < 75 %}
+                    orange
+                  {% else %}
+                    green
+                  {% endif %}
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-entity-card
+                entity: switch.kueche_geschirrspueler_setting_powerstate
+                name: Geschirrspüler
+                icon: mdi:dishwasher
+                tap_action:
+                  action: toggle
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style

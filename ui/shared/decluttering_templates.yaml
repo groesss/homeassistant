@@ -1,0 +1,21 @@
+message_alert:
+  card:
+    type: markdown
+    entity: '[[entity]]'
+    content: >
+      {% set type = state_attr('[[entity]]','message_type') %}
+
+      {% set emoji = '🔔' %}
+
+      {% if type == 'info' %}{% set emoji = '💡' %}
+
+      {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+      {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+      **{{ emoji }} {{
+      state_attr('[[entity]]','message_title')
+      }}**  
+
+      {{ state_attr('[[entity]]','message') }}
+    card_mod: !include /config/ui/shared/styles/message_alert.yaml # Message Alert Style

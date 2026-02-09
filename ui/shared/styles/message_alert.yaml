@@ -1,0 +1,20 @@
+style: |
+  ha-card {
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 12px;
+    {% set type = state_attr(config.entity, 'message_type') %}
+    {% if type == 'info' %}
+      border: 2px solid var(--info-color);
+      background: rgba(0, 128, 0, 0.1);
+      color: var(--info-color);
+    {% elif type == 'warning' %}
+      border: 2px solid var(--warning-color);
+      background: rgba(255, 165, 0, 0.1);
+      color: var(--warning-color);
+    {% elif type == 'error' %}
+      border: 2px solid var(--error-color);
+      background: rgba(255, 0, 0, 0.1);
+      color: var(--error-color);
+    {% endif %}
+  }

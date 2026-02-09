@@ -1,0 +1,106 @@
+type: grid
+cards:
+  - type: heading
+    heading: Geräte
+    heading_style: title
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+          # ++
+          # ++ Wäschetrockner
+          # 
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              entity: sensor.waschkeller_trockner_status_text
+              primary: 🧺 Wäschetrockner
+              icon: mdi:tumble-dryer
+              icon_color: >
+                {% set status =
+                states('sensor.waschkeller_trockner_status_text') %} {% if
+                status == 'Läuft' %}
+                  orange
+                {% elif status in ['Fertig', 'Bereit'] %}
+                  green
+                {% elif status == 'Pausiert' %}
+                  yellow
+                {% elif status == 'Gestoppt' %}
+                  red
+                {% elif status == 'Ausgeschaltet' %}
+                  grey
+                {% else %}
+                  blue
+                {% endif %}
+              layout: horizontal
+              secondary: '{{ states(''sensor.waschkeller_trockner_status_text'') }}'
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              # Status
+              - type: custom:mushroom-template-card
+                primary: >-
+                  Status: {{
+                  states('sensor.waschkeller_trockner_status_text') }}
+                secondary: >
+                  {% set time =
+                  states('sensor.waschkeller_trockner_option_remainingprogramtime')
+                  %} {% if time in ['unknown', 'unavailable', '', None] %}
+                    -
+                  {% else %}
+                    {% set end = as_timestamp(time) %}
+                    {% set diff = (end - now().timestamp()) / 60 %}
+                    {% if diff > 1 %}
+                      Fertig um: {{ end | timestamp_custom('%H:%M') }} (noch {{ diff | round(0) }} Minuten)
+                    {% elif diff > 0 %}
+                      Fertig um: {{ end | timestamp_custom('%H:%M') }} (gleich fertig)
+                    {% else %}
+                      -
+                    {% endif %}
+                  {% endif %}
+                icon: mdi:tumble-dryer
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              # Programm
+              - type: custom:mushroom-template-card
+                primary: Programm
+                secondary: >
+                  {{
+                  states('sensor.waschkeller_trockner_aktives_programm_text')
+                  }}
+                icon: mdi:playlist-play
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              - type: custom:mushroom-template-card
+                primary: Fortschritt
+                secondary: >
+                  {% set progress =
+                  states('sensor.waschkeller_trockner_option_programprogress')
+                  | float(0) %}
+
+                  {% if progress < 1 %}
+                    -
+                  {% else %}
+                    {{ progress }}%
+                  {% endif %}
+                icon: mdi:progress-clock
+                icon_color: >
+                  {% set progress =
+                  states('sensor.waschkeller_trockner_option_programprogress')
+                  | float(0) %} {% if progress < 1 %}
+                    grey
+                  {% elif progress < 25 %}
+                    red
+                  {% elif progress < 75 %}
+                    orange
+                  {% else %}
+                    green
+                  {% endif %}
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+              # Wäschetrockner Ein/Aus
+              - type: custom:mushroom-entity-card
+                entity: switch.waschkeller_trockner_setting_powerstate
+                name: Wäschetrockner
+                icon: mdi:tumble-dryer
+                tap_action:
+                  action: toggle
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style

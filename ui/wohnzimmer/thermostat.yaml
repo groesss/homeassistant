@@ -1,7 +1,10 @@
 type: grid
 cards:
-  - type: tile
-    entity: sensor.0xc09b9efffe4a46bf_local_temperature
-    card_mod:
-      style: !include /config/ui/shared/styles/transparent_card.yaml
+  - type: custom:stack-in-card
+    mode: vertical
+    card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+    cards:
+      - type: tile
+        entity: sensor.0xc09b9efffe4a46bf_local_temperature
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
 title: wohnzimmer_thermostat_1

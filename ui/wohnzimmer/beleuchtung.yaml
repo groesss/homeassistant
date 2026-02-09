@@ -1,198 +1,201 @@
 type: grid
 cards:
   - type: heading
-    icon: mdi:lightbulb-group-outline
-    heading: Beleuchtung 
+    heading: Beleuchtung
     heading_style: title
+    icon: mdi:lightbulb-group-outline
   - type: vertical-stack
     cards:
-      - type: custom:fold-entity-row
-        head:
-          type: custom:mushroom-template-card
-          primary: Lampen 
-          secondary: |-
-            {{ expand('light.wohnzimmer_group_esstisch',
-                       'light.wohnzimmer_group_wohnzimmer',
-                       'light.wohnzimmer_group_stahltrager',
-                       'light.wohnzimmer_group_schrank')
-               | selectattr('state','eq','on') | list | count }} von 4 an
-          icon: mdi:lightbulb-group
-          icon_color: |-
-            {% set lights = [
-              'light.wohnzimmer_group_esstisch',
-              'light.wohnzimmer_group_wohnzimmer',
-              'light.wohnzimmer_group_stahltrager',
-              'light.wohnzimmer_group_schrank'] %}
-            {% if lights | select('is_state','on') | list | count > 0 %}
-              yellow
-            {% else %}
-              grey
-            {% endif %}
-        entities:
-          - type: custom:mushroom-template-card
-            toggle: true
-            card_mod:
-              style: !include /config/ui/shared/styles/transparent_card.yaml
-            icon_color: |-
-              {% if is_state(entity, 'on') %}
-                yellow
-              {% else %}
-                grey
-              {% endif %}
-            secondary: |-
-              {% if is_state(entity, 'on') %}
-                {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
-              {% else %}
-                Aus
-              {% endif %}
-          - type: custom:mushroom-template-card
-            toggle: true
-            card_mod:
-              style: !include /config/ui/shared/styles/transparent_card.yaml
-            icon_color: |-
-              {% if is_state(entity, 'on') %}
-                yellow
-              {% else %}
-                grey
-              {% endif %}
-            secondary: |-
-              {% if is_state(entity, 'on') %}
-                {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
-              {% else %}
-                Aus
-              {% endif %}
-            entity: light.wohnzimmer_group_esstisch
-            primary: Esstisch
-            icon: mdi:ceiling-light
-          - type: custom:mushroom-template-card
-            toggle: true
-            card_mod:
-              style: !include /config/ui/shared/styles/transparent_card.yaml
-            icon_color: |-
-              {% if is_state(entity, 'on') %}
-                yellow
-              {% else %}
-                grey
-              {% endif %}
-            secondary: |-
-              {% if is_state(entity, 'on') %}
-                {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
-              {% else %}
-                Aus
-              {% endif %}
-            entity: light.wohnzimmer_group_wohnzimmer
-            primary: Wohnzimmer
-            icon: mdi:floor-lamp
-          - type: custom:mushroom-template-card
-            toggle: true
-            card_mod:
-              style: !include /config/ui/shared/styles/transparent_card.yaml
-            icon_color: |-
-              {% if is_state(entity, 'on') %}
-                yellow
-              {% else %}
-                grey
-              {% endif %}
-            secondary: |-
-              {% if is_state(entity, 'on') %}
-                {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
-              {% else %}
-                Aus
-              {% endif %}
-            entity: light.wohnzimmer_group_stahltrager
-            primary: Stahlträger
-            icon: mdi:track-light
-          - type: custom:mushroom-template-card
-            toggle: true
-            card_mod:
-              style: !include /config/ui/shared/styles/transparent_card.yaml
-            icon_color: |-
-              {% if is_state(entity, 'on') %}
-                yellow
-              {% else %}
-                grey
-              {% endif %}
-            secondary: |-
-              {% if is_state(entity, 'on') %}
-                {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
-              {% else %}
-                Aus
-              {% endif %}
-            entity: light.wohnzimmer_group_schrank
-            primary: Schrank
-            icon: mdi:wall-sconce
-      - type: custom:fold-entity-row
-        head:
-          type: custom:mushroom-template-card
-          primary: Szenen
-          icon: mdi:palette
-          icon_color: indigo
-        entities:
-          - type: custom:mushroom-chips-card
-            chips:
-              - type: template
-                icon: mdi:candle
-                content: Besinnlich
-                icon_color: deep-orange
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_besinnlich
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
-              - type: template
-                icon: mdi:city
-                content: Fairfax
-                icon_color: teal
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_fairfax
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
-              - type: template
-                icon: mdi:star-four-points
-                content: Galaxy
-                icon_color: purple
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_galaxy
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
-              - type: template
-                icon: mdi:weather-sunny
-                content: Hell
-                icon_color: yellow
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_hell
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
-              - type: template
-                icon: mdi:home-floor-2
-                content: Hell OG
-                icon_color: amber
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_hell_upperfloor
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
-              - type: template
-                icon: mdi:beach
-                content: Rio
-                icon_color: red
-                tap_action:
-                  action: call-service
-                  service: scene.turn_on
-                  data:
-                    entity_id: scene.wohnzimmer_lights_scene_rio
-                card_mod:
-                  style: !include /config/ui/shared/styles/transparent_card.yaml
+      - type: custom:stack-in-card
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        mode: vertical
+        cards:
+
+          # ++
+          # ++ Lampen
+          # 
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Lampen
+              secondary: |-
+                {{ expand('light.wohnzimmer_group_esstisch',
+                           'light.wohnzimmer_group_wohnzimmer',
+                           'light.wohnzimmer_group_stahltrager',
+                           'light.wohnzimmer_group_schrank')
+                   | selectattr('state','eq','on') | list | count }} von 4 an
+              icon: mdi:lightbulb-group
+              icon_color: |-
+                {% set lights = [
+                  'light.wohnzimmer_group_esstisch',
+                  'light.wohnzimmer_group_wohnzimmer',
+                  'light.wohnzimmer_group_stahltrager',
+                  'light.wohnzimmer_group_schrank'] %}
+                {% if lights | select('is_state','on') | list | count > 0 %}
+                  yellow
+                {% else %}
+                  grey
+                {% endif %}
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              - type: custom:mushroom-template-card
+                toggle: true
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                icon_color: |-
+                  {% if is_state(entity, 'on') %}
+                    yellow
+                  {% else %}
+                    grey
+                  {% endif %}
+                secondary: |-
+                  {% if is_state(entity, 'on') %}
+                    {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
+                  {% else %}
+                    Aus
+                  {% endif %}
+              - type: custom:mushroom-template-card
+                toggle: true
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                icon_color: |-
+                  {% if is_state(entity, 'on') %}
+                    yellow
+                  {% else %}
+                    grey
+                  {% endif %}
+                secondary: |-
+                  {% if is_state(entity, 'on') %}
+                    {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
+                  {% else %}
+                    Aus
+                  {% endif %}
+                entity: light.wohnzimmer_group_esstisch
+                primary: Esstisch
+                icon: mdi:ceiling-light
+              - type: custom:mushroom-template-card
+                toggle: true
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                icon_color: |-
+                  {% if is_state(entity, 'on') %}
+                    yellow
+                  {% else %}
+                    grey
+                  {% endif %}
+                secondary: |-
+                  {% if is_state(entity, 'on') %}
+                    {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
+                  {% else %}
+                    Aus
+                  {% endif %}
+                entity: light.wohnzimmer_group_wohnzimmer
+                primary: Wohnzimmer
+                icon: mdi:floor-lamp
+              - type: custom:mushroom-template-card
+                toggle: true
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                icon_color: |-
+                  {% if is_state(entity, 'on') %}
+                    yellow
+                  {% else %}
+                    grey
+                  {% endif %}
+                secondary: |-
+                  {% if is_state(entity, 'on') %}
+                    {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
+                  {% else %}
+                    Aus
+                  {% endif %}
+                entity: light.wohnzimmer_group_stahltrager
+                primary: Stahlträger
+                icon: mdi:track-light
+              - type: custom:mushroom-template-card
+                toggle: true
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                icon_color: |-
+                  {% if is_state(entity, 'on') %}
+                    yellow
+                  {% else %}
+                    grey
+                  {% endif %}
+                secondary: |-
+                  {% if is_state(entity, 'on') %}
+                    {{ (state_attr(entity, 'brightness') | default(0) | int / 2.55) | round(0) }} %
+                  {% else %}
+                    Aus
+                  {% endif %}
+                entity: light.wohnzimmer_group_schrank
+                primary: Schrank
+                icon: mdi:wall-sconce
+
+            # ++
+            # ++ Szenen
+            # 
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Szenen
+              icon: mdi:palette
+              icon_color: indigo
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              - type: custom:mushroom-chips-card
+                chips:
+                  - type: template
+                    icon: mdi:candle
+                    content: Besinnlich
+                    icon_color: deep-orange
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_besinnlich
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                  - type: template
+                    icon: mdi:city
+                    content: Fairfax
+                    icon_color: teal
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_fairfax
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                  - type: template
+                    icon: mdi:star-four-points
+                    content: Galaxy
+                    icon_color: purple
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_galaxy
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                  - type: template
+                    icon: mdi:weather-sunny
+                    content: Hell
+                    icon_color: yellow
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_hell
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                  - type: template
+                    icon: mdi:home-floor-2
+                    content: Hell OG
+                    icon_color: amber
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_hell_upperfloor
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                  - type: template
+                    icon: mdi:beach
+                    content: Rio
+                    icon_color: red
+                    tap_action:
+                      action: call-service
+                      service: scene.turn_on
+                      data:
+                        entity_id: scene.wohnzimmer_lights_scene_rio
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style

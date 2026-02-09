@@ -6,8 +6,14 @@ cards:
     icon: mdi:cactus
   - type: vertical-stack
     cards:
-      - type: vertical-stack
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
         cards:
+        
+          # ++
+          # ++ Terrarium Betrieb
+          # 
           - type: custom:mushroom-entity-card
             entity: input_boolean.wohnzimmer_terrarium_timer_active
             name: Terrarium Betrieb
@@ -22,64 +28,69 @@ cards:
               {% else %}
                 grey
               {% endif %}
-              card_mod: !include /config/ui/shared/styles/terrarium_title.yaml
-          - type: custom:stack-in-card
-            mode: vertical
-            card_mod:
-              style: |
-                ha-card {
-                  {% if is_state('input_boolean.wohnzimmer_terrarium_timer_active','off') %}
-                    opacity: 0.45;
-                    pointer-events: none;
-                    filter: grayscale(100%);
-                  {% endif %}
-                  background: transparent !important;
-                  box-shadow: none !important;
-                  border: none !important;
-                  padding: 6px 0 !important;
-                }
-            cards:
-              - type: custom:fold-entity-row
-                head:
-                  type: custom:mushroom-template-card
-                  primary: Lampen
-                  secondary: >
-                    {{ expand([
-                      'switch.wohnzimmer_smartplug_terrarium_1',
-                      'switch.wohnzimmer_smartplug_terrarium_2'
-                    ]) | selectattr('state','eq','on') | list | count }}
-                    von 2 an
-                  icon: mdi:lightbulb-group
-                  icon_color: >
-                    {% set lights = [
-                      'switch.wohnzimmer_smartplug_terrarium_1',
-                      'switch.wohnzimmer_smartplug_terrarium_2'
-                    ] %} 
+            card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+          
+          # ++
+          # ++ Lampen
+          # 
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Lampen
+              secondary: >
+                {{ expand([
+                  'switch.wohnzimmer_smartplug_terrarium_1',
+                  'switch.wohnzimmer_smartplug_terrarium_2'
+                ]) | selectattr('state','eq','on') | list | count }}
+                von 2 an
+              icon: mdi:lightbulb-group
+              icon_color: >
+                {% set lights = [
+                  'switch.wohnzimmer_smartplug_terrarium_1',
+                  'switch.wohnzimmer_smartplug_terrarium_2'
+                ] %} 
 
-                    {% if lights | select('is_state','on') | list |
-                    count > 0 %}
-                      yellow
-                    {% else %}
-                      grey
-                    {% endif %}
-                entities:
+                {% if lights | select('is_state','on') | list |
+                count > 0 %}
+                  yellow
+                {% else %}
+                  grey
+                {% endif %}
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+            entities:
+              - type: custom:stack-in-card
+                mode: vertical
+                card_mod:
+                  style: |
+                    ha-card {
+                      {% if is_state('input_boolean.wohnzimmer_terrarium_timer_active','off') %}
+                        opacity: 0.45;
+                        pointer-events: none;
+                        filter: grayscale(100%);
+                      {% endif %}
+                      background: transparent !important;
+                      box-shadow: none !important;
+                      border: none !important;
+                      padding: 6px 0 !important;
+                    }
+                cards:
                   - type: custom:mushroom-template-card
                     primary: Bright Sun Desert
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                   - type: custom:stack-in-card
                     mode: horizontal
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                     cards:
                       - type: custom:mushroom-entity-card
                         entity: input_datetime.wohnzimmer_terrarium_lampe1_on
                         name: An
                         icon: mdi:weather-sunset-up
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                       - type: custom:mushroom-entity-card
                         entity: input_datetime.wohnzimmer_terrarium_lampe1_off
                         name: Aus
                         icon: mdi:weather-sunset-down
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                       - type: custom:mushroom-template-card
                         entity: switch.wohnzimmer_smartplug_terrarium_1
                         toggle: true
@@ -92,24 +103,24 @@ cards:
                           {% else %}
                             grey
                           {% endif %}
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                   - type: custom:mushroom-template-card
                     primary: Halogenlampe
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                   - type: custom:stack-in-card
                     mode: horizontal
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                     cards:
                       - type: custom:mushroom-entity-card
                         entity: input_datetime.wohnzimmer_terrarium_lampe2_on
                         name: An
                         icon: mdi:weather-sunset-up
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                       - type: custom:mushroom-entity-card
                         entity: input_datetime.wohnzimmer_terrarium_lampe2_off
                         name: Aus
                         icon: mdi:weather-sunset-down
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
                       - type: custom:mushroom-template-card
                         entity: switch.wohnzimmer_smartplug_terrarium_2
                         toggle: true
@@ -122,36 +133,40 @@ cards:
                           {% else %}
                             grey
                           {% endif %}
-                        card_mod: !include /config/ui/shared/styles/terrarium_flat.yaml
-              - type: custom:stack-in-card
-                mode: horizontal
-                card_mod:
-                  style: |
-                    ha-card {
-                      {% if is_state('input_boolean.wohnzimmer_terrarium_timer_active','off') %}
-                        opacity: 0.45;
-                        pointer-events: none;
-                        filter: grayscale(100%);
-                      {% endif %}
-                      border: none !important;
-                      box-shadow: none !important;
-                      background: transparent !important;
-                      padding: 0 !important;
-                      margin: 0 !important;
-                    }
-                cards:
-                  - type: custom:mushroom-entity-card
-                    entity: input_boolean.wohnzimmer_terrarium_warmup_active
-                    name: Warmup
-                    toggle: true
-                    icon_color: yellow
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
-                  - type: custom:mushroom-entity-card
-                    entity: input_boolean.wohnzimmer_terrarium_cooldown_active
-                    name: Cooldown
-                    toggle: true
-                    icon_color: blue
-                    card_mod: !include /config/ui/shared/styles/terrarium_flat_padded.yaml
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+          
+          # ++
+          # ++ Warmup / Cooldown
+          # 
+          - type: custom:stack-in-card
+            mode: horizontal
+            card_mod:
+              style: |
+                ha-card {
+                  {% if is_state('input_boolean.wohnzimmer_terrarium_timer_active','off') %}
+                    opacity: 0.45;
+                    pointer-events: none;
+                    filter: grayscale(100%);
+                  {% endif %}
+                  border: none !important;
+                  box-shadow: none !important;
+                  background: transparent !important;
+                  padding: 0 !important;
+                  margin: 0 !important;
+                }
+            cards:
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.wohnzimmer_terrarium_warmup_active
+                name: Warmup
+                toggle: true
+                icon_color: yellow
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml  # Card compact Style
+              - type: custom:mushroom-entity-card
+                entity: input_boolean.wohnzimmer_terrarium_cooldown_active
+                name: Cooldown
+                toggle: true
+                icon_color: blue
+                card_mod: !include /config/ui/shared/styles/flat_compact.yaml  # Card compact Style
   - type: markdown
     content: '{{ states(''sensor.wohnzimmer_terrarium_warmup_cooldown_info'') }}'
     card_mod: !include /config/ui/shared/styles/markdown_plain.yaml

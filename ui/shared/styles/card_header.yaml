@@ -1,0 +1,6 @@
+style: |
+  ha-card {
+    border: var(--ha-card-border-width, 1px) solid var(--ha-card-border-color, var(--divider-color)) !important;
+    box-shadow: var(--ha-card-box-shadow, none) !important;
+    background: var(--ha-card-background, var(--card-background-color)) !important;
+  }

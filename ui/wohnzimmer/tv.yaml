@@ -6,89 +6,98 @@ cards:
     icon: mdi:television
   - type: vertical-stack
     cards:
-      - type: custom:fold-entity-row
-        head:
-          type: custom:mushroom-template-card
-          primary: Fernseher
-          icon: mdi:television
-          card_mod:
-            style: !include /config/ui/shared/styles/transparent_card.yaml
-          icon_color: >
-            {% set status =
-            states('media_player.wohnzimmer_tv_samsung_q90_series_75')
-            %} {% if status in ['on', 'playing'] %}
-              orange
-            {% elif status in ['off', 'idle'] %}
-              grey
-            {% else %}
-              blue
-            {% endif %}
-        entities:
-          - entity: media_player.wohnzimmer_tv_samsung_q90_series_75
-            name: 📺 Samsung Fernseher
-      - type: custom:fold-entity-row
-        open: false
-        head:
-          type: custom:mushroom-template-card
-          primary: Kindersicherung
-          icon: mdi:human-child
-          card_mod:
-            style: !include /config/ui/shared/styles/transparent_card.yaml
-          icon_color: >
-            {% set status =
-            states('input_boolean.wohnzimmer_tv_kindersicherung') %} {%
-            if status == 'on' %}
-              orange
-            {% elif status == 'off' %}
-              grey
-            {% else %}
-              blue
-            {% endif %}
-        entities:
-          - entity: input_boolean.wohnzimmer_tv_kindersicherung
-            name: 🛡 Kindersicherung aktivieren
-          - type: custom:numberbox-card
-            entity: input_number.wohnzimmer_tv_timer_number
-            name: ⏳ Tägliches Zeitlimit (Minuten)
-            icon: mdi:timer
-            unit: ' min'
-            speed: 250
-          - entity: input_number.wohnzimmer_tv_timer_number
-            name: finetuning ...
-          - entity: switch.wohnzimmer_smartplug_tv
-            name: 🔌 Steckdose (TV)
-          - type: custom:hui-element
-            card_type: gauge
-            entity: counter.wohnzimmer_tv_watch_minutes
-            name: TV-Zeitverbrauch heute
-            min: 0
-            max: |
-              [[[
-                return Number(states['input_number.wohnzimmer_tv_timer_number'].state);
-              ]]]
-            severity:
-              green: 0
-              yellow: 70
-              red: 90
-            unit: min
-      - type: conditional
-        conditions:
-          - condition: state
-            entity: input_boolean.wohnzimmer_tv_kindersicherung
-            state: 'on'
-        card:
-          type: markdown
-          content: >
-            **👨‍👩‍👧 Kindersicherung ist aktiv.**   (noch **{{
-            states('input_number.wohnzimmer_tv_timer_number') | float |
-            round(0) | int - 
-            states('counter.wohnzimmer_tv_watch_minutes') | float |
-            round(0) | int }} Minuten** übrig)
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+
+          # ++
+          # ++ Fernseher
+          # 
+          - type: custom:fold-entity-row
+            head:
+              type: custom:mushroom-template-card
+              primary: Fernseher
+              icon: mdi:television
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+              icon_color: >
+                {% set status =
+                states('media_player.wohnzimmer_tv_samsung_q90_series_75')
+                %} {% if status in ['on', 'playing'] %}
+                  orange
+                {% elif status in ['off', 'idle'] %}
+                  grey
+                {% else %}
+                  blue
+                {% endif %}
+            entities:
+              - entity: media_player.wohnzimmer_tv_samsung_q90_series_75
+                name: 📺 Samsung Fernseher
+
+          # ++
+          # ++ Kindersicherung
+          # 
+          - type: custom:fold-entity-row
+            open: false
+            head:
+              type: custom:mushroom-template-card
+              primary: Kindersicherung
+              icon: mdi:human-child
+              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+              icon_color: >
+                {% set status =
+                states('input_boolean.wohnzimmer_tv_kindersicherung') %} {%
+                if status == 'on' %}
+                  orange
+                {% elif status == 'off' %}
+                  grey
+                {% else %}
+                  blue
+                {% endif %}
+            entities:
+              - entity: input_boolean.wohnzimmer_tv_kindersicherung
+                name: 🛡 Kindersicherung aktivieren
+              - type: custom:numberbox-card
+                entity: input_number.wohnzimmer_tv_timer_number
+                name: ⏳ Tägliches Zeitlimit (Minuten)
+                icon: mdi:timer
+                unit: ' min'
+                speed: 250
+              - entity: input_number.wohnzimmer_tv_timer_number
+                name: finetuning ...
+              - entity: switch.wohnzimmer_smartplug_tv
+                name: 🔌 Steckdose (TV)
+              - type: custom:hui-element
+                card_type: gauge
+                entity: counter.wohnzimmer_tv_watch_minutes
+                name: TV-Zeitverbrauch heute
+                min: 0
+                max: |
+                  [[[
+                    return Number(states['input_number.wohnzimmer_tv_timer_number'].state);
+                  ]]]
+                severity:
+                  green: 0
+                  yellow: 70
+                  red: 90
+                unit: min
+          - type: conditional
+            conditions:
+              - condition: state
+                entity: input_boolean.wohnzimmer_tv_kindersicherung
+                state: 'on'
+            card:
+              type: markdown
+              content: >
+                **👨‍👩‍👧 Kindersicherung ist aktiv.**   (noch **{{
+                states('input_number.wohnzimmer_tv_timer_number') | float |
+                round(0) | int - 
+                states('counter.wohnzimmer_tv_watch_minutes') | float |
+                round(0) | int }} Minuten** übrig)
 
 
-            Wenn die erlaubte Zeit von **{{
-            states('input_number.wohnzimmer_tv_timer_number') | float |
-            round(0) | int }} Minuten** erreicht ist, wird die Steckdose
-            **automatisch ausgeschaltet**.
-          card_mod:
-            style: !include /config/ui/shared/styles/transparent_card.yaml
+                Wenn die erlaubte Zeit von **{{
+                states('input_number.wohnzimmer_tv_timer_number') | float |
+                round(0) | int }} Minuten** erreicht ist, wird die Steckdose
+                **automatisch ausgeschaltet**.
+              card_mod: !include /config/ui/shared/styles/markdown_plain.yaml # Markdown Plain Style
