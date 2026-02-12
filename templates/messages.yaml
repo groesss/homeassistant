@@ -59,3 +59,11 @@
         message: " Die Batterie des Oelkeller Flutsensors beträgt nur noch {{ states('sensor.oelkeller_shellyflood_battery') }} %. Bitte tausche sie zeitnah aus, damit der Sensor weiterhin funktioniert."
         message_type: "info"
 
+    - name: "Arbeitszimmer Thermostat Batterie Message"
+      unique_id: arbeitszimmer_thermostat_batterie_message
+      state: "{{ states('sensor.arbeitszimmer_thermostat_battery')|int(0) < 20 }}"
+      icon: mdi:battery
+      attributes:
+        message_title: "Thermostat Arbeitszimmer Batterie gering"
+        message: "Die Batterie des Arbeitszimmer-Thermostats ist nur noch bei {{ states('sensor.arbeitszimmer_thermostat_battery') }} %. Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert."
+        message_type: "info"

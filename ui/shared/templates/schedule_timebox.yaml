@@ -1,0 +1,49 @@
+# ++
+# ++ Schedule Timebox Template
+# ++
+# Beschreibung:
+#   Horizontaler Stack mit Zeit- und Temperaturauswahl für Heizungssteuerung.
+#   Zeigt zwei Felder nebeneinander: eine Zeitauswahl (input_datetime) und 
+#   eine Temperaturauswahl (numberbox) für einen Zeitplan-Slot.
+#
+# Verwendung:
+#   type: custom:decluttering-card
+#   template: schedule_timebox
+#   variables:
+#     - time: input_datetime.heizung_slot1_time
+#     - temp: input_number.heizung_slot1_temp
+#
+# Variablen:
+#   - time: Entity-ID der Zeit-Entität (input_datetime)
+#   - temp: Entity-ID der Temperatur-Entität (input_number)
+#
+# Styling:
+#   - Verwendet flat_compact_nested.yaml für saubere Darstellung ohne Ränder
+#   - Transparenter Hintergrund, keine Schatten
+#   - Negative left-margin für linksbündige Ausrichtung
+#   - overflow:visible für Icon-Sichtbarkeit
+
+schedule_timebox:
+  card:
+  type: custom:stack-in-card
+  mode: horizontal
+  card_mod:
+    style: |
+      ha-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        margin: 0 0 0 -21px !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+  cards:
+    - type: custom:input-datetime
+      entity: '[[time]]'
+      icon: mdi:clock-outline
+      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+    - type: custom:numberbox-card
+      entity: '[[temp]]'
+      icon: mdi:thermometer
+      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml

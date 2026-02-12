@@ -1,0 +1,46 @@
+type: vertical-stack
+cards:
+  - type: custom:stack-in-card
+    mode: horizontal
+    cards:
+      - type: custom:timepicker-card
+        entity: input_datetime.arbeitszimmer_thermostat_schedule_tuesday_1_time
+        icon: mdi:clock-outline
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+      - type: custom:numberbox-card
+        entity: input_number.arbeitszimmer_thermostat_schedule_tuesday_1_temp
+        icon: mdi:thermometer
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+  - type: custom:stack-in-card
+    mode: horizontal
+    cards:
+      - type: custom:timepicker-card
+        entity: input_datetime.arbeitszimmer_thermostat_schedule_tuesday_2_time
+        icon: mdi:clock-outline
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+      - type: custom:numberbox-card
+        entity: input_number.arbeitszimmer_thermostat_schedule_tuesday_2_temp
+        icon: mdi:thermometer
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+  - type: custom:stack-in-card
+    mode: horizontal
+    cards:
+      - type: custom:timepicker-card
+        entity: input_datetime.arbeitszimmer_thermostat_schedule_tuesday_3_time
+        icon: mdi:clock-outline
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+      - type: custom:numberbox-card
+        entity: input_number.arbeitszimmer_thermostat_schedule_tuesday_3_temp
+        icon: mdi:thermometer
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+  - type: custom:stack-in-card
+    mode: horizontal
+    cards:
+      - type: custom:timepicker-card
+        entity: input_datetime.arbeitszimmer_thermostat_schedule_tuesday_4_time
+        icon: mdi:clock-outline
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+      - type: custom:numberbox-card
+        entity: input_number.arbeitszimmer_thermostat_schedule_tuesday_4_temp
+        icon: mdi:thermometer
+        card_mod: !include /config/ui/shared/styles/flat_compact.yaml

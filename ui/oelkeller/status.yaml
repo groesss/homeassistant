@@ -10,33 +10,37 @@ cards:
         mode: vertical
         card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
         cards:
-          - type: custom:fold-entity-row
-            head:
-              type: custom:mushroom-template-card
-              primary: Flutsensor
-              icon: mdi:water-alert-outline
-              icon_color: >
-                {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
-                  red
-                {% elif is_state('binary_sensor.oelkeller_shellyflood_flood', 'off') %}
-                  green
-                {% else %}
-                  grey
-                {% endif %}
-              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
             entities:
-              - type: custom:mushroom-template-card
-                primary: >
-                  {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
-                    ⚠️ Warnung!
-                  {% else %}
-                    ✅ Alles in Ordnung
-                  {% endif %}
-                secondary: >
-                  {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
-                    Der Flutsensor hat Wasser erkannt. Das Hauswasserwerk verliert Wasser.
-                    Bitte überprüfe, ob der Ölkeller überschwemmt ist!
-                  {% else %}
-                    Der Flut-Sensor im Ölkeller für das Hauswasserwerk meldet keine Überflutung.
-                  {% endif %}
-                card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Flutsensor
+                  icon: mdi:water-alert-outline
+                  icon_color: >
+                    {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                      red
+                    {% elif is_state('binary_sensor.oelkeller_shellyflood_flood', 'off') %}
+                      green
+                    {% else %}
+                      grey
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: >
+                      {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                        ⚠️ Warnung!
+                      {% else %}
+                        ✅ Alles in Ordnung
+                      {% endif %}
+                    secondary: >
+                      {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                        Der Flutsensor hat Wasser erkannt. Das Hauswasserwerk verliert Wasser.
+                        Bitte überprüfe, ob der Ölkeller überschwemmt ist!
+                      {% else %}
+                        Der Flut-Sensor im Ölkeller für das Hauswasserwerk meldet keine Überflutung.
+                      {% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style

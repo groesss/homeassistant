@@ -232,6 +232,7 @@
     - sensor.garten_grundwasser_message
     - sensor.oelkeller_flutsensor_message
     - sensor.oelkeller_flutsensor_batterie_message
+    - sensor.arbeitszimmer_thermostat_batterie_message
     to: 'True'
     trigger: state
   actions:
@@ -259,6 +260,255 @@
     action: notify.mobile_app_rmx3085
   variables:
     msg_sensor: '{{ trigger.entity_id }}'
+  mode: single
+- id: '1769991000000'
+  alias: Arbeitszimmer_Thermostat_Zeitplan_sync
+  description: Synchronisiert die Zeitplan-Helper mit dem Thermostat-Zeitplan.
+  triggers:
+  - entity_id:
+    - input_boolean.arbeitszimmer_thermostat_schedule_same
+    - input_datetime.arbeitszimmer_thermostat_schedule_common_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_common_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_common_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_common_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_common_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_common_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_common_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_common_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_monday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_monday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_monday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_monday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_monday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_monday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_monday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_monday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_tuesday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_tuesday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_tuesday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_tuesday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_tuesday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_tuesday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_tuesday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_tuesday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_wednesday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_wednesday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_wednesday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_wednesday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_wednesday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_wednesday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_wednesday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_wednesday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_thursday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_thursday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_thursday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_thursday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_thursday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_thursday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_thursday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_thursday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_friday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_friday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_friday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_friday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_friday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_friday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_friday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_friday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_saturday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_saturday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_saturday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_saturday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_saturday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_saturday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_saturday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_saturday_4_temp
+    - input_datetime.arbeitszimmer_thermostat_schedule_sunday_1_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_sunday_2_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_sunday_3_time
+    - input_datetime.arbeitszimmer_thermostat_schedule_sunday_4_time
+    - input_number.arbeitszimmer_thermostat_schedule_sunday_1_temp
+    - input_number.arbeitszimmer_thermostat_schedule_sunday_2_temp
+    - input_number.arbeitszimmer_thermostat_schedule_sunday_3_temp
+    - input_number.arbeitszimmer_thermostat_schedule_sunday_4_temp
+    trigger: state
+  variables:
+    common_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_common_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_common_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_common_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_common_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_common_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_common_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_common_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_common_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    monday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_monday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_monday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_monday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_monday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_monday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_monday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_monday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_monday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    tuesday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_tuesday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_tuesday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_tuesday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_tuesday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_tuesday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_tuesday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_tuesday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_tuesday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    wednesday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_wednesday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_wednesday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_wednesday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_wednesday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_wednesday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_wednesday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_wednesday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_wednesday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    thursday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_thursday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_thursday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_thursday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_thursday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_thursday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_thursday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_thursday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_thursday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    friday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_friday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_friday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_friday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_friday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_friday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_friday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_friday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_friday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    saturday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_saturday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_saturday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_saturday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_saturday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_saturday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_saturday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_saturday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_saturday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+    sunday_schedule: >
+      {% set slots = [
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_sunday_1_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_sunday_1_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_sunday_2_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_sunday_2_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_sunday_3_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_sunday_3_temp')},
+        {'t': states('input_datetime.arbeitszimmer_thermostat_schedule_sunday_4_time'), 'temp': states('input_number.arbeitszimmer_thermostat_schedule_sunday_4_temp')}
+      ] %}
+      {% set parts = [] %}
+      {% for s in slots %}
+        {% if s.t not in ['unknown','unavailable',''] and s.temp not in ['unknown','unavailable',''] %}
+          {% set parts = parts + [ s.t[0:5] ~ '/' ~ (s.temp | float(0)) ] %}
+        {% endif %}
+      {% endfor %}
+      {{ parts | join(' ') }}
+  actions:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.arbeitszimmer_thermostat_schedule_same
+        state: 'on'
+      sequence:
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_monday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_tuesday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_wednesday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_thursday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_friday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_saturday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+      - data:
+          entity_id: text.arbeitszimmer_thermostat_weekly_schedule_sunday
+          value: '{{ common_schedule }}'
+        action: text.set_value
+    default:
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_monday
+        value: '{{ monday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_tuesday
+        value: '{{ tuesday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_wednesday
+        value: '{{ wednesday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_thursday
+        value: '{{ thursday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_friday
+        value: '{{ friday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_saturday
+        value: '{{ saturday_schedule }}'
+      action: text.set_value
+    - data:
+        entity_id: text.arbeitszimmer_thermostat_weekly_schedule_sunday
+        value: '{{ sunday_schedule }}'
+      action: text.set_value
   mode: single
 - id: '1760956184095'
   alias: wohnzimmer_terrarium_lampe1_einschalten
@@ -358,9 +608,8 @@
   actions:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
-        state: 'on'
+      - condition: template
+        value_template: "{{ trigger.entity_id == 'input_boolean.wohnzimmer_terrarium_warmup_active' }}"
       sequence:
       - target:
           entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
@@ -370,9 +619,8 @@
           level: info
         action: system_log.write
     - conditions:
-      - condition: state
-        entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
-        state: 'on'
+      - condition: template
+        value_template: "{{ trigger.entity_id == 'input_boolean.wohnzimmer_terrarium_cooldown_active' }}"
       sequence:
       - target:
           entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
@@ -405,7 +653,7 @@
           %}\n{% if on in ['unknown','unavailable',''] or off in ['unknown','unavailable','']
           %}\n  false\n{% else %}\n  {% set on_dt = strptime(on,'%H:%M:%S') %}\n  {%
           set off_dt = strptime(off,'%H:%M:%S') %}\n  {{ ((off_dt-on_dt).seconds/3600)
-          >= 14 }}\n{% endif %}\n"
+            >= states('input_number.wohnzimmer_terrarium_max_time') | float(0) }}\n{% endif %}\n"
       sequence:
       - data:
           level: warning
@@ -459,7 +707,7 @@
   conditions:
   - condition: state
     entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
-    state: 'off'
+    state: 'on'
   actions:
   - data:
       level: info

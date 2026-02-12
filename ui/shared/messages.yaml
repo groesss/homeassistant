@@ -75,3 +75,16 @@ cards:
       template: message_alert
       variables:
         - entity: sensor.waschkeller_trockner_message
+
+  # ++
+  # ++ Arbeitszimmer Thermostat Batterie Messages
+  #
+  - type: conditional
+    conditions:
+      - entity: sensor.arbeitszimmer_thermostat_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.arbeitszimmer_thermostat_batterie_message

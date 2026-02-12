@@ -11,6 +11,7 @@ cards:
     square: false
     cards:
       - type: custom:button-card
+        template: overview_tile
         name: Wohnzimmer
         icon: mdi:sofa
         show_state: true
@@ -28,12 +29,21 @@ cards:
         tap_action:
           action: navigate
           navigation_path: view_wohnzimmer
-        styles:
-          card:
-            - height: 90px
-            - font-size: 13px
-            - border-radius: 16px
       - type: custom:button-card
+        template: overview_tile
+        name: Arbeitszimmer
+        icon: mdi:desk
+        show_state: true
+        state_display: >
+          [[[ 
+            const temp = states['sensor.arbeitszimmer_thermostat_local_temperature']?.state;
+            return temp ? `${temp} °C` : '-';
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: view_arbeitszimmer
+      - type: custom:button-card
+        template: overview_tile
         name: Küche
         icon: mdi:faucet
         show_state: true
@@ -50,11 +60,6 @@ cards:
         tap_action:
           action: navigate
           navigation_path: view_kueche
-        styles:
-          card:
-            - height: 90px
-            - font-size: 13px
-            - border-radius: 16px
   - type: markdown
     content: '## Erdgeschoss'
     text_only: true
@@ -63,15 +68,12 @@ cards:
     square: false
     cards:
       - type: custom:button-card
+        template: overview_tile
         name: Garten
         icon: mdi:flower-outline
         tap_action:
           action: navigate
           navigation_path: view_garten
-        styles:
-          card:
-            - height: 90px
-            - border-radius: 16px
   - type: markdown
     content: '## Keller'
     text_only: true
@@ -80,16 +82,14 @@ cards:
     square: false
     cards:
       - type: custom:button-card
+        template: overview_tile
         name: Waschkeller
         icon: mdi:washing-machine
         tap_action:
           action: navigate
           navigation_path: view_waschkeller
-        styles:
-          card:
-            - height: 90px
-            - border-radius: 16px
       - type: custom:button-card
+        template: overview_tile
         name: Ölkeller
         icon: mdi:oil
         show_state: true
@@ -100,7 +100,3 @@ cards:
         tap_action:
           action: navigate
           navigation_path: view_oelkeller
-        styles:
-          card:
-            - height: 90px
-            - border-radius: 16px

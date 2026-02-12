@@ -9,8 +9,14 @@ frontend:
     - /hacsfiles/lovelace-card-mod/card-mod.js
 
 lovelace:
-  mode: yaml
   resource_mode: yaml
+  dashboards:
+    lovelace:
+      mode: yaml
+      filename: ui-lovelace.yaml
+      title: Overview
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
   resources:
     - url: /hacsfiles/lovelace-mushroom/mushroom.js?hacstag=4443503755010
       type: module
@@ -46,7 +52,7 @@ script: !include scripts.yaml
 scene: !include scenes.yaml
 template: !include_dir_merge_list templates/
 input_number: !include_dir_merge_named helpers/input_number
-input_boolean: !include_dir_merge_named helpers/input_boolean 
+input_boolean: !include_dir_merge_named helpers/input_boolean
 input_datetime: !include_dir_merge_named helpers/input_datetime
 input_select: !include_dir_merge_named helpers/input_select
 utility_meter: !include helpers/utility_meter.yaml

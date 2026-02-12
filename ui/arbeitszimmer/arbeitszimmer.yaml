@@ -1,0 +1,12 @@
+type: sections
+max_columns: 4
+title: Arbeitszimmer
+path: view_arbeitszimmer
+subview: true
+icon: mdi:desk
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+      - !include /config/ui/arbeitszimmer/thermostat_dienstag_kompakt.yaml
+  #- !include /config/ui/arbeitszimmer/thermostat.yaml

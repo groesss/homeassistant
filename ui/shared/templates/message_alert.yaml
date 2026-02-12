@@ -1,0 +1,50 @@
+# ++
+# ++ Message Alert Template
+# ++
+# Beschreibung:
+#   Markdown-Karte für Benachrichtigungen und Warnmeldungen mit dynamischen 
+#   Emojis basierend auf dem Nachrichtentyp. Zeigt Titel und Inhalt einer 
+#   Message-Entität formatiert an.
+#
+# Verwendung:
+#   type: custom:decluttering-card
+#   template: message_alert
+#   variables:
+#     - entity: sensor.system_nachricht
+#
+# Variablen:
+#   - entity: Entity-ID der Message-Entität mit Attributen:
+#       - message_type: 'info', 'warning' oder 'error'
+#       - message_title: Überschrift der Nachricht
+#       - message: Nachrichteninhalt
+#
+# Nachrichtentypen und Emojis:
+#   - info: 💡 (Information)
+#   - warning: ⚠️ (Warnung)
+#   - error: ❌ (Fehler)
+#   - default: 🔔 (Benachrichtigung)
+#
+# Styling:
+#   - Verwendet message_alert.yaml Style
+
+message_alert:
+  card:
+    type: markdown
+    entity: '[[entity]]'
+    content: >
+      {% set type = state_attr('[[entity]]','message_type') %}
+
+      {% set emoji = '🔔' %}
+
+      {% if type == 'info' %}{% set emoji = '💡' %}
+
+      {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+
+      {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+
+      **{{ emoji }} {{
+      state_attr('[[entity]]','message_title')
+      }}**  
+
+      {{ state_attr('[[entity]]','message') }}
+    card_mod: !include /config/ui/shared/styles/message_alert.yaml # Message Alert Style

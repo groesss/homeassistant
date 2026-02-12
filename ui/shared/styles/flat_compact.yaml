@@ -4,6 +4,7 @@ style: |
     box-shadow: none !important;
     background: transparent !important;
     border-radius: 0 !important;
-    margin: 0 !important;
+    margin: 0 0 0 -21px !important;
     padding: 0 !important;
+    overflow: visible !important;
   }

@@ -1,0 +1,135 @@
+arbeitszimmer_thermostat_schedule_common_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Gesamt 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_common_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Gesamt 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_common_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Gesamt 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_common_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Gesamt 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_monday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Montag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_monday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Montag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_monday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Montag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_monday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Montag 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_tuesday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Dienstag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_tuesday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Dienstag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_tuesday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Dienstag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_tuesday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Dienstag 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_wednesday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Mittwoch 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_wednesday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Mittwoch 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_wednesday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Mittwoch 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_wednesday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Mittwoch 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_thursday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Donnerstag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_thursday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Donnerstag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_thursday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Donnerstag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_thursday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Donnerstag 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_friday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Freitag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_friday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Freitag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_friday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Freitag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_friday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Freitag 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_saturday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Samstag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_saturday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Samstag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_saturday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Samstag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_saturday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Samstag 4
+  has_date: false
+  has_time: true
+
+arbeitszimmer_thermostat_schedule_sunday_1_time:
+  name: Arbeitszimmer Thermostat Zeitplan Sonntag 1
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_sunday_2_time:
+  name: Arbeitszimmer Thermostat Zeitplan Sonntag 2
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_sunday_3_time:
+  name: Arbeitszimmer Thermostat Zeitplan Sonntag 3
+  has_date: false
+  has_time: true
+arbeitszimmer_thermostat_schedule_sunday_4_time:
+  name: Arbeitszimmer Thermostat Zeitplan Sonntag 4
+  has_date: false
+  has_time: true

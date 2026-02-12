@@ -1,0 +1,53 @@
+# ++
+# ++ Schedule Slot Template
+# ++
+# Beschreibung:
+#   Einfacher Zeitplan-Slot für Heizungssteuerung mit Zeit- und Temperaturauswahl.
+#   Zeigt zwei Eingabefelder horizontal nebeneinander: Zeit (input_datetime) und 
+#   Temperatur (input_number). Kompaktere Variante von schedule_timebox mit 
+#   input-number statt numberbox.
+#
+# Verwendung:
+#   type: custom:decluttering-card
+#   template: schedule_slot
+#   variables:
+#     - time: input_datetime.heizung_montag_1_time
+#     - temp: input_number.heizung_montag_1_temp
+#
+# Variablen:
+#   - time: Entity-ID der Zeit-Entität (input_datetime)
+#   - temp: Entity-ID der Temperatur-Entität (input_number)
+#
+# Unterschied zu schedule_timebox:
+#   - Verwendet input-number statt numberbox-card
+#   - Einfachere, kompaktere Darstellung
+#   - Besser geeignet für verschachtelte Strukturen
+#
+# Styling:
+#   - Verwendet flat_compact_nested.yaml für saubere Darstellung
+#   - Transparenter Hintergrund, keine Schatten
+#   - Negative left-margin für linksbündige Ausrichtung
+#   - overflow:visible für Icon-Sichtbarkeit
+
+schedule_slot:
+  card:
+  type: custom:stack-in-card
+  mode: horizontal
+  card_mod:
+    style: |
+      ha-card {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+        border-radius: 0 !important;
+        margin: 0 0 0 -21px !important;
+        padding: 0 !important;
+        overflow: visible !important;
+      }
+  cards:
+    - type: custom:input-datetime
+      entity: '[[time]]'
+      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
+    - type: custom:input-number
+      entity: '[[temp]]'
+      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style

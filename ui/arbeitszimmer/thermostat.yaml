@@ -1,0 +1,19 @@
+type: entities
+title: Montag
+entities:
+  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_1_time
+    name: Zeit 1
+  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_1_temp
+    name: Temperatur 1
+  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_2_time
+    name: Zeit 2
+  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_2_temp
+    name: Temperatur 2
+  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_3_time
+    name: Zeit 3
+  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_3_temp
+    name: Temperatur 3
+  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_4_time
+    name: Zeit 4
+  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_4_temp
+    name: Temperatur 4

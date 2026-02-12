@@ -23,3 +23,15 @@ backups/
 
 # Local deps/cache
 /deps/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Home Assistant runtime files
+.HA_VERSION
+
+# Zigbee2MQTT local state/logs
+zigbee2mqtt/state.json
+zigbee2mqtt/log/

@@ -10,70 +10,74 @@ cards:
         mode: vertical
         card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
         cards:
-          - type: custom:fold-entity-row
-            head:
-              type: custom:mushroom-template-card
-              primary: Gardena Ventil 1
-              secondary: >
-                {% set batt =
-                states('sensor.garten_gardena_ventil_1_battery') %} {% set
-                moist = states('sensor.garten_gardena_ventil_1_moisture') %}
-                Batterie: {{ batt if batt != 'unknown' else '-' }}% ·
-                Feuchtigkeit: {{ moist if moist != 'unknown' else '-' }}%
-              icon: mdi:water
-              icon_color: |
-                {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
-                  blue
-                {% else %}
-                  grey
-                {% endif %}
-              card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
             entities:
-              - entity: valve.garten_gardena_ventil_1
-                name: Ventil Steuerung
-              - entity: number.garten_gardena_ventil_1_manual_watering_time
-                name: Manuelle Bewässerungszeit (min)
-              - entity: number.garten_gardena_ventil_1_open_for
-                name: Geöffnet für (min)
-              - entity: number.garten_gardena_ventil_1_rain_pause
-                name: Regenpause (h)
-              - entity: number.garten_gardena_ventil_1_remaining_open_time
-                name: Verbleibende Zeit (min)
-              - entity: number.garten_gardena_ventil_1_seasonal_adjust
-                name: Saisonale Anpassung (%)
-              - entity: number.garten_gardena_ventil_1_sensor_threshold
-                name: Sensor Schwelle
-              - entity: sensor.garten_gardena_ventil_1_battery
-                name: Ventil Batterie
-              - entity: sensor.garten_gardena_ventil_1_moisture
-                name: Bodenfeuchtigkeit
-              - entity: sensor.garten_gardena_ventil_1_sensor_battery
-                name: Sensor Batterie
-              - entity: sensor.garten_gardena_ventil_1_sensor_timestamp
-                name: Letzte Sensor-Aktualisierung
+
               - type: custom:fold-entity-row
                 head:
-                  type: section
-                  label: Zeitplan
+                  type: custom:mushroom-template-card
+                  primary: Gardena Ventil 1
+                  secondary: >
+                    {% set batt =
+                    states('sensor.garten_gardena_ventil_1_battery') %} {% set
+                    moist = states('sensor.garten_gardena_ventil_1_moisture') %}
+                    Batterie: {{ batt if batt != 'unknown' else '-' }}% ·
+                    Feuchtigkeit: {{ moist if moist != 'unknown' else '-' }}%
+                  icon: mdi:water
+                  icon_color: |
+                    {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
+                      blue
+                    {% else %}
+                      grey
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
                 entities:
-                  - type: custom:stack-in-card
-                    mode: horizontal
-                    cards:
-                      - type: entities
-                        entities:
-                          - entity: input_boolean.gardena_mo
-                            name: Mo
-                          - entity: input_boolean.gardena_di
-                            name: Di
-                          - entity: input_boolean.gardena_mi
-                            name: Mi
-                      - type: entities
-                        entities:
-                          - entity: input_boolean.gardena_do
-                            name: Do
-                          - entity: input_boolean.gardena_fr
-                            name: Fr
-                          - entity: input_boolean.gardena_sa
-                            name: Sa
-                          - entity: input_boolean.gardena_so
-                            name: So
+                  - entity: valve.garten_gardena_ventil_1
+                    name: Ventil Steuerung
+                  - entity: number.garten_gardena_ventil_1_manual_watering_time
+                    name: Manuelle Bewässerungszeit (min)
+                  - entity: number.garten_gardena_ventil_1_open_for
+                    name: Geöffnet für (min)
+                  - entity: number.garten_gardena_ventil_1_rain_pause
+                    name: Regenpause (h)
+                  - entity: number.garten_gardena_ventil_1_remaining_open_time
+                    name: Verbleibende Zeit (min)
+                  - entity: number.garten_gardena_ventil_1_seasonal_adjust
+                    name: Saisonale Anpassung (%)
+                  - entity: number.garten_gardena_ventil_1_sensor_threshold
+                    name: Sensor Schwelle
+                  - entity: sensor.garten_gardena_ventil_1_battery
+                    name: Ventil Batterie
+                  - entity: sensor.garten_gardena_ventil_1_moisture
+                    name: Bodenfeuchtigkeit
+                  - entity: sensor.garten_gardena_ventil_1_sensor_battery
+                    name: Sensor Batterie
+                  - entity: sensor.garten_gardena_ventil_1_sensor_timestamp
+                    name: Letzte Sensor-Aktualisierung
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Zeitplan
+                    entities:
+                      - type: custom:stack-in-card
+                        mode: horizontal
+                        cards:
+                          - type: entities
+                            entities:
+                              - entity: input_boolean.gardena_mo
+                                name: Mo
+                              - entity: input_boolean.gardena_di
+                                name: Di
+                              - entity: input_boolean.gardena_mi
+                                name: Mi
+                          - type: entities
+                            entities:
+                              - entity: input_boolean.gardena_do
+                                name: Do
+                              - entity: input_boolean.gardena_fr
+                                name: Fr
+                              - entity: input_boolean.gardena_sa
+                                name: Sa
+                              - entity: input_boolean.gardena_so
+                                name: So

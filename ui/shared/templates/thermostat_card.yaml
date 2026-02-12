@@ -1,0 +1,457 @@
+# ++
+# ++ Thermostat Card Template
+# ++
+# Beschreibung:
+#   Komplettes Thermostat-Steuerungs-Template mit Zeitplanung für alle Wochentage.
+#   Bietet vollständige Heizungssteuerung mit Thermostat-Karte, Batterie- und 
+#   Temperaturanzeige sowie flexibler Zeitplanung (gemeinsam oder individuell pro Tag).
+#
+# Verwendung:
+#   type: custom:decluttering-card
+#   template: thermostat_card
+#   variables:
+#     - climate: climate.wohnzimmer_thermostat
+#     - title: Wohnzimmer Heizung
+#     - local_temp: sensor.wohnzimmer_temperatur
+#     - battery: sensor.wohnzimmer_thermostat_batterie
+#     - frost_temp: input_number.wohnzimmer_frostschutz
+#     - open_window: binary_sensor.wohnzimmer_fenster
+#     - schedule_same: input_boolean.wohnzimmer_gleicher_zeitplan
+#     - schedule_common_1_time: input_datetime.wohnzimmer_slot1_zeit
+#     - schedule_common_1_temp: input_number.wohnzimmer_slot1_temp
+#     # ... weitere Variablen (siehe unten)
+#
+# Hauptbereiche:
+#   1. Thermostat-Steuerung
+#      - Thermostat-Karte mit Temperaturregelung
+#      - Aktuelle Raumtemperatur
+#      - Batteriestatus
+#      - Frostschutztemperatur
+#
+#   2. Zeitplan-Steuerung
+#      - Umschaltung zwischen gemeinsamem und individuellem Zeitplan
+#      - Gemeinsam: 4 Zeitslots für alle Tage
+#      - Individuell: 4 Zeitslots pro Wochentag (7 Tage)
+#
+# Benötigte Variablen:
+#   - climate: Climate-Entität (climate.*)
+#   - title: Anzeigename
+#   - local_temp: Temperatursensor (sensor.*)
+#   - battery: Batteriesensor (sensor.*)
+#   - frost_temp: Frostschutz-Temperatur (input_number.*)
+#   - open_window: Fenstersensor (binary_sensor.*)
+#   - schedule_same: Toggle für gleichen Zeitplan (input_boolean.*)
+#
+#   Gemeinsamer Zeitplan (4 Slots):
+#     - schedule_common_X_time: input_datetime.* (X = 1-4)
+#     - schedule_common_X_temp: input_number.* (X = 1-4)
+#
+#   Individueller Zeitplan (7 Tage × 4 Slots = 28 Variablen):
+#     - schedule_monday_X_time / schedule_monday_X_temp
+#     - schedule_tuesday_X_time / schedule_tuesday_X_temp
+#     - schedule_wednesday_X_time / schedule_wednesday_X_temp
+#     - schedule_thursday_X_time / schedule_thursday_X_temp
+#     - schedule_friday_X_time / schedule_friday_X_temp
+#     - schedule_saturday_X_time / schedule_saturday_X_temp
+#     - schedule_sunday_X_time / schedule_sunday_X_temp
+#     (jeweils X = 1-4)
+#
+# Features:
+#   - Farbcodierung des Thermostat-Status (orange=heizen, grau=aus)
+#   - Fenster-Status-Anzeige
+#   - Flexible Zeitplanung mit Conditional-Cards
+#   - Verwendet schedule_slot-Template für Zeitplan-Slots
+#
+# Styling:
+#   - Verwendet stack_wrapper.yaml für Haupt-Container
+#   - card_header.yaml für Fold-Entity-Row-Header
+#   - flat_compact.yaml für direkte Child-Elemente
+
+thermostat_card:
+  card:
+  type: custom:stack-in-card
+  mode: vertical
+  card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+  cards:
+    - type: thermostat
+      entity: '[[climate]]'
+      name: '[[title]]'
+      card_mod:
+        style: |
+          ha-card {
+            border-radius: 12px !important;
+            overflow: hidden;
+          }
+    - type: custom:fold-entity-row
+      head:
+        type: custom:mushroom-template-card
+        primary: Steuerung
+        secondary: >
+          {% set t = states('[[local_temp]]') %}
+          {% set target = state_attr('[[climate]]','temperature') %}
+          {% set mode = states('[[climate]]') %}
+          {% set window = states('[[open_window]]') %}
+          {{ t if t not in ['unknown','unavailable',''] else '-' }} °C · Ziel {{ target if target is not none else '-' }} °C · {{ mode }} · Fenster {{ 'offen' if window == 'on' else 'zu' }}
+        icon: mdi:thermostat
+        icon_color: >
+          {% set mode = states('[[climate]]') %}
+          {% if mode in ['heat','auto'] %}
+            orange
+          {% elif mode in ['off','idle'] %}
+            grey
+          {% else %}
+            blue
+          {% endif %}
+        card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+      entities:
+        - type: custom:mushroom-entity-card
+          entity: '[[local_temp]]'
+          name: Temperatur
+          card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+        - type: custom:mushroom-entity-card
+          entity: '[[battery]]'
+          name: Batterie
+          card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+        - type: custom:mushroom-entity-card
+          entity: '[[frost_temp]]'
+          name: Frostschutz
+          card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+    - type: custom:fold-entity-row
+      head:
+        type: custom:mushroom-template-card
+        primary: Zeitplan
+        secondary: >
+          {% if is_state('[[schedule_same]]','on') %}
+            Gleich fuer alle Tage
+          {% else %}
+            Individuell pro Tag
+          {% endif %}
+        icon: mdi:calendar-week
+        card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+      entities:
+        - type: custom:mushroom-entity-card
+          entity: '[[schedule_same]]'
+          name: Gleicher Zeitplan fuer alle Tage
+          icon: mdi:calendar-sync
+          card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+        - type: conditional
+          conditions:
+            - entity: '[[schedule_same]]'
+              state: 'on'
+          card:
+            type: vertical-stack
+            cards:
+              - type: custom:decluttering-card
+                template: schedule_slot
+                variables:
+                  - time: '[[schedule_common_1_time]]'
+                  - temp: '[[schedule_common_1_temp]]'
+              - type: custom:decluttering-card
+                template: schedule_slot
+                variables:
+                  - time: '[[schedule_common_2_time]]'
+                  - temp: '[[schedule_common_2_temp]]'
+              - type: custom:decluttering-card
+                template: schedule_slot
+                variables:
+                  - time: '[[schedule_common_3_time]]'
+                  - temp: '[[schedule_common_3_temp]]'
+              - type: custom:decluttering-card
+                template: schedule_slot
+                variables:
+                  - time: '[[schedule_common_4_time]]'
+                  - temp: '[[schedule_common_4_temp]]'
+        - type: conditional
+          conditions:
+            - entity: '[[schedule_same]]'
+              state: 'off'
+          card:
+            type: vertical-stack
+            cards:
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Montag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_monday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_monday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_monday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_monday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_monday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_monday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_monday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_monday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Dienstag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_tuesday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_tuesday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_tuesday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_tuesday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_tuesday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_tuesday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_tuesday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_tuesday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Mittwoch
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_wednesday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_wednesday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_wednesday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_wednesday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_wednesday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_wednesday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_wednesday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_wednesday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Donnerstag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_thursday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_thursday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_thursday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_thursday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_thursday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_thursday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_thursday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_thursday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Freitag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_friday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_friday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_friday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_friday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_friday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_friday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_friday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_friday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Samstag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_saturday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_saturday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_saturday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_saturday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_saturday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_saturday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_saturday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_saturday_4_temp]]'
+              - type: custom:fold-entity-row
+                head:
+                  type: section
+                  label: Sonntag
+                cards:
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_sunday_1_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_sunday_1_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_sunday_2_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_sunday_2_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_sunday_3_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_sunday_3_temp]]'
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    cards:
+                      - type: custom:mushroom-entity-card
+                        entity: '[[schedule_sunday_4_time]]'
+                        icon: mdi:clock-outline
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: thermostat
+                        entity: '[[schedule_sunday_4_temp]]'
