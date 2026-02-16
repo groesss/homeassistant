@@ -1,14 +1,35 @@
-sensor:
-  - platform: template
-    sensors:
-      wohnzimmer_tv_timer_text:
-        friendly_name: "TV Timer"
-        value_template: >
-          {% set m = states('input_number.wohnzimmer_tv_timer_number') | int %}
-          {% set h = m // 60 %}
-          {% set min = m % 60 %}
-          {% if h > 0 %}
-            {{ h }} h{% if min > 0 %} {{ min }} min{% endif %}
-          {% else %}
-            {{ min }} min
-          {% endif %}
+## Datei: templates/tv.yaml
+# Beschreibung:
+# Dieses Template liefert einen Sensor für die Anzeige des TV-Timers im Wohnzimmer.
+# Der Sensor berechnet aus dem Zeitlimit (input_number) eine formatierte Textanzeige (z.B. "1 h 15 min").
+#
+# Namenskonvention: Name folgt dem Muster <raum>_<gerät>_<attribut>.
+# Konsistenz: Die Logik ist auf die TV-Automatisierungen und UI abgestimmt.
+#
+# Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
+# Datei: templates/tv.yaml
+- sensor:
+    - name: "wohnzimmer_tv_timer_text"
+      unique_id: "wohnzimmer_tv_timer_text"
+      state: >
+        {% set m = states('input_number.wohnzimmer_tv_timer_number') | int | default(0) %}
+        {% set h = m // 60 %}
+        {% set min = m % 60 %}
+        {% if h > 0 %}
+          {{ h }} h{% if min > 0 %} {{ min }} min{% endif %}
+        {% else %}
+          {{ min }} min
+        {% endif %}
+
+    - name: "wohnzimmer_tv_timer_verbleibend"
+      unique_id: "wohnzimmer_tv_timer_verbleibend"
+      state: >
+        {% set verbrauch = states('counter.wohnzimmer_tv_watch_minutes') | float | default(0) %}
+        {% set limit = states('input_number.wohnzimmer_tv_timer_number') | float | default(0) %}
+        {% set rest = limit - verbrauch %}
+        {{ verbrauch | int }} / {{ limit | int }} min
+        {% if rest > 0 %}
+          (noch {{ rest | int }} min verbleibend)
+        {% else %}
+          (Limit erreicht!)
+        {% endif %}

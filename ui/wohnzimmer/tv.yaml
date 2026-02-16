@@ -39,6 +39,100 @@ cards:
                     name: 📺 Samsung Fernseher
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
 
+                  # Quellen-Statistik Überschrift
+                  - type: custom:mushroom-title-card
+                    title: tägliche Zeitverteilung
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Header Style
+
+                                    
+                  # Netflix 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Netflix"
+                      - entity: input_number.wohnzimmer_tv_minute_count_netflix
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_netflix
+                      - max: 100
+                      - icon: mdi:netflix
+                      - color: red
+                     
+                  # YouTube 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "YouTube"
+                      - entity: input_number.wohnzimmer_tv_minute_count_youtube
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_youtube
+                      - max: 100
+                      - icon: mdi:youtube
+                      - color: red
+                
+                 # Prime Video 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Prime Video"
+                      - entity: input_number.wohnzimmer_tv_minute_count_prime
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_prime
+                      - max: 100
+                      - icon: mdi:movie-filter
+                      - color: cyan
+
+                 # Disney+ 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Disney+"
+                      - entity: input_number.wohnzimmer_tv_minute_count_disney
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_disney
+                      - max: 100
+                      - icon: mdi:star-shooting
+                      - color: blue
+
+                  # PLEX 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Plex"
+                      - entity: input_number.wohnzimmer_tv_minute_count_plex
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_plex
+                      - max: 100
+                      - icon: mdi:plex
+                      - color: yellow
+                  
+                  # HDMI 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "HDMI"
+                      - entity: input_number.wohnzimmer_tv_minute_count_hdmi
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_hdmi
+                      - max: 100
+                      - icon: mdi:hdmi-port
+                      - color: grey
+                  
+                  # TV 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "TV"
+                      - entity: input_number.wohnzimmer_tv_minute_count_tv
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_andere
+                      - max: 100
+                      - icon: mdi:television-classic
+                      - color: green                 
+                  
+                  # Andere 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Andere"
+                      - entity: input_number.wohnzimmer_tv_minute_count_andere
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_andere
+                      - max: 100
+                      - icon: mdi:dots-horizontal
+                      - color: purple
+
               # ++
               # ++ Kindersicherung
               # 
@@ -124,81 +218,16 @@ cards:
                               pointer-events: none;
                               {% endif %}
                             }
-                  - type: custom:mushroom-template-card
-                    entity: counter.wohnzimmer_tv_watch_minutes
-                    primary: TV-Zeitverbrauch heute
-                    secondary: >
-                      {% set verbrauch = states('counter.wohnzimmer_tv_watch_minutes') | float(0) %}
-                      {% set limit = states('input_number.wohnzimmer_tv_timer_number') | float(1) %}
-                      {% set rest = limit - verbrauch %}
-                      {{ verbrauch | round(0) }} / {{ limit | round(0) }} min
-                      {% if rest > 0 %}
-                        (noch {{ rest | round(0) }} min)
-                      {% else %}
-                        (Limit erreicht!)
-                      {% endif %}
-                    icon: mdi:clock-time-eight
-                    icon_color: >
-                      {% set verbrauch = states('counter.wohnzimmer_tv_watch_minutes') | float(0) %}
-                      {% set limit = states('input_number.wohnzimmer_tv_timer_number') | float(1) %}
-                      {% set prozent = (verbrauch / limit * 100) | round(0) %}
-                      {% if prozent < 50 %}
-                        green
-                      {% elif prozent < 75 %}
-                        yellow
-                      {% elif prozent < 100 %}
-                        orange
-                      {% else %}
-                        red
-                      {% endif %}
-                    tap_action:
-                      action: >
-                        {% if is_state('input_boolean.wohnzimmer_tv_kindersicherung', 'off') %}
-                        none
-                        {% else %}
-                        more-info
-                        {% endif %}
-                    card_mod:
-                      style: |
-                        ha-card {
-                          border: none !important;
-                          box-shadow: none !important;
-                          background: transparent !important;
-                          border-radius: 0 !important;
-                          margin: 0 0 0 -21px !important;
-                          padding: 0 !important;
-                          position: relative;
-                          {% if is_state('input_boolean.wohnzimmer_tv_kindersicherung', 'off') %}
-                          filter: grayscale(1) opacity(0.5);
-                          pointer-events: none;
-                          {% endif %}
-                        }
-                        ha-card:after {
-                          content: "";
-                          position: absolute;
-                          bottom: 0;
-                          left: 0;
-                          height: 4px;
-                          background: 
-                            {% set verbrauch = states('counter.wohnzimmer_tv_watch_minutes') | float(0) %}
-                            {% set limit = states('input_number.wohnzimmer_tv_timer_number') | float(1) %}
-                            {% set prozent = (verbrauch / limit * 100) | round(0) %}
-                            {% if prozent < 50 %}
-                              var(--green-color)
-                            {% elif prozent < 75 %}
-                              var(--yellow-color)
-                            {% elif prozent < 100 %}
-                              var(--orange-color)
-                            {% else %}
-                              var(--red-color)
-                            {% endif %};
-                          width: 
-                            {% set verbrauch = states('counter.wohnzimmer_tv_watch_minutes') | float(0) %}
-                            {% set limit = states('input_number.wohnzimmer_tv_timer_number') | float(1) %}
-                            {% set prozent = (verbrauch / limit * 100) | round(0) %}
-                            {{ [prozent, 100] | min }}%;
-                          border-radius: 2px;
-                        }
+                  # Zeitverbrauch heute 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "TV-Zeitverbrauch heute"
+                      - secondary_sensor: sensor.wohnzimmer_tv_timer_verbleibend
+                      - entity: counter.wohnzimmer_tv_watch_minutes
+                      - max: input_number.wohnzimmer_tv_timer_number
+                      - icon: mdi:clock-time-eight              
+                      - mode: inverse # Farbdarstellung umgekehrt                  
 
           - type: conditional
             conditions:

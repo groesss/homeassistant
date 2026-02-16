@@ -1,0 +1,30 @@
+# ++
+# ++ TV AmbiLight (Einschalten)
+# ++
+# Schaltet das Schranklicht als Hintergrundbeleuchtung automatisch ein, wenn der Fernseher
+# eingeschaltet wird. Nur aktiv zwischen 30 Min vor Sonnenuntergang und Sonnenaufgang
+# (d.h. nur nachts/abends für bessere Atmosphäre und Augenschonung).
+# ++
+
+- id: '1714417689648'
+  alias: Wohnzimmer TV AmbiLights ein
+  description: Schaltet Schranklicht bei TV-Start ein (nur nachts)
+  triggers:
+  - platform: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    to: 'on'
+  - platform: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    to: playing
+  conditions:
+  - condition: sun
+    after: sunset
+    after_offset: "-00:30:00"
+    before: sunrise
+  actions:
+  - service: light.turn_on
+    target:
+      entity_id: light.wohnzimmer_group_schrank
+    data:
+      flash: short
+  mode: single

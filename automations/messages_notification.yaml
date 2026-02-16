@@ -1,0 +1,51 @@
+# ++
+# ++ Zentrale Notifications für Status-Meldungen
+# ++
+# Sendet Push-Notifications für wichtige Ereignisse von verschiedenen Geräten:
+# - Geschirrespüler, Backofen, Trockner (fertig)
+# - Grundwassersensor (Alarm)
+# - Ölkeller Flutsensor (Warnung)
+# - Batterie-Warnungen (Thermostat, Sensoren)
+# Verwendet Emojis basierend auf Nachrichtentyp (Info/Warning/Error).
+# ++
+
+- id: '1758805020047'
+  alias: Messages_Notification
+  description: Sendet Push-Notifications für Geräte- und Sensor-Meldungen
+  triggers:
+  - entity_id:
+    - sensor.kueche_geschirrspueler_message
+    - sensor.kueche_backofen_message
+    - sensor.waschkeller_trockner_message
+    - sensor.garten_grundwasser_message
+    - sensor.oelkeller_flutsensor_message
+    - sensor.oelkeller_flutsensor_batterie_message
+    - sensor.arbeitszimmer_thermostat_batterie_message
+    to: 'True'
+    trigger: state
+  variables:
+    msg_sensor: '{{ trigger.entity_id }}'
+  actions:
+  - data:
+      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
+        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
+        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
+        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
+        }}\n"
+      message: '{{ state_attr(msg_sensor,''message'') }}'
+      data:
+        ttl: 0
+        priority: high
+    action: notify.mobile_app_sm_g991b
+  - data:
+      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
+        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
+        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
+        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
+        }}\n"
+      message: '{{ state_attr(msg_sensor,''message'') }}'
+      data:
+        ttl: 0
+        priority: high
+    action: notify.mobile_app_rmx3085
+  mode: single

@@ -1,0 +1,28 @@
+# ++
+# ++ Terrarium Lampe 2 (Halogenlampe) - Einschalten
+# ++
+# Schaltet die Halogenlampe zur geplanten Zeit ein, wenn der Timer aktiv ist.
+# Die Einschaltzeit wird durch den Warmup/Cooldown-Zyklus dynamisch angepasst.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: '1760956254550'
+  alias: Wohnzimmer_Terrarium_Lampe2_Einschalten
+  description: Schaltet Halogenlampe zeitgesteuert ein
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe2_on
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_2
+    action: switch.turn_on
+  - action: system_log.write
+    data:
+      message: '[Terrarium] Lampe ''Halogenlampe'' eingeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+  mode: single

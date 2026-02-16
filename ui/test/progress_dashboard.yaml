@@ -1,0 +1,8 @@
+type: sections
+max_columns: 4
+title: Progress Bar Tests
+path: progress_tests
+icon: mdi:chart-line-variant
+subview: true
+sections:
+  - !include /config/ui/test/progress_test.yaml

@@ -1,0 +1,46 @@
+# ++
+# ++ Garten Gardena Bewässerungszeitplan
+# ++
+# Automatische Bewässerung nach konfigurierbarem Zeitplan:
+# - Morgens und/oder abends (separate Zeiten einstellbar)
+# - Wochentagabhängig (einzelne Tage aktivierbar)
+# - Konfigurierbare Bewässerungsdauer
+# Öffnet das Ventil zur eingestellten Zeit und schließt es automatisch nach Ablauf.
+# ++
+
+- id: '1756481008405'
+  alias: Garten_Gardena_Zeitplan_Bewässerung
+  description: Öffnet das Gardena Ventil morgens oder abends nach Zeitplan, nur an
+    aktivierten Wochentagen.
+  triggers:
+  - at: input_datetime.gardena_morgen_start
+    trigger: time
+  - at: input_datetime.gardena_abend_start
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: "{% set day = now().weekday() %} {% set booleans = [\n  'input_boolean.gardena_mo',\n
+      \ 'input_boolean.gardena_di',\n  'input_boolean.gardena_mi',\n  'input_boolean.gardena_do',\n
+      \ 'input_boolean.gardena_fr',\n  'input_boolean.gardena_sa',\n  'input_boolean.gardena_so']
+      %}\n{{ is_state(booleans[day], 'on') }}\n"
+  actions:
+  - target:
+      entity_id: valve.garten_gardena_ventil_1
+    action: valve.open
+  - data:
+      message: 'Gardena Ventil geöffnet um {{ now().strftime(''%H:%M'') }} für  {{
+        states(''input_number.gardena_dauer'') | int(5) }} Minuten.
+
+        '
+      level: info
+    action: system_log.write
+  - delay:
+      minutes: '{{ states(''input_number.gardena_dauer'') | int(5) }}'
+  - target:
+      entity_id: valve.garten_gardena_ventil_1
+    action: valve.close
+  - data:
+      message: Gardena Ventil geschlossen um {{ now().strftime('%H:%M') }}
+      level: info
+    action: system_log.write
+  mode: restart

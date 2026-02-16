@@ -1,0 +1,43 @@
+progress_bar_button:
+  template:
+    - base
+  show_icon: true
+  show_name: true
+  show_state: true
+  name: '[[name]]'
+  icon: '[[icon|mdi:progress-clock]]'
+  icon_color: '[[icon_color|blue]]'
+  state_display: |
+    [[[
+      const value = parseInt(variables.value || 0);
+      const max = parseInt(variables.max || 1);
+      const percent = Math.round((value / max) * 100);
+      return `${value} min (${percent}%)`;
+    ]]]
+  styles:
+    card:
+      - border: none
+      - box-shadow: none
+      - background: transparent
+      - border-radius: 0
+      - margin: 0 0 0 -21px
+      - padding: 0
+    name:
+      - text-align: left
+    state:
+      - text-align: left
+    icon:
+      - color: '[[icon_color|blue]]'
+    custom_fields:
+      bar:
+        - width: 100%
+        - margin-top: 4px
+  custom_fields:
+    bar: |
+      [[[
+        const value = parseInt(variables.value || 0);
+        const max = parseInt(variables.max || 1);
+        const percent = Math.round((value / max) * 100);
+        const color = variables.color || 'var(--green-color)';
+        return `<div style="height:4px;width:${percent}%;background:${color};border-radius:2px;"></div>`;
+      ]]]

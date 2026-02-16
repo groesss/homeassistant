@@ -33,38 +33,38 @@
 
 timer_row:
   card:
-  type: custom:stack-in-card
-  mode: horizontal
-  card_mod:
-    style: |
-      ha-card {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-        border-radius: 0 !important;
-        margin: 0 0 0 -21px !important;
-        padding: 0 !important;
-        overflow: visible !important;
-      }
-  cards:
-    - type: custom:mushroom-entity-card
-      entity: '[[time_on]]'
-      name: An
-      icon: mdi:weather-sunset-up
-      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
-    - type: custom:mushroom-entity-card
-      entity: '[[time_off]]'
-      name: Aus
-      icon: mdi:weather-sunset-down
-      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
-    - type: custom:mushroom-template-card
-      entity: '[[switch_entity]]'
-      toggle: true
-      icon: mdi:lightbulb
-      icon_color: >
-        {% if is_state('[[switch_entity]]','on') %}
-          yellow
-        {% else %}
-          grey
-        {% endif %}
-      card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
+    type: custom:stack-in-card
+    mode: horizontal
+    card_mod:
+      style: |
+        ha-card {
+          border: none !important;
+          box-shadow: none !important;
+          background: transparent !important;
+          border-radius: 0 !important;
+          margin: 0 0 0 -21px !important;
+          padding: 0 !important;
+          overflow: visible !important;
+        }
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: '[[time_on]]'
+        name: An
+        icon: mdi:weather-sunset-up
+        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
+      - type: custom:mushroom-entity-card
+        entity: '[[time_off]]'
+        name: Aus
+        icon: mdi:weather-sunset-down
+        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style
+      - type: custom:mushroom-template-card
+        entity: '[[switch_entity]]'
+        toggle: true
+        icon: mdi:lightbulb
+        icon_color: >
+          {% if is_state('[[switch_entity]]','on') %}
+            yellow
+          {% else %}
+            grey
+          {% endif %}
+        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml # Nested Card Style

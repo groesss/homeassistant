@@ -6,7 +6,7 @@ wohnzimmer_tv_timer_number:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_disney:
+wohnzimmer_tv_minute_count_disney:
     name: TV Minuten Disney
     min: 0
     max: 1440
@@ -14,7 +14,7 @@ tv_minute_count_disney:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_hdmi:
+wohnzimmer_tv_minute_count_hdmi:
     name: TV Minuten HDMI
     min: 0
     max: 1440
@@ -22,7 +22,7 @@ tv_minute_count_hdmi:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_netflix:
+wohnzimmer_tv_minute_count_netflix:
     name: TV Minuten Netflix
     min: 0
     max: 1440
@@ -30,7 +30,7 @@ tv_minute_count_netflix:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_plex:
+wohnzimmer_tv_minute_count_plex:
     name: TV Minuten Plex
     min: 0
     max: 1440
@@ -38,7 +38,7 @@ tv_minute_count_plex:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_prime:
+wohnzimmer_tv_minute_count_prime:
     name: TV Minuten Prime Video
     min: 0
     max: 1440
@@ -46,7 +46,7 @@ tv_minute_count_prime:
     unit_of_measurement: min
     mode: box
 
-tv_minute_count_youtube:
+wohnzimmer_tv_minute_count_youtube:
     name: TV Minuten YouTube
     min: 0
     max: 1440
@@ -55,7 +55,7 @@ tv_minute_count_youtube:
     mode: box
 
 wohnzimmer_tv_minute_count_tv:
-    name: TV Minuten Gesamt
+    name: TV Minuten TV
     min: 0
     max: 1440
     step: 1

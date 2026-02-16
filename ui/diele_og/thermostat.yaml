@@ -1,0 +1,22 @@
+type: grid
+cards:
+  - type: heading
+    heading: Heizung
+    heading_style: title
+    icon: mdi:thermostat
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+        - type: custom:decluttering-card
+          template: thermostat_card
+          variables:
+            - entity: climate.diele_thermostat
+            - title: Diele Heizung
+            - battery: sensor.diele_thermostat_battery
+            - frost_temp: number.diele_thermostat_frost_protection_temperature
+            - open_window: switch.diele_thermostat_open_window
+            - child_lock: switch.diele_thermostat_child_lock
+

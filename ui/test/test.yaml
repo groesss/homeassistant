@@ -1,0 +1,12 @@
+type: sections
+max_columns: 4
+title: Test
+path: view_test 
+icon: mdi:beaker-question
+subview: true
+sections:
+  - type: grid
+    # This section is for displaying common messages or alerts
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - !include /config/ui/test/progress_test.yaml

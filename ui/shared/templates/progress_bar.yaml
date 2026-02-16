@@ -1,0 +1,249 @@
+# =============================================================================
+# PROGRESS BAR - Decluttering Template
+# =============================================================================
+# Ein vielseitiges Progressbar-Template für Home Assistant mit verschiedenen
+# Modi und automatischer Farb-/Icon-Logik.
+#
+# PFLICHTPARAMETER:
+# - title: Titel der Karte (String)
+# - entity: Sensor/Input-Entity für aktuellen Wert (String)
+# - max: Maximalwert - kann Entity oder Zahl sein (String/Number) 
+#   * Für battery mode: Optional (Standard: 100)
+#
+# OPTIONALE PARAMETER:
+# - icon: Icon für die Karte (String, z.B. "mdi:battery")
+#   * Bei mode: battery wird automatisch "mdi:battery" gesetzt
+# - color: Überschreibt automatische Farben (String)
+#   * Unterstützt: red, orange, yellow, green, blue, purple, cyan, grey
+# - mode: Spezielle Modi (String)
+#   * normal: Standard (wenig=rot, viel=grün)
+#   * inverse: Umgekehrte Farben (wenig=grün, viel=rot)
+#   * battery: Batterie-Logik (automatisch max=100, Batterie-Icon)
+# - secondary_sensor: Zeigt anderen Sensor-Wert statt Standard-% (String)
+#
+# FUNKTIONSWEISE:
+# 1. Balken-Breite: (entity_value / max_value) * 100%
+# 2. Automatische Farben basierend auf Prozentsatz und Modus
+# 3. Icon-Farbe passt sich der Balken-Farbe an
+# 4. Fehlerbehandlung bei fehlenden/unavailable Entities
+#
+# BEISPIELE:
+#
+# Standard Progressbar:
+# - type: custom:decluttering-card
+#   template: progress_bar
+#   variables:
+#     - title: "CPU Auslastung"
+#     - entity: sensor.cpu_percent
+#     - max: 100
+#     - icon: mdi:cpu-64-bit
+#
+# Zeitverbrauch (inverse Farben):
+# - type: custom:decluttering-card
+#   template: progress_bar
+#   variables:
+#     - title: "TV-Zeit heute"
+#     - entity: counter.tv_minutes
+#     - max: input_number.tv_limit
+#     - icon: mdi:television
+#     - mode: inverse
+# 
+# Batterie (automatisch max=100):
+# - type: custom:decluttering-card
+#   template: progress_bar
+#   variables:
+#     - title: "Thermostat"
+#     - entity: sensor.thermostat_battery
+#     - mode: battery
+#
+# Mit Secondary-Sensor:
+# - type: custom:decluttering-card
+#   template: progress_bar
+#   variables:
+#     - title: "Wassertank"
+#     - entity: sensor.water_level
+#     - max: 1000
+#     - secondary_sensor: sensor.water_flow_rate
+#     - icon: mdi:water-tank
+#
+# Custom Farbe:
+# - type: custom:decluttering-card
+#   template: progress_bar
+#   variables:
+#     - title: "Custom"
+#     - entity: input_number.test
+#     - max: 100
+#     - color: purple
+# =============================================================================
+
+progress_bar:
+  card:
+    type: custom:mushroom-template-card
+
+    primary: >
+      {% set missing = [] %}
+      {% if '[[entity]]' == '' or '[[entity]]' == 'None' %}
+        {% set _ = missing.append('entity') %}
+      {% endif %}
+      {% if '[[max]]' == '' or '[[max]]' == 'None' %}
+        {% set _ = missing.append('max') %}
+      {% endif %}
+      {% if missing | length > 0 %}
+        ❌ Missing: {{ missing | join(', ') }}
+      {% else %}
+        {% set entity_state = states('[[entity]]') %}
+        {% if entity_state in ['unknown', 'unavailable'] %}
+          [[title]] ⚠️ Entity nicht verfügbar
+        {% else %}
+          [[title]]
+        {% endif %}
+      {% endif %}
+    
+    secondary: >
+      {% set missing = [] %}
+      {% if '[[entity]]' == '' or '[[entity]]' == 'None' %}
+        {% set _ = missing.append('entity') %}
+      {% endif %}
+      {% if '[[max]]' == '' or '[[max]]' == 'None' %}
+        {% set _ = missing.append('max') %}
+      {% endif %}
+      {% if missing | length > 0 %}
+        ❌ Missing: {{ missing | join(', ') }}
+      {% else %}
+        {% set sec_sensor = '[[secondary_sensor]]' %}
+        {# Prüfe ob secondary_sensor gesetzt ist (beginnt mit 'sensor.' oder 'input_') #}
+        {% if sec_sensor.startswith('sensor.') or sec_sensor.startswith('input_') %}
+          {% set sec_state = states(sec_sensor) %}
+          {% if sec_state not in ['unknown', 'unavailable'] %}
+            {{ sec_state }}
+          {% else %}
+            🚫 {{ sec_sensor }} ({{ sec_state }})
+          {% endif %}
+        {% else %}
+          {% set value_val = states('[[entity]]') | float(0) %}
+          {% set mode_val = '[[mode]]' if '[[mode]]' != '' else 'normal' %}
+          {% if mode_val == 'battery' %}
+            {{ value_val | round(0) }} %
+          {% elif mode_val == 'critical' %}
+            ⚠️ {{ value_val | round(0) }} %
+          {% else %}
+            {{ value_val | round(0) }} %
+          {% endif %}
+        {% endif %}
+      {% endif %}
+
+    icon: >
+      {% set mode_val = '[[mode]]' %}
+      {% if mode_val == 'battery' %}
+        mdi:battery
+      {% else %}
+        [[icon]]
+      {% endif %}
+
+    icon_color: >      
+      {% set color_val = '[[color]]' if '[[color]]' != '' else '' %}
+      {% set mode_val = '[[mode]]' if '[[mode]]' != '' else 'normal' %}
+      {% set entity_val = states('[[entity]]') | float(0) %}
+      {% set max_entity = '[[max]]' %}
+      {% if max_entity.startswith('sensor.') or max_entity.startswith('input_number.') %}
+        {% set max_val = states(max_entity) | float(default=1) %}
+      {% elif mode_val == 'battery' %}
+        {% set max_val = 100 %}
+      {% else %}
+        {% set max_val = max_entity | float(default=1) %}
+      {% endif %}
+      {% set calc_percent = (entity_val / max_val * 100) %}
+      
+      {% if color_val == 'red' %}#ff4444{% elif color_val == 'orange' %}#ff8800{% elif color_val == 'yellow' %}#ffcc00{% elif color_val == 'green' %}#44aa44{% elif color_val == 'blue' %}#4488ff{% elif color_val == 'purple' %}#8844ff{% elif color_val == 'cyan' %}#44aaff{% elif color_val == 'grey' %}#888888{% elif mode_val == 'battery' %}{% if calc_percent < 20 %}#ff4444{% elif calc_percent < 40 %}#ff8800{% elif calc_percent < 70 %}#ffcc00{% else %}#44aa44{% endif %}{% elif mode_val == 'inverse' %}{% if calc_percent < 25 %}#44aa44{% elif calc_percent < 75 %}#ff8800{% else %}#ff4444{% endif %}{% elif calc_percent < 1 %}#888888{% elif calc_percent < 25 %}#ff4444{% elif calc_percent < 75 %}#ff8800{% else %}#44aa44{% endif %}
+
+
+    #########################
+    # PROGRESS BAR
+    #########################
+
+    card_mod:
+      style: |        
+        {% set mode_val = '[[mode]]' if '[[mode]]' != '' else 'normal' %}
+        {% set value_val = states('[[entity]]') | float(0) %}
+        {% set max_entity = '[[max]]' %}
+        {% if max_entity.startswith('sensor.') or max_entity.startswith('input_number.') %}
+          {% set max_val = states(max_entity) | float(default=1) %}
+        {% elif mode_val == 'battery' %}
+          {% set max_val = 100 %}
+        {% else %}
+          {% set max_val = max_entity | float(default=1) %}
+        {% endif %}
+        {% set color_val = '[[color]]' if '[[color]]' != '' else '' %}
+        
+        {% if mode_val == 'battery' %}
+          {% set percent = (value_val / max_val * 100) %}
+        {% else %}
+          {% set percent = (value_val / max_val * 100) %}
+        {% endif %}
+
+        ha-card {
+          border: none !important;
+          box-shadow: none !important;
+          background: transparent !important;
+          border-radius: 0 !important;
+          margin: 0 0 0 -21px !important;
+          padding: 0 !important;
+          position: relative;
+        }
+
+
+        #########################
+        # BLINK ANIMATION
+        #########################
+
+        @keyframes blink {
+          0% { opacity: 1; }
+          50% { opacity: 0.2; }
+          100% { opacity: 1; }
+        }
+
+        ha-card:after {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          height: 6px;
+          transition: width 0.4s ease;
+          z-index: 1000;
+
+          /* Vollständige Farblogik für alle Modi */
+          {% set user_color = '[[color]]' %}
+          {% set mode_val = '[[mode]]' %}
+          {% set entity_value = states('[[entity]]') | float(0) %}
+          {% set calc_percent = (entity_value / max_val * 100) %}
+          background: {% if user_color == 'red' %}#ff4444{% elif user_color == 'orange' %}#ff8800{% elif user_color == 'yellow' %}#ffcc00{% elif user_color == 'green' %}#44aa44{% elif user_color == 'blue' %}#4488ff{% elif user_color == 'purple' %}#8844ff{% elif user_color == 'cyan' %}#44aaff{% elif user_color == 'grey' %}#888888{% elif mode_val == 'battery' %}{% if calc_percent < 20 %}#ff4444{% elif calc_percent < 40 %}#ff8800{% elif calc_percent < 70 %}#ffcc00{% else %}#44aa44{% endif %}{% elif mode_val == 'inverse' %}{% if calc_percent < 25 %}#44aa44{% elif calc_percent < 75 %}#ff8800{% else %}#ff4444{% endif %}{% elif calc_percent < 1 %}#888888{% elif calc_percent < 25 %}#ff4444{% elif calc_percent < 75 %}#ff8800{% else %}#44aa44{% endif %};
+          
+          width: {{ percent | round(0) }}%;
+          border-radius: 2px;
+        }
+
+# Debug-Card um Variablen zu überprüfen
+debug_card:
+  type: vertical-stack
+  cards:
+    - type: custom:mushroom-template-card
+      primary: "Debug Progress Bar"
+    - type: markdown
+      content: |
+        **Debug Variables:**
+        - Title: [[title]]
+        - Entity: [[entity]] 
+        - Max: [[max]]
+        - Icon: [[icon]]
+        - Color: [[color]]
+        - Mode: [[mode]]
+        - Secondary Sensor: [[secondary_sensor]]
+        
+        **Current Values:**
+        - Entity State: {{ states('[[entity]]') }}
+        - Max Value: {{ states('[[max]]') if '[[max]]'.startswith('sensor.') or '[[max]]'.startswith('input_number.') else '[[max]]' }}
+        
+        **Calculated:**
+        - Value: {{ states('[[entity]]') | float(0) }}
+        - Max: {{ states('[[max]]') | float(100) if '[[max]]'.startswith('sensor.') or '[[max]]'.startswith('input_number.') else '[[max]]' | float(100) }}
+        - Percent: {{ (states('[[entity]]') | float(0) / (states('[[max]]') | float(100) if '[[max]]'.startswith('sensor.') or '[[max]]'.startswith('input_number.') else '[[max]]' | float(100))) * 100 }}

@@ -1,0 +1,44 @@
+# ++
+# ++ Terrarium Warmup/Cooldown Exklusivität
+# ++
+# Stellt sicher, dass Warmup und Cooldown sich gegenseitig ausschließen.
+# Wenn einer aktiviert wird, deaktiviert die Automation automatisch den anderen.
+# Verhindert fehlerhafte Konfigurationen (beide Modi gleichzeitig würden sich widersprechen).
+# ++
+
+- id: '1760963587057'
+  alias: Wohnzimmer_Terrarium_Warmup_Cooldown_Exklusiv
+  description: Gewährleistet gegenseitigen Ausschluss von Warmup und Cooldown
+  triggers:
+  - entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+    to: 'on'
+    trigger: state
+  - entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+    to: 'on'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.entity_id == 'input_boolean.wohnzimmer_terrarium_warmup_active' }}"
+      sequence:
+      - target:
+          entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+        action: input_boolean.turn_off
+      - data:
+          message: '[Terrarium] Cooldown deaktiviert, da Warmup aktiviert wurde.'
+          level: info
+        action: system_log.write
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.entity_id == 'input_boolean.wohnzimmer_terrarium_cooldown_active' }}"
+      sequence:
+      - target:
+          entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
+        action: input_boolean.turn_off
+      - data:
+          message: '[Terrarium] Warmup deaktiviert, da Cooldown aktiviert wurde.'
+          level: info
+        action: system_log.write
+  mode: single

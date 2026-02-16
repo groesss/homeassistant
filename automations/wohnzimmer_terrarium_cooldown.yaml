@@ -1,0 +1,80 @@
+# ++
+# ++ Terrarium Cooldown (Herbst)
+# ++
+# Verkürzt täglich die Beleuchtungsdauer der Terrarium-Lampen um jeweils 30 Minuten,
+# um den natürlichen Jahreszyklus zu simulieren. Die Lampen gehen jeden Tag 30 Min später
+# an und 30 Min früher aus, bis die Beleuchtungsdauer unter 1 Stunde fällt.
+# Dann schaltet sich der Timer automatisch aus (Winterschlaf-Modus).
+# ++
+
+- id: '1769878981192'
+  alias: Wohnzimmer_Terrarium_Cooldown
+  description: Verkürzt täglich die Terrariumbeleuchtung um 30 Min bis Winterschlaf-Modus aktiviert wird
+  triggers:
+  - at: 00:01:00
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
+    state: 'on'
+  actions:
+  - data:
+      level: info
+      message: '[COOLDOWN] Started'
+    action: system_log.write
+  - variables:
+      l1_on: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_on'') }}'
+      l1_off: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_off'') }}'
+      l2_on: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe2_on'') }}'
+      l2_off: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe2_off'') }}'
+  - variables:
+      d1: "{{ (as_timestamp('1970-01-01 ' ~ l1_off) -\n    as_timestamp('1970-01-01
+        ' ~ l1_on)) / 3600 }}\n"
+      d2: "{{ (as_timestamp('1970-01-01 ' ~ l2_off) -\n    as_timestamp('1970-01-01
+        ' ~ l2_on)) / 3600 }}\n"
+      min_current: '{{ [d1, d2] | min }}'
+  - data:
+      level: info
+      message: '[COOLDOWN] Current hours: {{ min_current }}
+
+        '
+    action: system_log.write
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{{ min_current < 1 }}'
+      sequence:
+      - data:
+          level: info
+          message: '[COOLDOWN] Finished → Winter mode'
+        action: system_log.write
+      - target:
+          entity_id:
+          - input_boolean.wohnzimmer_terrarium_cooldown_active
+          - input_boolean.wohnzimmer_terrarium_timer_active
+        action: input_boolean.turn_off
+    default:
+    - data:
+        level: info
+        message: '[COOLDOWN] Applying -1h'
+      action: system_log.write
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
+        time: "{{ (strptime(l1_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
+        time: "{{ (strptime(l1_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
+        time: "{{ (strptime(l2_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime
+    - data:
+        entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
+        time: "{{ (strptime(l2_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
+          }}\n"
+      action: input_datetime.set_datetime

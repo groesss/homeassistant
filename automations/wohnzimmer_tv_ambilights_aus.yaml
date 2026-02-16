@@ -1,0 +1,26 @@
+# ++
+# ++ TV AmbiLight (Ausschalten)
+# ++
+# Schaltet das Schranklicht automatisch aus, wenn der Fernseher ausgeschaltet wird.
+# Ein kurzer Flash-Effekt signalisiert das Ausschalten. Funktioniert unabhängig von
+# der Tageszeit (auch tagsüber, falls AmbiLight manuell eingeschaltet wurde).
+# ++
+
+- id: '1755459782243'
+  alias: Wohnzimmer TV AmbiLights aus
+  description: Schaltet Schranklicht bei TV-Aus aus (mit Flash-Effekt)
+  triggers:
+  - platform: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    to: 'off'
+  - platform: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    to: idle
+  conditions: []
+  actions:
+  - service: light.turn_off
+    target:
+      entity_id: light.wohnzimmer_group_schrank
+    data:
+      flash: short
+  mode: single

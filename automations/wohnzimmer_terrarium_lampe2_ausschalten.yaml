@@ -1,0 +1,28 @@
+# ++
+# ++ Terrarium Lampe 2 (Halogenlampe) - Ausschalten
+# ++
+# Schaltet die Halogenlampe zur geplanten Zeit aus, wenn der Timer aktiv ist.
+# Die Ausschaltzeit wird durch den Warmup/Cooldown-Zyklus dynamisch angepasst.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: '1760956279817'
+  alias: Wohnzimmer_Terrarium_Lampe2_Ausschalten
+  description: Schaltet Halogenlampe zeitgesteuert aus
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe2_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_2
+    action: switch.turn_off
+  - action: system_log.write
+    data:
+      message: '[Terrarium] Lampe ''Halogenlampe'' ausgeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+  mode: single

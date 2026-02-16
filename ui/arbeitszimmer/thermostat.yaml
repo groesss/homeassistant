@@ -1,19 +1,22 @@
-type: entities
-title: Montag
-entities:
-  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_1_time
-    name: Zeit 1
-  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_1_temp
-    name: Temperatur 1
-  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_2_time
-    name: Zeit 2
-  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_2_temp
-    name: Temperatur 2
-  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_3_time
-    name: Zeit 3
-  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_3_temp
-    name: Temperatur 3
-  - entity: input_datetime.arbeitszimmer_thermostat_schedule_monday_4_time
-    name: Zeit 4
-  - entity: input_number.arbeitszimmer_thermostat_schedule_monday_4_temp
-    name: Temperatur 4
+type: grid
+cards:
+  - type: heading
+    heading: Heizung
+    heading_style: title
+    icon: mdi:thermostat
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+        - type: custom:decluttering-card
+          template: thermostat_card
+          variables:
+            - entity: climate.arbeitszimmer_thermostat
+            - title: Arbeitszimmer Heizung
+            - battery: sensor.arbeitszimmer_thermostat_battery
+            - frost_temp: number.arbeitszimmer_thermostat_frost_protection_temperature
+            - open_window: switch.arbeitszimmer_thermostat_open_window
+            - child_lock: switch.arbeitszimmer_thermostat_child_lock
+

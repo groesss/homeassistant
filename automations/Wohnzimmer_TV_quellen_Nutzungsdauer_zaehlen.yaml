@@ -1,0 +1,117 @@
+# ++
+# ++ TV Quellen-Tracking
+# ++
+# Trackt jede Minute die aktuell aktive TV-Quelle (Netflix, YouTube, Prime Video,
+# Disney+, Plex, HDMI, TV) und inkrementiert den entsprechenden Zähler.
+# Wenn keine bekannte Quelle aktiv ist, wird der "Andere"-Zähler erhöht.
+# Die Statistiken werden täglich um Mitternacht zurückgesetzt.
+# ++
+
+- id: '1753081050526'
+  alias: Wohnzimmer_TV_quellen_Nutzungsdauer_zählen
+  description: Trackt minutenweise die aktive TV-Quelle in separaten Zählern
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    state: 'on'
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''HDMI'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_hdmi
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_hdmi'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Netflix'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_netflix
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_netflix'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''YouTube'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_youtube
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_youtube'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Prime Video'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_prime
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_prime'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Disney+'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_disney
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_disney'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''Plex'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_plex
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_plex'') | int(0) + 1 }}'
+        action: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
+          %} {{ src == ''TV'' }}
+
+          '
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_tv
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_tv'') | int(0) + 1 }}'
+        action: input_number.set_value
+    default:
+    - service: system_log.write
+      data:
+        level: warning
+        message: >
+          TV Quellen-Tracking: Unbekannte Quelle '{{ state_attr('media_player.wohnzimmer_tv_samsung_q90_series_75','source') }}' gezählt!
+    - target:
+        entity_id: input_number.wohnzimmer_tv_minute_count_andere
+      data:
+        value: '{{ states(''input_number.wohnzimmer_tv_minute_count_andere'') | int(0) + 1 }}'
+      action: input_number.set_value
+  mode: single

@@ -1,3 +1,13 @@
+## Datei: templates/pumpe.yaml
+# Beschreibung:
+# Dieses Template definiert einen Binary Sensor für den Status der Gartenpumpe.
+# Der Sensor ist 'on', wenn die Leistung über 5W liegt, und 'off', wenn nicht.
+# Die Verfügbarkeit prüft, ob der Leistungssensor gültige Werte liefert.
+#
+# Namenskonvention: unique_id folgt dem Muster <raum>_<gerät>_<attribut>.
+# Konsistenz: Die Logik ist auf die Pumpenautomatisierung und UI abgestimmt.
+#
+# Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
 binary_sensor:
   - name: "Pumpe läuft"
     unique_id: "garten_smartplug_pumpe_status"
@@ -6,3 +16,16 @@ binary_sensor:
       {{ states('sensor.garten_smartplug_pumpe_power')|float > 5 }}
     availability: >
       {{ states('sensor.garten_smartplug_pumpe_power') not in ['unknown', 'unavailable', 'None'] }}
+
+
+
+              #    - type: custom:decluttering-card
+              #      template: progress_bar
+              #      variables:
+              #        - name: "Fortschritt"
+              #        - value: "{{ states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) }}"
+              #        - max: "100"
+              #        - color: "{{ 'grey' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 1 else 'red' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 25 else 'orange' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 75 else 'green' }}"
+              #        - icon: "mdi:progress-clock"
+              #        - icon_color: "{{ 'grey' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 1 else 'red' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 25 else 'orange' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 75 else 'green' }}"
+              #        - unit: "%"

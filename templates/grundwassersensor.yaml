@@ -1,3 +1,12 @@
+# Datei: templates/grundwassersensor.yaml
+# Beschreibung:
+# Dieses Template liefert einen Sensor für den Status des Grundwassersensors im Garten.
+# Der Sensor zeigt an, ob der Schwimmerschalter ausgelöst ist oder alles im grünen Bereich ist.
+#
+# Namenskonvention: unique_id folgt dem Muster <raum>_<gerät>_<attribut>.
+# Konsistenz: Die Logik ist auf die Grundwasser-Meldungen und Pumpenautomatisierung abgestimmt.
+#
+# Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
 - sensor:
     - name: "Garten Grundwasser Status"
       unique_id: "sensor.garten_grundwasser_status"

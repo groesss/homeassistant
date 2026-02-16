@@ -1,10 +1,32 @@
+
 type: grid
 cards:
-  - type: custom:stack-in-card
-    mode: vertical
-    card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+  - type: heading
+    heading: Heizungen
+    heading_style: title
+    icon: mdi:thermostat
+  - type: vertical-stack
     cards:
-      - type: tile
-        entity: sensor.0xc09b9efffe4a46bf_local_temperature
-        card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-title: wohnzimmer_thermostat_1
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+          - type: custom:decluttering-card
+            template: thermostat_card
+            variables:
+              - entity: climate.wohnzimmer_thermostat_1
+              - title: Wohnzimmer Heizung 1
+              - battery: sensor.wohnzimmer_thermostat_1_battery
+              - frost_temp: number.wohnzimmer_thermostat_1_frost_protection_temperature
+              - open_window: switch.wohnzimmer_thermostat_1_open_window
+              - child_lock: switch.wohnzimmer_thermostat_1_child_lock
+
+          - type: custom:decluttering-card
+            template: thermostat_card
+            variables:
+              - entity: climate.wohnzimmer_thermostat_2
+              - title: Wohnzimmer Heizung 2
+              - battery: sensor.wohnzimmer_thermostat_2_battery
+              - frost_temp: number.wohnzimmer_thermostat_2_frost_protection_temperature
+              - open_window: switch.wohnzimmer_thermostat_2_open_window
+              - child_lock: switch.wohnzimmer_thermostat_2_child_lock

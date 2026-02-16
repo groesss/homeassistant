@@ -60,6 +60,19 @@ cards:
         tap_action:
           action: navigate
           navigation_path: view_kueche
+      - type: custom:button-card
+        template: overview_tile
+        name: Diele
+        icon: mdi:desk
+        show_state: true
+        state_display: >
+          [[[ 
+            const temp = states['sensor.diele_thermostat_local_temperature']?.state;
+            return temp ? `${temp} °C` : '-';
+          ]]]
+        tap_action:
+          action: navigate
+          navigation_path: view_diele_og
   - type: markdown
     content: '## Erdgeschoss'
     text_only: true
@@ -100,3 +113,10 @@ cards:
         tap_action:
           action: navigate
           navigation_path: view_oelkeller
+      - type: custom:button-card
+        template: overview_tile
+        name: Test
+        icon: mdi:washing-machine
+        tap_action:
+          action: navigate
+          navigation_path: view_test

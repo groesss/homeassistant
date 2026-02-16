@@ -1,5 +1,13 @@
+
 # Datei: templates/wohnzimmer_terrarium.yaml
-# Template-Sensor für Warmup & Cooldown mit automatischer Aktualisierung
+# Beschreibung:
+# Dieses Template liefert einen Sensor für das Terrarium im Wohnzimmer, der die aktuelle Beleuchtungsdauer, den Warmup/Cooldown-Status und relevante Hinweise als Text bereitstellt.
+# Die Logik berücksichtigt die Zeitschaltuhren, Warmup/Cooldown-Phasen und die aktuelle Konfiguration der Lampen.
+#
+# Namenskonvention: unique_id und Name folgen dem Muster <raum>_<gerät>_<attribut>.
+# Konsistenz: Die Status- und Attributlogik ist auf die Terrarium-Automatisierungen abgestimmt.
+#
+# Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
 
 - sensor:
     - name: "Wohnzimmer Terrarium Warmup/Cooldown Info"

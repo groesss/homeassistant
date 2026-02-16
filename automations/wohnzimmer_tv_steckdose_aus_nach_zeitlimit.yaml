@@ -1,0 +1,26 @@
+# ++
+# ++ Kindersicherung: Zeitlimit-Enforcement
+# ++
+# Überwacht minutenweise, ob die TV-Nutzungsdauer das eingestellte Zeitlimit erreicht hat.
+# Wenn die Kindersicherung aktiv ist und das Limit erreicht wird, schaltet die Automation
+# automatisch die TV-Steckdose aus ("harte" Abschaltung).
+# ++
+
+- id: '1753078838414'
+  alias: Wohnzimmer_TV_Steckdose_aus_nach_Zeitlimit
+  description: Schaltet TV-Steckdose aus, wenn Kindersicherungs-Zeitlimit erreicht ist
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_tv_kindersicherung
+    state: 'on'
+  - condition: template
+    value_template: "{{ states('counter.wohnzimmer_tv_watch_minutes') | int >=\n   states('input_number.wohnzimmer_tv_timer_number')
+      | int }}\n"
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_tv
+    action: switch.turn_off
+  mode: single

@@ -1,5 +1,14 @@
+
 # Datei: templates/backofen.yaml
-# Template-Sensoren für den Backofen
+# Beschreibung:
+# Diese Datei enthält Template-Sensoren für den Backofen in der Küche.
+# Sie liefern den aktuellen Status (z.B. Läuft, Fertig, Ausgeschaltet) und das aktive Programm (z.B. Heißluft, Ober-/Unterhitze) als Text.
+# Die Sensoren reagieren auf Status- und Türsensoren sowie das aktive Programm und sind für die Anzeige im Dashboard und für Benachrichtigungen optimiert.
+#
+# Namenskonvention: Alle unique_ids und Namen folgen dem Muster <raum>_<gerät>_<attribut>.
+# Konsistenz: Die Logik und Statusabbildung ist identisch zu den Templates für Geschirrspüler und Trockner.
+#
+# Änderungen an der Statuslogik oder Programmliste sollten immer synchron in allen Geräte-Templates erfolgen.
 
 - trigger:
     - platform: state

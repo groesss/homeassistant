@@ -1,0 +1,28 @@
+# ++
+# ++ Terrarium Lampe 1 (Bright Sun) - Ausschalten
+# ++
+# Schaltet die Bright Sun Lampe zur geplanten Zeit aus, wenn der Timer aktiv ist.
+# Die Ausschaltzeit wird durch den Warmup/Cooldown-Zyklus dynamisch angepasst.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: '1760956227580'
+  alias: Wohnzimmer_Terrarium_Lampe1_Ausschalten
+  description: Schaltet Bright Sun Lampe zeitgesteuert aus
+  triggers:
+  - at: input_datetime.wohnzimmer_terrarium_lampe1_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_terrarium_timer_active
+    state: 'on'
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_terrarium_1
+    action: switch.turn_off
+  - data:
+      message: '[Terrarium] Lampe ''Bright Sun'' ausgeschaltet um {{ now().strftime(''%H:%M'')
+        }}'
+      level: info
+    action: system_log.write
+  mode: single

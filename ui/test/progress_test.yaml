@@ -1,0 +1,207 @@
+
+type: grid
+cards:
+  # Zeitverbrauch heute 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "TV-Zeitverbrauch heute"
+      - secondary_sensor: sensor.wohnzimmer_tv_timer_verbleibend
+      - entity: counter.wohnzimmer_tv_watch_minutes
+      - max: input_number.wohnzimmer_tv_timer_number
+      - icon: mdi:clock-time-eight
+
+  # Zeitverbrauch heute 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "TV-Zeitverbrauch heute invers"
+      - secondary_sensor: sensor.wohnzimmer_tv_timer_verbleibend
+      - entity: counter.wohnzimmer_tv_watch_minutes
+      - max: input_number.wohnzimmer_tv_timer_number
+      - icon: mdi:clock-time-eight
+      - mode: inverse
+
+  # Andere 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Andere"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 100
+      - icon: mdi:dots-horizontal
+      - color: purple
+
+  # PLEX 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Plex"
+      - entity: input_number.wohnzimmer_tv_minute_count_plex
+      - max: 100
+      - icon: mdi:plex
+      - color: yellow
+
+  # Battery 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Batterie 100%"
+      - entity: sensor.arbeitszimmer_thermostat_battery
+      - mode: battery
+
+
+  # Battery 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Batterie"
+      - entity: sensor.sm_g991b_battery_level
+      - mode: battery
+
+
+
+  # Battery 
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Batterie"
+      - entity: sensor.0xc09b9efffe4a8803_battery
+      - mode: battery
+
+  # =============================================================================
+  # ERWEITERTE TESTS - Alle Modi und Edge-Cases
+  # =============================================================================
+
+  # Standard Normal Mode ohne Custom Color (automatische Farben)
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Standard Normal (25%)"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 400
+      - icon: mdi:netflix
+
+  # Custom Colors Test - Alle unterstützten Farben
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Rot (Custom) 50%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 200
+      - icon: mdi:youtube
+      - color: red
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Orange (Custom) 65%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 150
+      - icon: mdi:movie-filter
+      - color: orange
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Grün (Custom) 85%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 120
+      - icon: mdi:television-classic
+      - color: green
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Blau (Custom) 40%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 250
+      - icon: mdi:hdmi-port
+      - color: blue
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Cyan (Custom) 75%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 133
+      - icon: mdi:star-shooting
+      - color: cyan
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Grau (Custom) 15%"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 667
+      - icon: mdi:dots-horizontal
+      - color: grey
+
+  # Max als Entity (sensor/input_number) Test
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Max als Entity"  
+      - entity: counter.wohnzimmer_tv_watch_minutes
+      - max: input_number.wohnzimmer_tv_timer_number
+      - icon: mdi:gauge
+      - secondary_sensor: sensor.wohnzimmer_tv_timer_verbleibend
+
+  # Battery mit expliziter Max (überschreibt Standard 100)
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Batterie Custom Max"
+      - entity: sensor.arbeitszimmer_thermostat_battery
+      - max: 120
+      - mode: battery
+      - icon: mdi:battery-plus
+
+  # Fehlerfall Tests
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "❌ Fehler: Keine Entity"
+      - max: 100
+      - icon: mdi:alert-circle
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "❌ Fehler: Kein Max"
+      - entity: input_number.wohnzimmer_tv_minute_count_netflix
+      - icon: mdi:alert-circle
+
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "❌ Fehler: Unbekannte Entity"
+      - entity: sensor.does_not_exist_test
+      - max: 100
+      - icon: mdi:help
+
+  # Edge Cases
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "5% Test (fast leer)"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 2000
+      - icon: mdi:numeric-0
+
+  # Ohne Icon (sollte leer bleiben außer bei Battery mode)
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Kein Icon (35%)"
+      - entity: input_number.wohnzimmer_tv_minute_count_andere
+      - max: 286
+
+  # Battery ohne explizites Icon (sollte automatisch mdi:battery bekommen)
+  - type: custom:decluttering-card
+    template: progress_bar
+    variables:
+      - title: "Battery Auto-Icon"
+      - entity: sensor.sm_g991b_battery_level
+      - mode: battery

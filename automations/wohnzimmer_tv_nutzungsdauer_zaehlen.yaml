@@ -1,0 +1,23 @@
+# ++
+# ++ TV Gesamtnutzungsdauer
+# ++
+# Zählt jede Minute, in der der Fernseher eingeschaltet ist, im Gesamtzähler.
+# Dieser Zähler wird für die Kindersicherung verwendet und täglich um Mitternacht
+# zurückgesetzt. Unabhängig von der aktiven Quelle.
+# ++
+
+- id: '1753078468164'
+  alias: Wohnzimmer_TV_Nutzungsdauer_zählen
+  description: Inkrementiert den TV-Gesamtzähler jede Minute bei eingeschaltetem Fernseher
+  triggers:
+  - minutes: /1
+    trigger: time_pattern
+  conditions:
+  - condition: state
+    entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
+    state: 'on'
+  actions:
+  - target:
+      entity_id: counter.wohnzimmer_tv_watch_minutes
+    action: counter.increment
+  mode: single

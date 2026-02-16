@@ -1,0 +1,22 @@
+# ++
+# ++ Kindersicherung: Auto-Freigabe
+# ++
+# Schaltet die TV-Steckdose automatisch wieder ein, wenn die Kindersicherung
+# deaktiviert wird. Verhindert, dass der TV nach Zeitlimit-Abschaltung manuell
+# entsperrt werden muss.
+# ++
+
+- id: '1754902740359'
+  alias: Wohnzimmer_TV_Steckdose_ein_bei_Kindersicherung_aus
+  description: Schaltet TV-Steckdose automatisch ein wenn Kindersicherung deaktiviert wird
+  triggers:
+  - entity_id: input_boolean.wohnzimmer_tv_kindersicherung
+    from: 'on'
+    to: 'off'
+    trigger: state
+  conditions: []
+  actions:
+  - target:
+      entity_id: switch.wohnzimmer_smartplug_tv
+    action: switch.turn_on
+  mode: single

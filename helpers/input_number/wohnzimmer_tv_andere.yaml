@@ -1,0 +1,7 @@
+wohnzimmer_tv_minute_count_andere:
+    name: TV Minuten Andere
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box

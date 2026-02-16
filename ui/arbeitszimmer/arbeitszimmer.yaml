@@ -8,5 +8,4 @@ sections:
   - type: grid
     cards:
       - !include /config/ui/shared/messages.yaml
-      - !include /config/ui/arbeitszimmer/thermostat_dienstag_kompakt.yaml
-  #- !include /config/ui/arbeitszimmer/thermostat.yaml
+  - !include /config/ui/arbeitszimmer/thermostat.yaml

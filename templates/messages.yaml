@@ -1,8 +1,14 @@
-# messages.yaml
-# Alle Meldungen zentral pflegen
-# state: true/false (automatisch via value_template)
-# message: Text für Dashboard/Notification
-# message_type: info, warning, error
+
+# Datei: templates/messages.yaml
+# Beschreibung:
+# Diese Datei enthält zentrale Template-Sensoren für alle System- und Gerätemeldungen (z.B. Fertig-Meldungen, Warnungen, Batteriehinweise).
+# Jeder Sensor liefert einen state (true/false), einen Titel, eine Nachricht und einen Typ (info, warning, error) als Attribute.
+# Die Sensoren werden im Dashboard und für Benachrichtigungen verwendet.
+#
+# Namenskonvention: unique_id und Name folgen dem Muster <raum>_<gerät>_<attribut>_message.
+# Konsistenz: Die Logik ist auf die zugehörigen Geräte-Templates und Automatisierungen abgestimmt.
+#
+# Änderungen an den Meldungsbedingungen oder Texten sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
 
 - sensor:
     - name: "Kueche Geschirrspueler Message"

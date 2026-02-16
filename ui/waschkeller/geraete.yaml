@@ -73,32 +73,16 @@ cards:
                       }}
                     icon: mdi:playlist-play
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-                  - type: custom:mushroom-template-card
-                    primary: Fortschritt
-                    secondary: >
-                      {% set progress =
-                      states('sensor.waschkeller_trockner_option_programprogress')
-                      | float(0) %}
-
-                      {% if progress < 1 %}
-                        -
-                      {% else %}
-                        {{ progress }}%
-                      {% endif %}
-                    icon: mdi:progress-clock
-                    icon_color: >
-                      {% set progress =
-                      states('sensor.waschkeller_trockner_option_programprogress')
-                      | float(0) %} {% if progress < 1 %}
-                        grey
-                      {% elif progress < 25 %}
-                        red
-                      {% elif progress < 75 %}
-                        orange
-                      {% else %}
-                        green
-                      {% endif %}
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                                    
+                 # Fortschritt
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Fortschritt"
+                      - entity: counter.waschkeller_trockner_option_programprogress
+                      - max: 100
+                      - icon: mdi:progress-clock
+                                    
                   # Wäschetrockner Ein/Aus
                   - type: custom:mushroom-entity-card
                     entity: switch.waschkeller_trockner_setting_powerstate

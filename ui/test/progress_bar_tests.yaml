@@ -1,0 +1,23 @@
+type: sections
+max_columns: 4
+title: Progress Bar Tests
+path: progress-tests
+icon: mdi:chart-line-variant
+sections:
+  # Navigation zurück
+  - type: grid
+    cards:
+      - type: custom:mushroom-template-card
+        primary: "← Zurück zu Tests"
+        secondary: "Test-Übersicht"
+        icon: mdi:arrow-left
+        icon_color: grey
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/0/7
+        card_mod:
+          style: |
+            ha-card {
+              margin-bottom: 16px;
+            }
+  - !include /config/ui/test/progress_test.yaml

@@ -129,7 +129,6 @@ cards:
                     primary: Alarmzeit einstellen
                     icon: mdi:alarm
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-
               - type: custom:fold-entity-row
                 head:
                   type: custom:mushroom-template-card
@@ -173,33 +172,16 @@ cards:
                       {% endif %}
                     icon: mdi:dishwasher
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-                  - type: custom:mushroom-template-card
-                    primary: Fortschritt
-                    secondary: >
-                      {% set progress =
-
-                      states('sensor.kueche_geschirrspueler_option_programprogress')
-                      |
-
-                      float(0) %} {% if progress < 1 %}
-                        -
-                      {% else %}
-                        {{ states('sensor.kueche_geschirrspueler_option_programprogress') }}%
-                      {% endif %}
-                    icon: mdi:progress-clock
-                    icon_color: >
-                      {% set progress =
-                      states('sensor.kueche_geschirrspueler_option_programprogress')
-                      | float(0) %} {% if progress < 1 %}
-                        grey
-                      {% elif progress < 25 %}
-                        red
-                      {% elif progress < 75 %}
-                        orange
-                      {% else %}
-                        green
-                      {% endif %}
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                 
+                 # Fortschritt
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Fortschritt"
+                      - entity: counter.kueche_geschirrspueler_option_programprogress
+                      - max: 100
+                      - icon: mdi:clock-time-eight
+                  
                   - type: custom:mushroom-entity-card
                     entity: switch.kueche_geschirrspueler_setting_powerstate
                     name: Geschirrspüler

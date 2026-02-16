@@ -1,0 +1,11 @@
+type: sections
+max_columns: 4
+title: Diele
+path: view_diele_og
+subview: true
+icon: mdi:desk
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - !include /config/ui/diele_og/thermostat.yaml
