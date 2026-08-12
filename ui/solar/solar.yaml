@@ -1,0 +1,14 @@
+type: sections
+max_columns: 4
+title: Solar & Energie
+path: view_solar
+icon: mdi:solar-panel-large
+sections:
+  - type: grid
+    cards:
+      - !include /config/ui/shared/messages.yaml
+  - !include /config/ui/solar/uebersicht.yaml
+  - !include /config/ui/solar/photovoltaik.yaml
+  - !include /config/ui/solar/batterie.yaml
+  - !include /config/ui/solar/netz.yaml
+  - !include /config/ui/solar/wechselrichter.yaml

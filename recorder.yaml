@@ -4,4 +4,17 @@ include:
     - sensor.garten_smartplug_pumpe_power
     - sensor.garten_smartplug_pumpe_current
     - sensor.garten_smartplug_pumpe_voltage
+    - sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power
+    - sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power
+    - sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power
+    - sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power
+    - sensor.ps_10_0_hc2g_rct_power_storage_battery_power
+    - sensor.ps_10_0_hc2g_rct_power_storage_grid_power
+    - sensor.ps_10_0_hc2g_rct_power_storage_consumer_power
+    - sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge
+    - sensor.ps_10_0_hc2g_rct_power_storage_grid_power_p1
+    - sensor.ps_10_0_hc2g_rct_power_storage_grid_power_p2
+    - sensor.ps_10_0_hc2g_rct_power_storage_grid_power_p3
+    - sensor.ps_10_0_hc2g_rct_power_storage_inverter_ac_power
+    - sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power
 

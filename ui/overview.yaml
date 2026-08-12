@@ -108,15 +108,9 @@ cards:
         show_state: true
         state_display: >
           [[[ return
-          states['sensor.oelkeller_shellyflood_temperature'].state + ' °C';
+          states['sensor.oelkeller_flutsensor_temperature'].state + ' °C';
           ]]]
         tap_action:
           action: navigate
           navigation_path: view_oelkeller
-      - type: custom:button-card
-        template: overview_tile
-        name: Test
-        icon: mdi:washing-machine
-        tap_action:
-          action: navigate
-          navigation_path: view_test
+

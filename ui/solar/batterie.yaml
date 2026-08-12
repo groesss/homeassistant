@@ -1,0 +1,183 @@
+﻿type: grid
+cards:
+  - type: heading
+    heading: Batteriespeicher
+    heading_style: title
+    icon: mdi:battery-charging
+
+  - type: custom:mini-graph-card
+    entities:
+      - entity: sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge
+        name: SOC
+        color: '#43a047'
+    hours_to_show: 24
+    points_per_hour: 4
+    line_width: 2
+    smoothing: true
+    show:
+      points: false
+      labels: false
+      legend: true
+    name: Ladezustand (24h)
+    icon: mdi:battery-outline
+
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
+        cards:
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
+            entities:
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Aktueller Zustand
+                  secondary: >
+                    {% set soc = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}
+                    {% set pwr = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+                    {% if pwr < -50 %}Lädt | {{ soc | round(0) }}%
+                    {% elif pwr > 50 %}Entlädt | {{ soc | round(0) }}%
+                    {% else %}Standby | {{ soc | round(0) }}%{% endif %}
+                  icon: "{% set s = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}{% if s >= 90 %}mdi:battery{% elif s >= 70 %}mdi:battery-80{% elif s >= 50 %}mdi:battery-60{% elif s >= 30 %}mdi:battery-40{% elif s >= 10 %}mdi:battery-20{% else %}mdi:battery-alert{% endif %}"
+                  icon_color: >
+                    {% set pwr = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+                    {% set soc = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}
+                    {% if pwr < -50 %}green{% elif pwr > 50 %}orange{% elif soc < 20 %}red{% else %}blue{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: Ladezustand
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) | round(1) }} %"
+                    icon: mdi:battery-outline
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Leistung
+                    secondary: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+                      {% set ap = p | abs %}
+                      {% if p < -50 %}⬆ Laden: {% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %}
+                      {% elif p > 50 %}⬇ Entladen: {% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %}
+                      {% else %}Standby{% endif %}
+                    icon: mdi:lightning-bolt
+                    icon_color: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+                      {% if p < -50 %}green{% elif p > 50 %}orange{% else %}grey{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Spannung
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_voltage') | float(0) | round(1) }} V"
+                    icon: mdi:sine-wave
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Strom
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_current') | float(0) | round(1) }} A"
+                    icon: mdi:current-dc
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Temperatur
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_temperature') | float(0) | round(1) }} °C"
+                    icon: mdi:thermometer
+                    icon_color: >
+                      {% set t = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_temperature') | float(0) %}
+                      {% if t > 40 %}red{% elif t > 30 %}orange{% else %}blue{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Status
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_status') }}"
+                    icon: mdi:information-outline
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Gesundheit & Statistiken
+                  secondary: "SOH: {{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_health') | float(0) | round(0) }} %"
+                  icon: mdi:heart-pulse
+                  icon_color: >
+                    {% set soh = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_health') | float(100) %}
+                    {% if soh >= 80 %}green{% elif soh >= 60 %}yellow{% else %}red{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: State of Health
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_health') | float(0) | round(1) }} %"
+                    icon: mdi:heart-pulse
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Ladezyklen
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_cycles') | float(0) | round(0) }}"
+                    icon: mdi:counter
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Eingeladene Energie (gesamt)
+                    secondary: >
+                      {% set e = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_stored_energy') | float(0) %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:battery-arrow-up
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Entladene Energie (gesamt)
+                    secondary: >
+                      {% set e = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_used_energy') | float(0) %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:battery-arrow-down
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Nächste Kalibrierung
+                    secondary: >
+                      {% set ts = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_next_battery_calibration_date') %}
+                      {% if ts in ['unknown', 'unavailable', '', 'None'] %}
+                        Nicht verfügbar
+                      {% else %}
+                        {{ as_local(as_datetime(ts)).strftime('%d.%m.%Y %H:%M') }}
+                      {% endif %}
+                    icon: mdi:calendar-clock
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Einstellungen
+                  secondary: >
+                    Min: {{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_minimum_state_of_charge') | float(0) | round(0) }}% |
+                    Max: {{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_maximum_state_of_charge') | float(0) | round(0) }}%
+                  icon: mdi:cog-outline
+                  icon_color: grey
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: SOC-Zielwert
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge_target') | float(0) | round(1) }} %"
+                    icon: mdi:target
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Mindest-SOC (normal)
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_minimum_state_of_charge') | float(0) | round(1) }} %"
+                    icon: mdi:battery-arrow-down-outline
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Mindest-SOC (Insel)
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_minimum_state_of_charge_island') | float(0) | round(1) }} %"
+                    icon: mdi:island
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Maximal-SOC
+                    secondary: "{{ states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_maximum_state_of_charge') | float(0) | round(1) }} %"
+                    icon: mdi:battery-arrow-up-outline
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+

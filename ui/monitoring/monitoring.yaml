@@ -1,0 +1,11 @@
+type: sections
+max_columns: 4
+title: Monitoring
+path: view_monitoring
+icon: mdi:heart-pulse
+sections:
+  - !include /config/ui/monitoring/warnungen.yaml
+  - !include /config/ui/monitoring/konnektivitaet.yaml
+  - !include /config/ui/monitoring/updates.yaml
+  - !include /config/ui/monitoring/watchman.yaml
+  - !include /config/ui/monitoring/systemlog.yaml

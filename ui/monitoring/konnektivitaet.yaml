@@ -1,0 +1,280 @@
+type: grid
+cards:
+  - type: heading
+    heading: Geräte-Konnektivität
+    heading_style: title
+    icon: mdi:connection
+
+  - type: custom:mushroom-template-card
+    primary: Gesamt Health
+    secondary: >
+      {% set s = states('binary_sensor.monitoring_gesamt_health') %}
+      {% if s == 'on' %}
+        Alle Geräte verbunden
+      {% else %}
+        Getrennt: {{ (state_attr('binary_sensor.monitoring_gesamt_health', 'offline') or []) | unique | join(', ') }}
+      {% endif %}
+    icon: mdi:heart-pulse
+    icon_color: >
+      {% set s = states('binary_sensor.monitoring_gesamt_health') %}
+      {% if s == 'on' %}green{% else %}red{% endif %}
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      # ++
+      # ++ Küche
+      #
+      - type: custom:mushroom-template-card
+        primary: Backofen
+        secondary: >
+          {% set s = states('binary_sensor.kueche_backofen_connected') %}
+          {% if s == 'on' %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:stove
+        icon_color: >
+          {% set s = states('binary_sensor.kueche_backofen_connected') %}
+          {% if s == 'on' %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Geschirrspüler
+        secondary: >
+          {% set s = states('binary_sensor.kueche_geschirrspueler_connected') %}
+          {% if s == 'on' %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:dishwasher
+        icon_color: >
+          {% set s = states('binary_sensor.kueche_geschirrspueler_connected') %}
+          {% if s == 'on' %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Waschkeller
+      #
+      - type: custom:mushroom-template-card
+        primary: Wäschetrockner
+        secondary: >
+          {% set s = states('binary_sensor.waschkeller_trockner_bosch_connected') %}
+          {% if s == 'on' %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:tumble-dryer
+        icon_color: >
+          {% set s = states('binary_sensor.waschkeller_trockner_bosch_connected') %}
+          {% if s == 'on' %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ PV / Wechselrichter
+      #
+      - type: custom:mushroom-template-card
+        primary: PV Wechselrichter
+        secondary: >
+          {% set ok = ['on', 'true', 'True', 'yes', 'connected', 'online'] %}
+          {% set devs = {
+            'A': states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_connected'),
+            'B': states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_connected'),
+            'Slave A': states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_connected'),
+            'Slave B': states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_connected')
+          } %}
+          {% set bad = [] %}
+          {% for k, v in devs.items() %}
+            {% if v not in ok and (v | replace(',', '.') | float(0)) < 1 %}{% set bad = bad + [k] %}{% endif %}
+          {% endfor %}
+          {% if bad | length == 0 %}Alle Generatoren verbunden{% else %}Getrennt: {{ bad | join(', ') }}{% endif %}
+        icon: mdi:solar-panel-large
+        icon_color: >
+          {% set ok = ['on', 'true', 'True', 'yes', 'connected', 'online'] %}
+          {% set devs = {
+            'A': states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_connected'),
+            'B': states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_connected'),
+            'Slave A': states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_connected'),
+            'Slave B': states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_connected')
+          } %}
+          {% set bad = [] %}
+          {% for k, v in devs.items() %}
+            {% if v not in ok and (v | replace(',', '.') | float(0)) < 1 %}{% set bad = bad + [k] %}{% endif %}
+          {% endfor %}
+          {% if bad | length == 0 %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: PV Batterie
+        secondary: >
+          {% set s = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:battery
+        icon_color: >
+          {% set s = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: PV Batterie Slave
+        secondary: >
+          {% set s = states('sensor.battery_at_ps_8_0_18fc_rct_power_storage_slave_battery_state_of_charge') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:battery-70
+        icon_color: >
+          {% set s = states('sensor.battery_at_ps_8_0_18fc_rct_power_storage_slave_battery_state_of_charge') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Garten / Gardena
+      #
+      - type: custom:mushroom-template-card
+        primary: Gardena Ventil 1
+        secondary: >
+          {% set stobj = states['sensor.garten_gardena_ventil_1_battery'] %}
+          {% if stobj %}Zuletzt gesehen: {{ stobj.last_updated | timestamp_custom('%d.%m. %H:%M') }}{% else %}Keine Daten{% endif %}
+        icon: mdi:water-pump
+        icon_color: >
+          {% set e = 'sensor.garten_gardena_ventil_1_battery' %}
+          {% set s = states(e) %}
+          {% set stobj = states[e] %}
+          {% set age = 9999 %}
+          {% if stobj %}{% set age = ((now() - stobj.last_updated).total_seconds()) / 3600 %}{% endif %}
+          {% if s in ['unavailable', 'unknown', 'none', 'None', ''] or age > 168 %}red{% else %}green{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Gardena Ventil 2
+        secondary: >
+          {% set stobj = states['sensor.garten_gardena_ventil_2_battery'] %}
+          {% if stobj %}Zuletzt gesehen: {{ stobj.last_updated | timestamp_custom('%d.%m. %H:%M') }}{% else %}Keine Daten{% endif %}
+        icon: mdi:water-pump
+        icon_color: >
+          {% set e = 'sensor.garten_gardena_ventil_2_battery' %}
+          {% set s = states(e) %}
+          {% set stobj = states[e] %}
+          {% set age = 9999 %}
+          {% if stobj %}{% set age = ((now() - stobj.last_updated).total_seconds()) / 3600 %}{% endif %}
+          {% if s in ['unavailable', 'unknown', 'none', 'None', ''] or age > 168 %}red{% else %}green{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Gardena Ventil 3
+        secondary: >
+          {% set stobj = states['sensor.garten_gardena_ventil_3_battery'] %}
+          {% if stobj %}Zuletzt gesehen: {{ stobj.last_updated | timestamp_custom('%d.%m. %H:%M') }}{% else %}Keine Daten{% endif %}
+        icon: mdi:water-pump
+        icon_color: >
+          {% set e = 'sensor.garten_gardena_ventil_3_battery' %}
+          {% set s = states(e) %}
+          {% set stobj = states[e] %}
+          {% set age = 9999 %}
+          {% if stobj %}{% set age = ((now() - stobj.last_updated).total_seconds()) / 3600 %}{% endif %}
+          {% if s in ['unavailable', 'unknown', 'none', 'None', ''] or age > 168 %}red{% else %}green{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Shelly Garten
+        secondary: >
+          {% set s = states('switch.garten_shelly_switch1') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:lightning-bolt
+        icon_color: >
+          {% set s = states('switch.garten_shelly_switch1') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Steckdose Pumpe
+        secondary: >
+          {% set s = states('switch.garten_smartplug_pumpe') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:pump
+        icon_color: >
+          {% set s = states('switch.garten_smartplug_pumpe') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Ölkeller
+      #
+      - type: custom:mushroom-template-card
+        primary: Shelly Flood
+        secondary: >
+          {% set s = states('binary_sensor.oelkeller_shellyflood_flood') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:water-alert
+        icon_color: >
+          {% set s = states('binary_sensor.oelkeller_shellyflood_flood') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Wohnzimmer
+      #
+      - type: custom:mushroom-template-card
+        primary: Steckdose TV
+        secondary: >
+          {% set s = states('switch.wohnzimmer_smartplug_tv') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:television
+        icon_color: >
+          {% set s = states('switch.wohnzimmer_smartplug_tv') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Steckdose Terrarium 1
+        secondary: >
+          {% set s = states('switch.wohnzimmer_smartplug_terrarium_1') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:leaf
+        icon_color: >
+          {% set s = states('switch.wohnzimmer_smartplug_terrarium_1') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Steckdose Terrarium 2
+        secondary: >
+          {% set s = states('switch.wohnzimmer_smartplug_terrarium_2') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:leaf
+        icon_color: >
+          {% set s = states('switch.wohnzimmer_smartplug_terrarium_2') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Aquarium Wohnzimmer
+        secondary: >
+          {% set s = states('switch.wohnzimmer_smartplug_aquarium') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:fish
+        icon_color: >
+          {% set s = states('switch.wohnzimmer_smartplug_aquarium') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Aquarium Küche
+        secondary: >
+          {% set s = states('switch.kueche_smartplug_aquarium') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:fish
+        icon_color: >
+          {% set s = states('switch.kueche_smartplug_aquarium') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Hue Bridge
+        secondary: >
+          {% set s = states('light.wohnzimmer') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:lightbulb-group
+        icon_color: >
+          {% set s = states('light.wohnzimmer') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Zigbee
+      #
+      - type: custom:mushroom-template-card
+        primary: Zigbee Bridge
+        secondary: >
+          {% set s = states('binary_sensor.zigbee2mqtt_bridge_connection_state') %}
+          {% if s == 'on' %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:zigbee
+        icon_color: >
+          {% set s = states('binary_sensor.zigbee2mqtt_bridge_connection_state') %}
+          {% if s == 'on' %}green{% else %}red{% endif %}
+
+      # ++
+      # ++ Netzwerk / Synology
+      #
+      - type: custom:mushroom-template-card
+        primary: Synology
+        secondary: >
+          {% set s = states('binary_sensor.diskstation_sicherheitsstatus') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
+        icon: mdi:nas
+        icon_color: >
+          {% set s = states('binary_sensor.diskstation_sicherheitsstatus') %}
+          {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}

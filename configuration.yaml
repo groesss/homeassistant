@@ -7,7 +7,22 @@ frontend:
   themes: !include_dir_merge_named themes
 
 lovelace:
-  resource_mode: yaml
+  mode: yaml
+  dashboards:
+    lovelace-solar:
+      mode: yaml
+      filename: ui-solar.yaml
+      title: Solar
+      icon: mdi:solar-panel-large
+      show_in_sidebar: true
+      require_admin: false
+    lovelace-monitoring:
+      mode: yaml
+      filename: ui-monitoring.yaml
+      title: Monitoring
+      icon: mdi:heart-pulse
+      show_in_sidebar: true
+      require_admin: false
   resources:
     - url: /local/community/lovelace-mushroom/mushroom.js
       type: module
@@ -37,13 +52,6 @@ lovelace:
       type: module
     - url: /local/community/decluttering-card/decluttering-card.js
       type: module
-  dashboards:
-    lovelace:
-      mode: yaml
-      filename: ui-lovelace.yaml
-      title: Overview
-      icon: mdi:view-dashboard
-      show_in_sidebar: true    
 
 automation: !include_dir_merge_list automations/
 script: !include scripts.yaml
@@ -53,5 +61,6 @@ input_number: !include_dir_merge_named helpers/input_number
 input_boolean: !include_dir_merge_named helpers/input_boolean
 input_datetime: !include_dir_merge_named helpers/input_datetime
 input_select: !include_dir_merge_named helpers/input_select
+input_text: !include_dir_merge_named helpers/input_text
 utility_meter: !include helpers/utility_meter.yaml
 recorder: !include recorder.yaml

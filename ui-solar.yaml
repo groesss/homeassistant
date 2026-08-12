@@ -1,0 +1,3 @@
+title: Solar
+views:
+  - !include ui/solar/solar.yaml

@@ -1,0 +1,20 @@
+type: grid
+cards:
+  - type: heading
+    heading: Watchman & System
+    heading_style: title
+    icon: mdi:shield-alert
+
+  - type: entities
+    entities:
+      - entity: sensor.watchman_status
+      - entity: sensor.watchman_last_parse
+      - entity: sensor.watchman_missing_entities
+      - entity: sensor.watchman_missing_actions
+      - entity: sensor.watchman_processed_files
+      - entity: sensor.watchman_ignored_files
+      - entity: sensor.watchman_parse_duration
+      - entity: sensor.watchman_last_updated
+      - entity: update.home_assistant_core_update
+      - entity: update.home_assistant_operating_system_update
+      - entity: update.home_assistant_supervisor_update

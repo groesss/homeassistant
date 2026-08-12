@@ -1,0 +1,234 @@
+type: grid
+cards:
+  - type: heading
+    heading: Photovoltaik
+    heading_style: title
+    icon: mdi:solar-panel
+
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
+        cards:
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
+            entities:
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Master – Aktuelle Leistung
+                  secondary: >
+                    {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power') | float(0) %}
+                    {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power') | float(0) %}
+                    {% set p = a + b %}
+                    {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} gesamt
+                  icon: mdi:solar-panel
+                  icon_color: >
+                    {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_all_generators_power') | float(0) %}
+                    {% if p > 2000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: String A
+                    secondary: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power') | float(0) %}
+                      {% set u = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_voltage') | float(0) %}
+                      {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {{ u | round(1) }} V
+                    icon: mdi:solar-panel
+                    icon_color: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power') | float(0) %}
+                      {% if p > 1000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: String B
+                    secondary: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power') | float(0) %}
+                      {% set u = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_voltage') | float(0) %}
+                      {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {{ u | round(1) }} V
+                    icon: mdi:solar-panel
+                    icon_color: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power') | float(0) %}
+                      {% if p > 1000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Slave – Aktuelle Leistung
+                  secondary: >
+                    {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power') | float(0) %}
+                    {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power') | float(0) %}
+                    {% set p = a + b %}
+                    {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} gesamt
+                  icon: mdi:solar-panel
+                  icon_color: >
+                    {% set p = states('sensor.ps_8_0_18fc_rct_power_storage_slave_all_generators_power') | float(0) %}
+                    {% if p > 2000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: String A
+                    secondary: >
+                      {% set p = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power') | float(0) %}
+                      {% set u = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_voltage') | float(0) %}
+                      {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {{ u | round(1) }} V
+                    icon: mdi:solar-panel
+                    icon_color: >
+                      {% set p = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power') | float(0) %}
+                      {% if p > 1000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: String B
+                    secondary: >
+                      {% set p = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power') | float(0) %}
+                      {% set u = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_voltage') | float(0) %}
+                      {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {{ u | round(1) }} V
+                    icon: mdi:solar-panel
+                    icon_color: >
+                      {% set p = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power') | float(0) %}
+                      {% if p > 1000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+  - type: custom:mini-graph-card
+    entities:
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power
+        name: Master String A
+        color: '#ef6c00'
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power
+        name: Master String B
+        color: '#f57f17'
+      - entity: sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power
+        name: Slave String A
+        color: '#43a047'
+      - entity: sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power
+        name: Slave String B
+        color: '#1e88e5'
+    hours_to_show: 24
+    points_per_hour: 4
+    line_width: 2
+    smoothing: true
+    show:
+      points: false
+      state: false
+      labels: false
+      legend: true
+    name: PV-String-Leistungen (24h)
+    icon: mdi:solar-power
+
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
+        cards:
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
+            entities:
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Ertrag Master
+                  secondary: >
+                    {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_energy_production_day') | float(0) %}
+                    {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_energy_production_day') | float(0) %}
+                    {% set e = a + b %}
+                    heute: {% if e >= 1000 %}{{ (e / 1000) | round(2) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                  icon: mdi:weather-sunny
+                  icon_color: orange
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: Heute
+                    secondary: >
+                      {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_energy_production_day') | float(0) %}
+                      {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_energy_production_day') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(2) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar-today
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Dieser Monat
+                    secondary: >
+                      {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_energy_production_month') | float(0) %}
+                      {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_energy_production_month') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(1) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar-month
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Dieses Jahr
+                    secondary: >
+                      {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_energy_production_year') | float(0) %}
+                      {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_energy_production_year') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Gesamt
+                    secondary: >
+                      {% set a = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_energy_production_total') | float(0) %}
+                      {% set b = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_energy_production_total') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:sigma
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Ertrag Slave
+                  secondary: >
+                    {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_energy_production_day') | float(0) %}
+                    {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_energy_production_day') | float(0) %}
+                    {% set e = a + b %}
+                    heute: {% if e >= 1000 %}{{ (e / 1000) | round(2) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                  icon: mdi:weather-sunny
+                  icon_color: orange
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: Heute
+                    secondary: >
+                      {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_energy_production_day') | float(0) %}
+                      {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_energy_production_day') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(2) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar-today
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Dieser Monat
+                    secondary: >
+                      {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_energy_production_month') | float(0) %}
+                      {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_energy_production_month') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(1) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar-month
+                    icon_color: blue
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Dieses Jahr
+                    secondary: >
+                      {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_energy_production_year') | float(0) %}
+                      {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_energy_production_year') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:calendar
+                    icon_color: green
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Gesamt
+                    secondary: >
+                      {% set a = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_energy_production_total') | float(0) %}
+                      {% set b = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_energy_production_total') | float(0) %}
+                      {% set e = a + b %}
+                      {% if e >= 1000 %}{{ (e / 1000) | round(0) }} kWh{% else %}{{ e | round(0) }} Wh{% endif %}
+                    icon: mdi:sigma
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml

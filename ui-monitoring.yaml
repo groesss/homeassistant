@@ -1,0 +1,4 @@
+title: Monitoring
+decluttering_templates: !include_dir_merge_named ui/shared/templates
+views:
+  - !include ui/monitoring/monitoring.yaml

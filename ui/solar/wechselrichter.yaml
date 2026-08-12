@@ -1,0 +1,180 @@
+﻿type: grid
+cards:
+  - type: heading
+    heading: Wechselrichter
+    heading_style: title
+    icon: mdi:chip
+
+  - type: custom:mushroom-template-card
+    primary: Slave-Erkennung
+    secondary: >
+      {% set serial = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_serial_number') %}
+      {% set ac = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power') %}
+      {% if serial not in ['unknown', 'unavailable', '', 'None'] or ac not in ['unknown', 'unavailable', '', 'None'] %}
+        Slave liefert Daten (Serial: {{ serial if serial not in ['unknown', 'unavailable', '', 'None'] else 'nicht gesetzt' }})
+      {% else %}
+        Slave aktuell nicht erkannt. Prüfe in der RCT-Integration, ob der Slave am Master sichtbar ist und Daten im selben API-Endpunkt bereitstellt.
+      {% endif %}
+    icon: mdi:lan-connect
+    icon_color: >
+      {% set serial = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_serial_number') %}
+      {% set ac = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power') %}
+      {% if serial not in ['unknown', 'unavailable', '', 'None'] or ac not in ['unknown', 'unavailable', '', 'None'] %}
+        green
+      {% else %}
+        orange
+      {% endif %}
+
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
+        cards:
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
+            entities:
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Master
+                  secondary: >
+                    {% set t = states('sensor.ps_10_0_hc2g_rct_power_storage_core_temperature') | float(0) %}
+                    {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_inverter_ac_power') | float(0) %}
+                    AC: {% if (p | abs) >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {{ t | round(1) }} °C
+                  icon: mdi:solar-power
+                  icon_color: >
+                    {% set cnt = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_fault_count') | int(0) %}
+                    {% if cnt > 0 %}red{% else %}green{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: AC-Leistung
+                    secondary: >
+                      {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_inverter_ac_power') | float(0) %}
+                      {% if (p | abs) >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %}
+                    icon: mdi:lightning-bolt-circle
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Kerntemperatur
+                    secondary: "{{ states('sensor.ps_10_0_hc2g_rct_power_storage_core_temperature') | float(0) | round(1) }} °C"
+                    icon: mdi:thermometer
+                    icon_color: >
+                      {% set t = states('sensor.ps_10_0_hc2g_rct_power_storage_core_temperature') | float(0) %}
+                      {% if t > 70 %}red{% elif t > 55 %}orange{% else %}blue{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Kühlkörper-Temperatur
+                    secondary: "{{ states('sensor.ps_10_0_hc2g_rct_power_storage_heat_sink_temperature') | float(0) | round(1) }} °C"
+                    icon: mdi:thermometer
+                    icon_color: >
+                      {% set t = states('sensor.ps_10_0_hc2g_rct_power_storage_heat_sink_temperature') | float(0) %}
+                      {% if t > 70 %}red{% elif t > 55 %}orange{% else %}blue{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Seriennummer
+                    secondary: "{{ states('sensor.ps_10_0_hc2g_rct_power_storage_inverter_serial_number') }}"
+                    icon: mdi:barcode
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Fehlerstatus
+                    secondary: >
+                      {% set cnt = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_fault_count') | int(0) %}
+                      {% set faults = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_faults') | default([], true) %}
+                      {% if cnt > 0 %}Warnung: {{ cnt }} Fehler: {{ faults | join(', ') }}{% else %}OK: Keine Fehler{% endif %}
+                    icon: >
+                      {% set cnt = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_fault_count') | int(0) %}
+                      {% if cnt > 0 %}mdi:alert-circle{% else %}mdi:check-circle{% endif %}
+                    icon_color: >
+                      {% set cnt = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_fault_count') | int(0) %}
+                      {% if cnt > 0 %}red{% else %}green{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Slave
+                  secondary: >
+                    {% set ac = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power') %}
+                    {% set temp = states('sensor.ps_8_0_18fc_rct_power_storage_slave_core_temperature') %}
+                    {% if ac in ['unknown', 'unavailable', '', 'None'] %}
+                      AC: Nicht verfügbar | {% if temp in ['unknown', 'unavailable', '', 'None'] %}Temperatur: Nicht verfügbar{% else %}{{ temp | float(0) | round(1) }} °C{% endif %}
+                    {% else %}
+                      {% set p = ac | float(0) %}
+                      AC: {% if (p | abs) >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %} | {% if temp in ['unknown', 'unavailable', '', 'None'] %}Temperatur: Nicht verfügbar{% else %}{{ temp | float(0) | round(1) }} °C{% endif %}
+                    {% endif %}
+                  icon: mdi:solar-power
+                  icon_color: >
+                    {% set cnt = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_fault_count') | int(0) %}
+                    {% if cnt > 0 %}red{% else %}green{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:mushroom-template-card
+                    primary: AC-Leistung
+                    secondary: >
+                      {% set s = states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power') %}
+                      {% if s in ['unknown', 'unavailable', '', 'None'] %}Nicht verfügbar{% else %}{% set p = s | float(0) %}{% if (p | abs) >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %}{% endif %}
+                    icon: mdi:lightning-bolt-circle
+                    icon_color: orange
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Kerntemperatur
+                    secondary: >
+                      {% set s = states('sensor.ps_8_0_18fc_rct_power_storage_slave_core_temperature') %}
+                      {% if s in ['unknown', 'unavailable', '', 'None'] %}Nicht verfügbar{% else %}{{ s | float(0) | round(1) }} °C{% endif %}
+                    icon: mdi:thermometer
+                    icon_color: >
+                      {% set t = states('sensor.ps_8_0_18fc_rct_power_storage_slave_core_temperature') | float(0) %}
+                      {% if t > 70 %}red{% elif t > 55 %}orange{% else %}blue{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Kühlkörper-Temperatur
+                    secondary: >
+                      {% set s = states('sensor.ps_8_0_18fc_rct_power_storage_slave_heat_sink_temperature') %}
+                      {% if s in ['unknown', 'unavailable', '', 'None'] %}Nicht verfügbar{% else %}{{ s | float(0) | round(1) }} °C{% endif %}
+                    icon: mdi:thermometer
+                    icon_color: >
+                      {% set t = states('sensor.ps_8_0_18fc_rct_power_storage_slave_heat_sink_temperature') | float(0) %}
+                      {% if t > 70 %}red{% elif t > 55 %}orange{% else %}blue{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Seriennummer
+                    secondary: "{{ states('sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_serial_number') }}"
+                    icon: mdi:barcode
+                    icon_color: grey
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:mushroom-template-card
+                    primary: Fehlerstatus
+                    secondary: >
+                      {% set cnt = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_fault_count') | int(0) %}
+                      {% set faults = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_faults') | default([], true) %}
+                      {% if cnt > 0 %}Warnung: {{ cnt }} Fehler: {{ faults | join(', ') }}{% else %}OK: Keine Fehler{% endif %}
+                    icon: >
+                      {% set cnt = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_fault_count') | int(0) %}
+                      {% if cnt > 0 %}mdi:alert-circle{% else %}mdi:check-circle{% endif %}
+                    icon_color: >
+                      {% set cnt = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_fault_count') | int(0) %}
+                      {% if cnt > 0 %}red{% else %}green{% endif %}
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+  - type: custom:mini-graph-card
+    entities:
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_inverter_ac_power
+        name: Master
+        color: '#ef6c00'
+      - entity: sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power
+        name: Slave
+        color: '#f57f17'
+    hours_to_show: 24
+    points_per_hour: 4
+    line_width: 2
+    smoothing: true
+    show:
+      points: false
+      legend: true
+    name: AC-Leistung (24h)
+    icon: mdi:lightning-bolt
+
+

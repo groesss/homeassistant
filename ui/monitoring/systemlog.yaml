@@ -1,0 +1,19 @@
+type: grid
+cards:
+  - type: heading
+    heading: Fehlerverlauf
+    heading_style: title
+    icon: mdi:history
+
+  - type: logbook
+    title: Letzte 24 Stunden
+    entities:
+      - binary_sensor.waschkeller_trockner_bosch_health
+      - sensor.garten_grundwasser_message
+      - sensor.oelkeller_flutsensor_message
+      - sensor.solar_wechselrichter_kommunikation_message
+      - sensor.solar_batterie_kommunikation_message
+      - sensor.solar_wechselrichter_fehler_message
+      - sensor.solar_slave_fehler_message
+      - sensor.solar_can_timeout_message
+    hours_to_show: 24

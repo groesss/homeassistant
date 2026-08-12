@@ -1,0 +1,155 @@
+
+# Datei: templates/monitoring.yaml
+# Beschreibung:
+# Zentrale Connectivity-Ueberwachung fuer alle Geraete. Der Binary-Sensor
+# 'Monitoring Gesamt Health' ist 'on', solange ALLE Geraete verbunden sind.
+# Das Attribut 'offline' listet die betroffenen Geraete fuer die UI.
+#
+# Check-Typen:
+#   'on'    - State ist 'on' (bzw. truthy-String) -> Bosch / Zigbee Bridge
+#   'num'   - State ist numerisch >= 1 oder truthy   -> RCT 'Connected'-Sensoren
+#   'avail' - Entity verfuegbar (nicht unavailable/unknown) -> Shelly, Steckdosen, Hue, Synology
+#   'seen'  - Entity verfuegbar UND zuletzt < 7 Tage gesehen -> Gardena BLE (Ventile schlafen)
+#
+# Namenskonvention: <system>_<name>_<attribut>.
+# Konsistenz: Die Geraeteliste hier muss zur Sektion 'Geraete-Konnektivitaet'
+# im Monitoring-Dashboard passen (ui/monitoring/konnektivitaet.yaml).
+
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: time_pattern
+      minutes: '/5'
+    - platform: state
+      entity_id:
+        - binary_sensor.kueche_backofen_connected
+        - binary_sensor.kueche_geschirrspueler_connected
+        - binary_sensor.waschkeller_trockner_bosch_connected
+        - sensor.ps_10_0_hc2g_rct_power_storage_generator_a_connected
+        - sensor.ps_10_0_hc2g_rct_power_storage_generator_b_connected
+        - sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_connected
+        - sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_connected
+        - sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge
+        - sensor.battery_at_ps_8_0_18fc_rct_power_storage_slave_battery_state_of_charge
+        - sensor.garten_gardena_ventil_1_battery
+        - sensor.garten_gardena_ventil_2_battery
+        - sensor.garten_gardena_ventil_3_battery
+        - switch.garten_shelly_switch1
+        - binary_sensor.oelkeller_shellyflood_flood
+        - switch.wohnzimmer_smartplug_tv
+        - switch.garten_smartplug_pumpe
+        - switch.wohnzimmer_smartplug_terrarium_1
+        - switch.wohnzimmer_smartplug_terrarium_2
+        - switch.wohnzimmer_smartplug_aquarium
+        - switch.kueche_smartplug_aquarium
+        - binary_sensor.zigbee2mqtt_bridge_connection_state
+        - light.wohnzimmer
+        - binary_sensor.diskstation_sicherheitsstatus
+
+  binary_sensor:
+    - name: "Monitoring Gesamt Health"
+      unique_id: monitoring_gesamt_health
+      icon: mdi:heart-pulse
+      state: >-
+        {% set ok = ['on', 'true', 'True', 'yes', 'connected', 'online'] %}
+        {% set bad_states = ['unavailable', 'unknown', 'none', 'None', ''] %}
+        {% set ns = namespace(bad=[]) %}
+        {% set devices = {
+          'Backofen': [('binary_sensor.kueche_backofen_connected', 'on')],
+          'Geschirrspüler': [('binary_sensor.kueche_geschirrspueler_connected', 'on')],
+          'Trockner': [('binary_sensor.waschkeller_trockner_bosch_connected', 'on')],
+          'PV Wechselrichter': [
+            ('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_connected', 'num'),
+            ('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_connected', 'num'),
+            ('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_connected', 'num'),
+            ('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_connected', 'num')
+          ],
+          'PV Batterie': [('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge', 'avail')],
+          'PV Batterie Slave': [('sensor.battery_at_ps_8_0_18fc_rct_power_storage_slave_battery_state_of_charge', 'avail')],
+          'Gardena Ventil 1': [('sensor.garten_gardena_ventil_1_battery', 'seen')],
+          'Gardena Ventil 2': [('sensor.garten_gardena_ventil_2_battery', 'seen')],
+          'Gardena Ventil 3': [('sensor.garten_gardena_ventil_3_battery', 'seen')],
+          'Shelly Garten': [('switch.garten_shelly_switch1', 'avail')],
+          'Shelly Flood': [('binary_sensor.oelkeller_shellyflood_flood', 'avail')],
+          'Steckdose TV': [('switch.wohnzimmer_smartplug_tv', 'avail')],
+          'Steckdose Pumpe': [('switch.garten_smartplug_pumpe', 'avail')],
+          'Steckdose Terrarium 1': [('switch.wohnzimmer_smartplug_terrarium_1', 'avail')],
+          'Steckdose Terrarium 2': [('switch.wohnzimmer_smartplug_terrarium_2', 'avail')],
+          'Aquarium Wohnzimmer': [('switch.wohnzimmer_smartplug_aquarium', 'avail')],
+          'Aquarium Küche': [('switch.kueche_smartplug_aquarium', 'avail')],
+          'Zigbee Bridge': [('binary_sensor.zigbee2mqtt_bridge_connection_state', 'on')],
+          'Hue Bridge': [('light.wohnzimmer', 'avail')],
+          'Synology': [('binary_sensor.diskstation_sicherheitsstatus', 'avail')]
+        } %}
+        {% for name, checks in devices.items() %}
+          {% set is_bad = namespace(n=False) %}
+          {% for e, t in checks %}
+            {% set s = states(e) %}
+            {% if t == 'on' %}
+              {% if s not in ok %}{% set is_bad.n = True %}{% endif %}
+            {% elif t == 'num' %}
+              {% if s not in ok and (s | replace(',', '.') | float(0)) < 1 %}{% set is_bad.n = True %}{% endif %}
+            {% elif t == 'avail' %}
+              {% if s in bad_states %}{% set is_bad.n = True %}{% endif %}
+            {% elif t == 'seen' %}
+              {% set stobj = states[e] %}
+              {% set age = 9999 %}
+              {% if stobj %}{% set age = ((now() - stobj.last_updated).total_seconds()) / 3600 %}{% endif %}
+              {% if s in bad_states or age > 168 %}{% set is_bad.n = True %}{% endif %}
+            {% endif %}
+          {% endfor %}
+          {% if is_bad.n %}{% set ns.bad = ns.bad + [name] %}{% endif %}
+        {% endfor %}
+        {{ 'on' if ns.bad | length == 0 else 'off' }}
+      attributes:
+        offline: >-
+          {% set ok = ['on', 'true', 'True', 'yes', 'connected', 'online'] %}
+          {% set bad_states = ['unavailable', 'unknown', 'none', 'None', ''] %}
+          {% set ns = namespace(bad=[]) %}
+          {% set devices = {
+            'Backofen': [('binary_sensor.kueche_backofen_connected', 'on')],
+            'Geschirrspüler': [('binary_sensor.kueche_geschirrspueler_connected', 'on')],
+            'Trockner': [('binary_sensor.waschkeller_trockner_bosch_connected', 'on')],
+            'PV Wechselrichter': [
+              ('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_connected', 'num'),
+              ('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_connected', 'num'),
+              ('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_connected', 'num'),
+              ('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_connected', 'num')
+            ],
+            'PV Batterie': [('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge', 'avail')],
+            'PV Batterie Slave': [('sensor.battery_at_ps_8_0_18fc_rct_power_storage_slave_battery_state_of_charge', 'avail')],
+            'Gardena Ventil 1': [('sensor.garten_gardena_ventil_1_battery', 'seen')],
+            'Gardena Ventil 2': [('sensor.garten_gardena_ventil_2_battery', 'seen')],
+            'Gardena Ventil 3': [('sensor.garten_gardena_ventil_3_battery', 'seen')],
+            'Shelly Garten': [('switch.garten_shelly_switch1', 'avail')],
+            'Shelly Flood': [('binary_sensor.oelkeller_shellyflood_flood', 'avail')],
+            'Steckdose TV': [('switch.wohnzimmer_smartplug_tv', 'avail')],
+            'Steckdose Pumpe': [('switch.garten_smartplug_pumpe', 'avail')],
+            'Steckdose Terrarium 1': [('switch.wohnzimmer_smartplug_terrarium_1', 'avail')],
+            'Steckdose Terrarium 2': [('switch.wohnzimmer_smartplug_terrarium_2', 'avail')],
+            'Aquarium Wohnzimmer': [('switch.wohnzimmer_smartplug_aquarium', 'avail')],
+            'Aquarium Küche': [('switch.kueche_smartplug_aquarium', 'avail')],
+            'Zigbee Bridge': [('binary_sensor.zigbee2mqtt_bridge_connection_state', 'on')],
+            'Hue Bridge': [('light.wohnzimmer', 'avail')],
+            'Synology': [('binary_sensor.diskstation_sicherheitsstatus', 'avail')]
+          } %}
+          {% for name, checks in devices.items() %}
+            {% set is_bad = namespace(n=False) %}
+            {% for e, t in checks %}
+              {% set s = states(e) %}
+              {% if t == 'on' %}
+                {% if s not in ok %}{% set is_bad.n = True %}{% endif %}
+              {% elif t == 'num' %}
+                {% if s not in ok and (s | replace(',', '.') | float(0)) < 1 %}{% set is_bad.n = True %}{% endif %}
+              {% elif t == 'avail' %}
+                {% if s in bad_states %}{% set is_bad.n = True %}{% endif %}
+              {% elif t == 'seen' %}
+                {% set stobj = states[e] %}
+                {% set age = 9999 %}
+                {% if stobj %}{% set age = ((now() - stobj.last_updated).total_seconds()) / 3600 %}{% endif %}
+                {% if s in bad_states or age > 168 %}{% set is_bad.n = True %}{% endif %}
+              {% endif %}
+            {% endfor %}
+            {% if is_bad.n %}{% set ns.bad = ns.bad + [name] %}{% endif %}
+          {% endfor %}
+          {{ ns.bad }}

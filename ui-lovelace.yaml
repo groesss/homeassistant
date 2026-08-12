@@ -4,6 +4,7 @@ button_card_templates: !include ui/shared/templates/button_card_templates.yaml
 
 views:
   - !include ui/overview.yaml
+  - !include ui/solar/solar.yaml
   - !include ui/wohnzimmer/wohnzimmer.yaml
   - !include ui/arbeitszimmer/arbeitszimmer.yaml
   - !include ui/diele_og/diele_og.yaml

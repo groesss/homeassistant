@@ -1,0 +1,100 @@
+﻿type: grid
+cards:
+  - type: heading
+    heading: Energie Übersicht
+    heading_style: title
+    icon: mdi:home-lightning-bolt-outline
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: Solar Gesamt
+        secondary: >
+          {% set ma = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power') | float(0) %}
+          {% set mb = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power') | float(0) %}
+          {% set sa = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power') | float(0) %}
+          {% set sb = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power') | float(0) %}
+          {% set p = ma + mb + sa + sb %}
+          {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %}
+        icon: mdi:solar-power-variant
+        icon_color: >
+          {% set ma = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power') | float(0) %}
+          {% set mb = states('sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power') | float(0) %}
+          {% set sa = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power') | float(0) %}
+          {% set sb = states('sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power') | float(0) %}
+          {% set p = ma + mb + sa + sb %}
+          {% if p > 6000 %}green{% elif p > 2000 %}orange{% elif p > 0 %}yellow{% else %}grey{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Batterie
+        secondary: >
+          {% set soc = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}
+          {% set pwr = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+          {% set ap = pwr | abs %}
+          {% if pwr < -50 %}{{ soc | round(0) }}% · Lädt ({% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %})
+          {% elif pwr > 50 %}{{ soc | round(0) }}% · Entlädt ({% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %})
+          {% else %}{{ soc | round(0) }}% · Standby{% endif %}
+        icon: "{% set s = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}{% if s >= 90 %}mdi:battery{% elif s >= 70 %}mdi:battery-80{% elif s >= 50 %}mdi:battery-60{% elif s >= 30 %}mdi:battery-40{% elif s >= 10 %}mdi:battery-20{% else %}mdi:battery-alert{% endif %}"
+        icon_color: >
+          {% set pwr = states('sensor.ps_10_0_hc2g_rct_power_storage_battery_power') | float(0) %}
+          {% set soc = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') | float(0) %}
+          {% if pwr < -50 %}green{% elif pwr > 50 %}orange{% elif soc < 20 %}red{% else %}blue{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Stromnetz
+        secondary: >
+          {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_grid_power') | float(0) %}
+          {% set ap = p | abs %}
+          {% if p > 50 %}Bezug: {% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %}
+          {% elif p < -50 %}Einspeisung: {% if ap >= 1000 %}{{ (ap / 1000) | round(2) }} kW{% else %}{{ ap | round(0) }} W{% endif %}
+          {% else %}Autark{% endif %}
+        icon: mdi:transmission-tower
+        icon_color: >
+          {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_grid_power') | float(0) %}
+          {% if p > 50 %}red{% elif p < -50 %}green{% else %}grey{% endif %}
+
+      - type: custom:mushroom-template-card
+        primary: Hausverbrauch
+        secondary: >
+          {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_consumer_power') | float(0) %}
+          {% if p >= 1000 %}{{ (p / 1000) | round(2) }} kW{% else %}{{ p | round(0) }} W{% endif %}
+        icon: mdi:home-lightning-bolt
+        icon_color: >
+          {% set p = states('sensor.ps_10_0_hc2g_rct_power_storage_consumer_power') | float(0) %}
+          {% if p > 5000 %}red{% elif p > 2000 %}orange{% else %}blue{% endif %}
+
+  - type: custom:mini-graph-card
+    entities:
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power
+        name: Master A
+        color: '#ef6c00'
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power
+        name: Master B
+        color: '#f57f17'
+      - entity: sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power
+        name: Slave A
+        color: '#43a047'
+      - entity: sensor.ps_8_0_18fc_rct_power_storage_slave_generator_b_power
+        name: Slave B
+        color: '#1e88e5'
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_battery_power
+        name: Batterie
+        color: '#8e24aa'
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_grid_power
+        name: Netz
+        color: '#6d4c41'
+      - entity: sensor.ps_10_0_hc2g_rct_power_storage_consumer_power
+        name: Verbrauch
+        color: '#546e7a'
+    hours_to_show: 24
+    points_per_hour: 4
+    line_width: 2
+    smoothing: true
+    show:
+      points: false
+      labels: false
+      legend: true
+    name: Leistungsfluss (24h)
+    icon: mdi:chart-areaspline

@@ -1,0 +1,18 @@
+type: grid
+cards:
+  - type: heading
+    heading: Updates
+    heading_style: title
+    icon: mdi:update
+
+  - type: custom:auto-entities
+    card:
+      type: entities
+      title: Verfügbare Updates
+    filter:
+      include:
+        - domain: update
+          state: 'on'
+    sort:
+      method: name
+      numeric: false
