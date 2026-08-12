@@ -18,5 +18,5 @@
   actions:
   - target:
       entity_id: switch.wohnzimmer_smartplug_tv
-    action: switch.turn_on
+    service: switch.turn_on
   mode: single

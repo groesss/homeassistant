@@ -1,0 +1,4 @@
+messages_acknowledged:
+  name: Message Acknowledged Keys
+  max: 255
+  initial: "|"

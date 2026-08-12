@@ -11,4 +11,5 @@ sections:
   - !include /config/ui/wohnzimmer/beleuchtung.yaml
   - !include /config/ui/wohnzimmer/tv.yaml
   - !include /config/ui/wohnzimmer/terrarium.yaml
+  - !include /config/ui/wohnzimmer/aquarium.yaml
   - !include /config/ui/wohnzimmer/thermostat.yaml

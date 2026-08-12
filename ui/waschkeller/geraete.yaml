@@ -48,7 +48,7 @@ cards:
                       states('sensor.waschkeller_trockner_status_text') }}
                     secondary: >
                       {% set time =
-                      states('sensor.waschkeller_trockner_option_remainingprogramtime')
+                      states('sensor.waschkeller_trockner_remaining_program_time')
                       %} {% if time in ['unknown', 'unavailable', '', None] %}
                         -
                       {% else %}
@@ -79,13 +79,13 @@ cards:
                     template: progress_bar
                     variables:
                       - title: "Fortschritt"
-                      - entity: counter.waschkeller_trockner_option_programprogress
+                      - entity: sensor.waschkeller_trockner_program_progress
                       - max: 100
                       - icon: mdi:progress-clock
                                     
                   # Wäschetrockner Ein/Aus
                   - type: custom:mushroom-entity-card
-                    entity: switch.waschkeller_trockner_setting_powerstate
+                    entity: switch.waschkeller_trockner_powerstate
                     name: Wäschetrockner
                     icon: mdi:tumble-dryer
                     tap_action:

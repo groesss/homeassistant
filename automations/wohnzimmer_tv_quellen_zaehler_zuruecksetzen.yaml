@@ -17,36 +17,36 @@
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_hdmi
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_netflix
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_prime
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_youtube
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_disney
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_plex
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_tv
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: input_number.wohnzimmer_tv_minute_count_andere
       value: 0
-    action: input_number.set_value
+    service: input_number.set_value
   - data:
       entity_id: counter.wohnzimmer_tv_watch_minutes
-    action: counter.reset
+    service: counter.reset
 

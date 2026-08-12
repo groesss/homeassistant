@@ -41,13 +41,13 @@ cards:
                   hold_action: none
                   secondary: >
                     {% set temp =
-                    states('sensor.kueche_backofen_status_currentcavitytemperature')
+                    states('sensor.kueche_backofen_currentcavitytemperature')
                     %} {% set status =
                     states('sensor.kueche_backofen_status_text') %} {% set
                     prog =
-                    states('sensor.kueche_backofen_option_programprogress')
+                    states('sensor.kueche_backofen_program_progress')
                     %} {% set t_raw =
-                    states('sensor.kueche_backofen_option_remainingprogramtime')
+                    states('sensor.kueche_backofen_remainingprogramtime')
                     %}
 
                     {% set temp_str = temp if temp not in
@@ -68,9 +68,9 @@ cards:
                       states('sensor.kueche_backofen_status_text') }}
                     secondary: >-
                       {% set temp =
-                      states('sensor.kueche_backofen_status_currentcavitytemperature')
+                      states('sensor.kueche_backofen_currentcavitytemperature')
                       %} {% set setpoint =
-                      states('sensor.kueche_backofen_option_setpointtemperature')
+                      states('sensor.kueche_backofen_setpointtemperature')
                       %} {% set temp_str = temp if temp not in
                       ['unknown','unavailable',''] else '-' %} Temperatur:
                       {{ temp_str }} °C {% if setpoint not in
@@ -107,7 +107,7 @@ cards:
                     primary: Zeit
                     secondary: >
                       {% set remaining =
-                      states('sensor.kueche_backofen_option_remainingprogramtime')
+                      states('sensor.kueche_backofen_remainingprogramtime')
                       %}
 
 
@@ -163,7 +163,7 @@ cards:
                       states('sensor.kueche_geschirrspueler_status_text') }}
                     secondary: >
                       Fertig um:  {% set time =
-                      states('sensor.kueche_geschirrspueler_option_remainingprogramtime')
+                      states('sensor.kueche_geschirrspueler_remainingprogramtime')
                       %} {% if time in ['unknown', 'unavailable', '', None]
                       %}
                         -
@@ -178,12 +178,12 @@ cards:
                     template: progress_bar
                     variables:
                       - title: "Fortschritt"
-                      - entity: counter.kueche_geschirrspueler_option_programprogress
+                      - entity: sensor.kueche_geschirrspueler_program_progress
                       - max: 100
                       - icon: mdi:clock-time-eight
                   
                   - type: custom:mushroom-entity-card
-                    entity: switch.kueche_geschirrspueler_setting_powerstate
+                    entity: switch.kueche_geschirrspueler_powerstate
                     name: Geschirrspüler
                     icon: mdi:dishwasher
                     tap_action:

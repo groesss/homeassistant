@@ -19,10 +19,10 @@
   actions:
   - target:
       entity_id: switch.wohnzimmer_smartplug_terrarium_1
-    action: switch.turn_off
+    service: switch.turn_off
   - data:
       message: '[Terrarium] Lampe ''Bright Sun'' ausgeschaltet um {{ now().strftime(''%H:%M'')
         }}'
       level: info
-    action: system_log.write
+    service: system_log.write
   mode: single

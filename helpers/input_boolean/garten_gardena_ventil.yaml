@@ -1,15 +1,66 @@
 # Statt multiple-Select → 7 Input Booleans
 gardena_mo:
   name: Montag
+  initial: true
 gardena_di:
   name: Dienstag
+  initial: false
 gardena_mi:
   name: Mittwoch
+  initial: true
 gardena_do:
   name: Donnerstag
+  initial: false
 gardena_fr:
   name: Freitag
+  initial: true
 gardena_sa:
   name: Samstag
+  initial: false
 gardena_so:
   name: Sonntag
+  initial: true
+
+gardena_ventil_2_mo:
+  name: Ventil 2 Montag
+  initial: false
+gardena_ventil_2_di:
+  name: Ventil 2 Dienstag
+  initial: false
+gardena_ventil_2_mi:
+  name: Ventil 2 Mittwoch
+  initial: false
+gardena_ventil_2_do:
+  name: Ventil 2 Donnerstag
+  initial: false
+gardena_ventil_2_fr:
+  name: Ventil 2 Freitag
+  initial: false
+gardena_ventil_2_sa:
+  name: Ventil 2 Samstag
+  initial: false
+gardena_ventil_2_so:
+  name: Ventil 2 Sonntag
+  initial: false
+
+gardena_ventil_3_mo:
+  name: Ventil 3 Montag
+  initial: false
+gardena_ventil_3_di:
+  name: Ventil 3 Dienstag
+  initial: false
+gardena_ventil_3_mi:
+  name: Ventil 3 Mittwoch
+  initial: false
+gardena_ventil_3_do:
+  name: Ventil 3 Donnerstag
+  initial: false
+gardena_ventil_3_fr:
+  name: Ventil 3 Freitag
+  initial: false
+gardena_ventil_3_sa:
+  name: Ventil 3 Samstag
+  initial: false
+gardena_ventil_3_so:
+  name: Ventil 3 Sonntag
+  initial: false

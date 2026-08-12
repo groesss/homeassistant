@@ -40,7 +40,7 @@
 
     - name: "Garten Grundwasser Message"
       unique_id: garten_grundwasser_message
-      state: "{{ is_state('switch.garten_shelly_grundwassersensor', 'True') }}"
+      state: "{{ is_state('sensor.garten_grundwasser_alarm', 'on') }}"
       icon: mdi:water-opacity
       attributes:
         message_title: "Grundwasser Sensor angeschlagen"
@@ -49,7 +49,7 @@
 
     - name: "Oelkeller Flutsensor Message"
       unique_id: oelkeller_flutsensor_message
-      state: "{{ is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') }}"
+      state: "{{ is_state('binary_sensor.oelkeller_flutsensor_flood', 'on') }}"
       icon: mdi:water-opacity
       attributes:
         message_title: "Überflutungs-Sensor Ölkeller angeschlagen"
@@ -58,18 +58,260 @@
    
     - name: "Oelkeller Flutsensor Batterie Message"
       unique_id: oelkeller_flutsensor_batterie_message
-      state: "{{ states('sensor.oelkeller_shellyflood_battery')|int < 20 }}"
+      state: >
+        {% set battery = states('sensor.oelkeller_flutsensor_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
       icon: mdi:battery
       attributes:
         message_title: "Überflutungs-Sensor Batterie gering"
-        message: " Die Batterie des Oelkeller Flutsensors beträgt nur noch {{ states('sensor.oelkeller_shellyflood_battery') }} %. Bitte tausche sie zeitnah aus, damit der Sensor weiterhin funktioniert."
+        message: >
+          {% set battery = states('sensor.oelkeller_flutsensor_battery') %}
+          Die Batterie des Oelkeller Flutsensors beträgt nur noch
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit der Sensor weiterhin funktioniert.
         message_type: "info"
 
     - name: "Arbeitszimmer Thermostat Batterie Message"
       unique_id: arbeitszimmer_thermostat_batterie_message
-      state: "{{ states('sensor.arbeitszimmer_thermostat_battery')|int(0) < 20 }}"
+      state: >
+        {% set battery = states('sensor.arbeitszimmer_thermostat_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
       icon: mdi:battery
       attributes:
         message_title: "Thermostat Arbeitszimmer Batterie gering"
-        message: "Die Batterie des Arbeitszimmer-Thermostats ist nur noch bei {{ states('sensor.arbeitszimmer_thermostat_battery') }} %. Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert."
+        message: >
+          {% set battery = states('sensor.arbeitszimmer_thermostat_battery') %}
+          Die Batterie des Arbeitszimmer-Thermostats ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert.
         message_type: "info"
+
+    - name: "Wohnzimmer Thermostat 1 Batterie Message"
+      unique_id: wohnzimmer_thermostat_1_batterie_message
+      state: >
+        {% set battery = states('sensor.wohnzimmer_thermostat_1_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Thermostat Wohnzimmer 1 Batterie gering"
+        message: >
+          {% set battery = states('sensor.wohnzimmer_thermostat_1_battery') %}
+          Die Batterie des Wohnzimmer-Thermostats 1 ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Wohnzimmer Thermostat 2 Batterie Message"
+      unique_id: wohnzimmer_thermostat_2_batterie_message
+      state: >
+        {% set battery = states('sensor.wohnzimmer_thermostat_2_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Thermostat Wohnzimmer 2 Batterie gering"
+        message: >
+          {% set battery = states('sensor.wohnzimmer_thermostat_2_battery') %}
+          Die Batterie des Wohnzimmer-Thermostats 2 ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Diele Thermostat Batterie Message"
+      unique_id: diele_thermostat_batterie_message
+      state: >
+        {% set battery = states('sensor.diele_thermostat_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Thermostat Diele Batterie gering"
+        message: >
+          {% set battery = states('sensor.diele_thermostat_battery') %}
+          Die Batterie des Diele-Thermostats ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Thermostat weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Garten Gardena Ventil 1 Batterie Message"
+      unique_id: garten_gardena_ventil_1_batterie_message
+      state: >
+        {% set battery = states('sensor.garten_gardena_ventil_1_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Gardena Ventil 1 Batterie gering"
+        message: >
+          {% set battery = states('sensor.garten_gardena_ventil_1_battery') %}
+          Die Batterie von Gardena Ventil 1 ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Ventil weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Garten Gardena Ventil 2 Batterie Message"
+      unique_id: garten_gardena_ventil_2_batterie_message
+      state: >
+        {% set battery = states('sensor.garten_gardena_ventil_2_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Gardena Ventil 2 Batterie gering"
+        message: >
+          {% set battery = states('sensor.garten_gardena_ventil_2_battery') %}
+          Die Batterie von Gardena Ventil 2 ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Ventil weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Garten Gardena Ventil 3 Batterie Message"
+      unique_id: garten_gardena_ventil_3_batterie_message
+      state: >
+        {% set battery = states('sensor.garten_gardena_ventil_3_battery') %}
+        {{ battery not in ['unknown', 'unavailable', 'none', 'None', ''] and battery | float(101) < 20 }}
+      icon: mdi:battery
+      attributes:
+        message_title: "Gardena Ventil 3 Batterie gering"
+        message: >
+          {% set battery = states('sensor.garten_gardena_ventil_3_battery') %}
+          Die Batterie von Gardena Ventil 3 ist nur noch bei
+          {{ battery if battery not in ['unknown', 'unavailable', 'none', 'None', ''] else '?' }} %.
+          Bitte tausche sie zeitnah aus, damit das Ventil weiterhin funktioniert.
+        message_type: "info"
+
+    - name: "Solar Wechselrichter Kommunikation Message"
+      unique_id: solar_wechselrichter_kommunikation_message
+      state: >
+        {% set value = states('sensor.ps_10_0_hc2g_rct_power_storage_inverter_serial_number') %}
+        {% set entity = states.sensor.ps_10_0_hc2g_rct_power_storage_inverter_serial_number %}
+        {{
+          value in ['unknown', 'unavailable', 'none', 'None', '']
+          and entity is not none
+          and (as_timestamp(now()) - as_timestamp(entity.last_changed, 0)) > 3600
+        }}
+      icon: mdi:solar-power-variant-outline
+      attributes:
+        message_title: "Solaranlage nicht erreichbar"
+        message: >
+          Der RCT Wechselrichter liefert seit mehr als 60 Minuten keine Daten mehr.
+          Bitte prüfe Home Assistant, die RCT Integration sowie die Netzwerkverbindung zum Wechselrichter.
+        message_type: "warning"
+
+    - name: "Solar Batterie Kommunikation Message"
+      unique_id: solar_batterie_kommunikation_message
+      state: >
+        {% set value = states('sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge') %}
+        {% set entity = states.sensor.battery_at_ps_10_0_hc2g_rct_power_storage_battery_state_of_charge %}
+        {{
+          value in ['unknown', 'unavailable', 'none', 'None', '']
+          and entity is not none
+          and (as_timestamp(now()) - as_timestamp(entity.last_changed, 0)) > 21600
+        }}
+      icon: mdi:battery-alert-variant-outline
+      attributes:
+        message_title: "Solar-Batterie nicht erreichbar"
+        message: >
+          Die RCT Batterie beziehungsweise deren Statusdaten sind seit mehr als 6 Stunden nicht erreichbar.
+          Bitte prüfe Batterie, Verkabelung und die Datenbereitstellung der RCT Integration.
+        message_type: "warning"
+
+    - name: "Solar Wechselrichter Fehler Message"
+      unique_id: solar_wechselrichter_fehler_message
+      state: >
+        {% set st = states('sensor.ps_10_0_hc2g_rct_power_storage_faults') %}
+        {% set cnt = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_fault_count') | int(0) %}
+        {% set faults = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_faults') | default([], true) %}
+        {{ cnt > 0 or (faults | length > 0) or st not in ['0', '0000', 'unknown', 'unavailable', 'none', 'None', ''] }}
+      icon: mdi:alert-circle-outline
+      attributes:
+        message_title: "Solaranlage meldet Fehler"
+        message_ack_enabled: true
+        message_ack_key: "sensor.solar_wechselrichter_fehler_message"
+        is_acknowledged: >
+          {% set store = states('input_text.messages_acknowledged') %}
+          {{ '|sensor.solar_wechselrichter_fehler_message|' in store }}
+        message: >
+          {% set st = states('sensor.ps_10_0_hc2g_rct_power_storage_faults') %}
+          {% set faults = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_faults') | default([], true) %}
+          {% if faults | length > 0 %}
+            Der RCT Wechselrichter meldet folgende Fehler: {{ faults | join(', ') }}.
+          {% elif st not in ['0', '0000', 'unknown', 'unavailable', 'none', 'None', ''] %}
+            Der RCT Wechselrichter meldet den Fehlerstatus: {{ st }}.
+          {% else %}
+            Der RCT Wechselrichter meldet einen unbekannten Fehler.
+          {% endif %}
+        message_type: "error"
+
+    - name: "Solar Slave Fehler Message"
+      unique_id: solar_slave_fehler_message
+      state: >
+        {% set st = states('sensor.ps_8_0_18fc_rct_power_storage_slave_faults') %}
+        {% set cnt = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_fault_count') | int(0) %}
+        {% set faults = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_faults') | default([], true) %}
+        {{ cnt > 0 or (faults | length > 0) or st not in ['0', '0000', 'unknown', 'unavailable', 'none', 'None', ''] }}
+      icon: mdi:alert-circle-outline
+      attributes:
+        message_title: "Solar-Slave meldet Fehler"
+        message_ack_enabled: true
+        message_ack_key: "sensor.solar_slave_fehler_message"
+        is_acknowledged: >
+          {% set store = states('input_text.messages_acknowledged') %}
+          {{ '|sensor.solar_slave_fehler_message|' in store }}
+        message: >
+          {% set st = states('sensor.ps_8_0_18fc_rct_power_storage_slave_faults') %}
+          {% set faults = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_faults') | default([], true) %}
+          {% if faults | length > 0 %}
+            Der RCT Slave-Wechselrichter meldet folgende Fehler: {{ faults | join(', ') }}.
+          {% elif st not in ['0', '0000', 'unknown', 'unavailable', 'none', 'None', ''] %}
+            Der RCT Slave-Wechselrichter meldet den Fehlerstatus: {{ st }}.
+          {% else %}
+            Der RCT Slave-Wechselrichter meldet einen unbekannten Fehler.
+          {% endif %}
+        message_type: "error"
+
+    - name: "Solar CAN Timeout Message"
+      unique_id: solar_can_timeout_message
+      state: >
+        {% set mst = states('sensor.ps_10_0_hc2g_rct_power_storage_faults') %}
+        {% set sst = states('sensor.ps_8_0_18fc_rct_power_storage_slave_faults') %}
+        {% set mf = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_faults') | default([], true) %}
+        {% set sf = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_faults') | default([], true) %}
+        {% set allf = (mf + sf) | join(', ') %}
+        {{ 'CAN_TIMEOUT' in allf or 'CAN_TIMEOUT' in mst or 'CAN_TIMEOUT' in sst }}
+      icon: mdi:lan-disconnect
+      attributes:
+        message_title: "Solar CAN Timeout erkannt"
+        message_ack_enabled: true
+        message_ack_key: "sensor.solar_can_timeout_message"
+        is_acknowledged: >
+          {% set store = states('input_text.messages_acknowledged') %}
+          {{ '|sensor.solar_can_timeout_message|' in store }}
+        message: >
+          {% set mst = states('sensor.ps_10_0_hc2g_rct_power_storage_faults') %}
+          {% set sst = states('sensor.ps_8_0_18fc_rct_power_storage_slave_faults') %}
+          {% set mf = state_attr('sensor.ps_10_0_hc2g_rct_power_storage_faults', 'active_faults') | default([], true) %}
+          {% set sf = state_attr('sensor.ps_8_0_18fc_rct_power_storage_slave_faults', 'active_faults') | default([], true) %}
+          CAN_TIMEOUT erkannt. Das deutet auf ein Kommunikationsproblem im Batterie/CAN-Pfad hin.
+          Master: {% if mf | length > 0 %}{{ mf | join(', ') }}{% else %}{{ mst }}{% endif %}.
+          Slave: {% if sf | length > 0 %}{{ sf | join(', ') }}{% else %}{{ sst }}{% endif %}.
+          Bitte pruefe CAN-Verkabelung, Batterie-Kommunikation und RCT-Integration.
+        message_type: "error"
+
+- sensor:
+    - name: "Messages Acknowledged Errors Active Count"
+      unique_id: messages_acknowledged_errors_active_count
+      state: >
+        {% set ns = namespace(c=0) %}
+        {% for s in states.sensor if s.entity_id.endswith('_message') and s.state == 'True' %}
+          {% set is_error = s.attributes.message_type == 'error' %}
+          {% set ack_enabled = (s.attributes.message_ack_enabled | string | lower) in ['true', '1', 'on', 'yes'] %}
+          {% set is_ack = (s.attributes.is_acknowledged | string | lower) in ['true', '1', 'on', 'yes'] %}
+          {% if is_error and ack_enabled and is_ack %}
+            {% set ns.c = ns.c + 1 %}
+          {% endif %}
+        {% endfor %}
+        {{ ns.c }}
+      icon: mdi:counter
+
+- binary_sensor:
+    - name: "Messages Has Acknowledged Errors Active"
+      unique_id: messages_has_acknowledged_errors_active
+      state: "{{ states('sensor.messages_acknowledged_errors_active_count') | int(0) > 0 }}"
+      icon: mdi:alert-circle-check

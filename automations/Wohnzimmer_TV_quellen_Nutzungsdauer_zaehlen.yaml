@@ -2,7 +2,7 @@
 # ++ TV Quellen-Tracking
 # ++
 # Trackt jede Minute die aktuell aktive TV-Quelle (Netflix, YouTube, Prime Video,
-# Disney+, Plex, HDMI, TV) und inkrementiert den entsprechenden Zähler.
+# Disney+, Plex, HDMI, TV, ARD Mediathek, HD+, Joyn, ZDF) und inkrementiert den entsprechenden Zähler.
 # Wenn keine bekannte Quelle aktiv ist, wird der "Andere"-Zähler erhöht.
 # Die Statistiken werden täglich um Mitternacht zurückgesetzt.
 # ++
@@ -18,100 +18,133 @@
     entity_id: media_player.wohnzimmer_tv_samsung_q90_series_75
     state: 'on'
   actions:
+  # Debug: Log aktuelle Quelle
+  - service: system_log.write
+    data:
+      level: info
+      message: >
+        TV Quellen-Debug: Aktuelle Quelle ist '{{ state_attr('media_player.wohnzimmer_tv_samsung_q90_series_75','source') }}'
   - choose:
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''HDMI'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''hdmi'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_hdmi
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_hdmi'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''Netflix'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''netflix'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_netflix
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_netflix'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''YouTube'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''youtube'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_youtube
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_youtube'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''Prime Video'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''prime video'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_prime
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_prime'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''Disney+'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''disney+'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_disney
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_disney'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''Plex'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''plex'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_plex
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_plex'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
     - conditions:
       - condition: template
-        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'')
-          %} {{ src == ''TV'' }}
-
-          '
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''tv'' }}'
       sequence:
       - target:
           entity_id: input_number.wohnzimmer_tv_minute_count_tv
         data:
           value: '{{ states(''input_number.wohnzimmer_tv_minute_count_tv'') | int(0) + 1 }}'
-        action: input_number.set_value
+        service: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''ard mediathek – streaming für alle'' }}'
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_ard
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_ard'') | int(0) + 1 }}'
+        service: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''hd+'' }}'
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_hdplus
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_hdplus'') | int(0) + 1 }}'
+        service: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''joyn'' }}'
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_joyn
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_joyn'') | int(0) + 1 }}'
+        service: input_number.set_value
+    - conditions:
+      - condition: template
+        value_template: '{% set src = state_attr(''media_player.wohnzimmer_tv_samsung_q90_series_75'',''source'') | lower | trim %}
+          {{ src == ''zdf'' }}'
+      sequence:
+      - target:
+          entity_id: input_number.wohnzimmer_tv_minute_count_zdf
+        data:
+          value: '{{ states(''input_number.wohnzimmer_tv_minute_count_zdf'') | int(0) + 1 }}'
+        service: input_number.set_value
     default:
     - service: system_log.write
       data:
         level: warning
         message: >
-          TV Quellen-Tracking: Unbekannte Quelle '{{ state_attr('media_player.wohnzimmer_tv_samsung_q90_series_75','source') }}' gezählt!
+          TV Quellen-Tracking: Unbekannte Quelle '{{ state_attr('media_player.wohnzimmer_tv_samsung_q90_series_75','source') }}' (Original) 
+          oder '{{ state_attr('media_player.wohnzimmer_tv_samsung_q90_series_75','source') | lower | trim }}' (Normalisiert) gezählt!
     - target:
         entity_id: input_number.wohnzimmer_tv_minute_count_andere
       data:
         value: '{{ states(''input_number.wohnzimmer_tv_minute_count_andere'') | int(0) + 1 }}'
-      action: input_number.set_value
+      service: input_number.set_value
   mode: single

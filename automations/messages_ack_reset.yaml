@@ -1,0 +1,18 @@
+- id: messages_ack_reset_on_resolved
+  alias: Messages_Ack_Reset_On_Resolved
+  description: Setzt den Gelesen-Status zurueck, sobald ein ack-faehiger Fehler geloest ist.
+  triggers:
+    - trigger: state
+      entity_id:
+        - sensor.solar_wechselrichter_fehler_message
+        - sensor.solar_slave_fehler_message
+        - sensor.solar_can_timeout_message
+      to: "False"
+  conditions:
+    - condition: template
+      value_template: "{{ state_attr(trigger.entity_id, 'message_ack_enabled') == true }}"
+  actions:
+    - action: script.message_reset_read
+      data:
+        message_entity: "{{ trigger.entity_id }}"
+  mode: queued

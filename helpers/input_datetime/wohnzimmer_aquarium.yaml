@@ -1,0 +1,10 @@
+wohnzimmer_aquarium_licht_on:
+  name: "Wohnzimmer Aquarium Licht An"
+  has_date: false
+  has_time: true
+  initial: "12:00:00"
+wohnzimmer_aquarium_licht_off:
+  name: "Wohnzimmer Aquarium Licht Aus"
+  has_date: false
+  has_time: true
+  initial: "19:00:00"

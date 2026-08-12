@@ -14,8 +14,10 @@
     aktivierten Wochentagen.
   triggers:
   - at: input_datetime.gardena_morgen_start
+    id: slot_1
     trigger: time
   - at: input_datetime.gardena_abend_start
+    id: slot_2
     trigger: time
   conditions:
   - condition: template
@@ -24,23 +26,263 @@
       \ 'input_boolean.gardena_fr',\n  'input_boolean.gardena_sa',\n  'input_boolean.gardena_so']
       %}\n{{ is_state(booleans[day], 'on') }}\n"
   actions:
+  - variables:
+      run_minutes: >
+        {% if trigger.id == 'slot_1' %}
+          {{ states('input_number.gardena_dauer') | int(5) }}
+        {% else %}
+          {{ states('input_number.gardena_dauer_2') | int(10) }}
+        {% endif %}
   - target:
       entity_id: valve.garten_gardena_ventil_1
-    action: valve.open
+    service: valve.open
   - data:
-      message: 'Gardena Ventil geöffnet um {{ now().strftime(''%H:%M'') }} für  {{
-        states(''input_number.gardena_dauer'') | int(5) }} Minuten.
+      message: 'Gardena Ventil geöffnet um {{ now().strftime(''%H:%M'') }} für {{
+        run_minutes | int }} Minuten.
 
         '
       level: info
-    action: system_log.write
+    service: system_log.write
   - delay:
-      minutes: '{{ states(''input_number.gardena_dauer'') | int(5) }}'
+      minutes: '{{ run_minutes | int }}'
   - target:
       entity_id: valve.garten_gardena_ventil_1
-    action: valve.close
+    service: valve.close
   - data:
       message: Gardena Ventil geschlossen um {{ now().strftime('%H:%M') }}
       level: info
-    action: system_log.write
+    service: system_log.write
   mode: restart
+
+- id: '1759498200001'
+  alias: Garten_Gardena_Ventil_1_Laufhistorie
+  description: Schreibt letzten Start/Stop und kompakte Laufhistorie fuer Ventil 1.
+  triggers:
+  - entity_id: valve.garten_gardena_ventil_1
+    from: 'closed'
+    to: 'open'
+    trigger: state
+  - entity_id: valve.garten_gardena_ventil_1
+    from: 'open'
+    to: 'closed'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'open' }}"
+      sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_1_last_start
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'closed' }}"
+      sequence:
+      - variables:
+          started_raw: "{{ states('input_text.gardena_ventil_1_last_start') }}"
+          started_ts: "{{ as_timestamp(strptime(started_raw, '%d.%m.%Y %H:%M'), 0) if started_raw not in ['unknown','unavailable','',None] else 0 }}"
+          duration_min: "{{ ((as_timestamp(now()) - started_ts) / 60) | round(0) if started_ts > 0 else 0 }}"
+          history_old: "{{ states('input_text.gardena_ventil_1_history') }}"
+          new_entry: "{{ now().strftime('%d.%m %H:%M') }} ({{ duration_min | int }} min)"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_1_last_stop
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_1_last_duration
+        data:
+          value: "{{ duration_min | int }} min"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_1_history
+        data:
+          value: >
+            {% set old = history_old if history_old not in ['unknown','unavailable','',None] else '' %}
+            {% if old | length > 0 %}
+              {{ (new_entry ~ ' | ' ~ old)[:255] }}
+            {% else %}
+              {{ new_entry[:255] }}
+            {% endif %}
+  mode: queued
+
+- id: '1759501200002'
+  alias: Garten_Gardena_Ventil_2_Zeitplan
+  description: Öffnet Gardena Ventil 2 nach eigenem Zeitplan an aktivierten Wochentagen.
+  triggers:
+  - at: input_datetime.gardena_ventil_2_slot_1_start
+    id: slot_1
+    trigger: time
+  - at: input_datetime.gardena_ventil_2_slot_2_start
+    id: slot_2
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: "{% set day = now().weekday() %} {% set booleans = [\n  'input_boolean.gardena_ventil_2_mo',\n  'input_boolean.gardena_ventil_2_di',\n  'input_boolean.gardena_ventil_2_mi',\n  'input_boolean.gardena_ventil_2_do',\n  'input_boolean.gardena_ventil_2_fr',\n  'input_boolean.gardena_ventil_2_sa',\n  'input_boolean.gardena_ventil_2_so'] %}\n{{ is_state(booleans[day], 'on') }}\n"
+  actions:
+  - variables:
+      run_minutes: >
+        {% if trigger.id == 'slot_1' %}
+          {{ states('input_number.gardena_ventil_2_dauer_1') | int(1) }}
+        {% else %}
+          {{ states('input_number.gardena_ventil_2_dauer_2') | int(1) }}
+        {% endif %}
+  - target:
+      entity_id: valve.garten_gardena_ventil_2
+    service: valve.open
+  - delay:
+      minutes: '{{ run_minutes | int }}'
+  - target:
+      entity_id: valve.garten_gardena_ventil_2
+    service: valve.close
+  mode: restart
+
+- id: '1759501200003'
+  alias: Garten_Gardena_Ventil_2_Laufhistorie
+  description: Schreibt letzten Start/Stop und kompakte Laufhistorie fuer Ventil 2.
+  triggers:
+  - entity_id: valve.garten_gardena_ventil_2
+    from: 'closed'
+    to: 'open'
+    trigger: state
+  - entity_id: valve.garten_gardena_ventil_2
+    from: 'open'
+    to: 'closed'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'open' }}"
+      sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_2_last_start
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'closed' }}"
+      sequence:
+      - variables:
+          started_raw: "{{ states('input_text.gardena_ventil_2_last_start') }}"
+          started_ts: "{{ as_timestamp(strptime(started_raw, '%d.%m.%Y %H:%M'), 0) if started_raw not in ['unknown','unavailable','',None] else 0 }}"
+          duration_min: "{{ ((as_timestamp(now()) - started_ts) / 60) | round(0) if started_ts > 0 else 0 }}"
+          history_old: "{{ states('input_text.gardena_ventil_2_history') }}"
+          new_entry: "{{ now().strftime('%d.%m %H:%M') }} ({{ duration_min | int }} min)"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_2_last_stop
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_2_last_duration
+        data:
+          value: "{{ duration_min | int }} min"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_2_history
+        data:
+          value: >
+            {% set old = history_old if history_old not in ['unknown','unavailable','',None] else '' %}
+            {% if old | length > 0 %}
+              {{ (new_entry ~ ' | ' ~ old)[:255] }}
+            {% else %}
+              {{ new_entry[:255] }}
+            {% endif %}
+  mode: queued
+
+- id: '1759501200004'
+  alias: Garten_Gardena_Ventil_3_Zeitplan
+  description: Öffnet Gardena Ventil 3 nach eigenem Zeitplan an aktivierten Wochentagen.
+  triggers:
+  - at: input_datetime.gardena_ventil_3_slot_1_start
+    id: slot_1
+    trigger: time
+  - at: input_datetime.gardena_ventil_3_slot_2_start
+    id: slot_2
+    trigger: time
+  conditions:
+  - condition: template
+    value_template: "{% set day = now().weekday() %} {% set booleans = [\n  'input_boolean.gardena_ventil_3_mo',\n  'input_boolean.gardena_ventil_3_di',\n  'input_boolean.gardena_ventil_3_mi',\n  'input_boolean.gardena_ventil_3_do',\n  'input_boolean.gardena_ventil_3_fr',\n  'input_boolean.gardena_ventil_3_sa',\n  'input_boolean.gardena_ventil_3_so'] %}\n{{ is_state(booleans[day], 'on') }}\n"
+  actions:
+  - variables:
+      run_minutes: >
+        {% if trigger.id == 'slot_1' %}
+          {{ states('input_number.gardena_ventil_3_dauer_1') | int(1) }}
+        {% else %}
+          {{ states('input_number.gardena_ventil_3_dauer_2') | int(1) }}
+        {% endif %}
+  - target:
+      entity_id: valve.garten_gardena_ventil_3
+    service: valve.open
+  - delay:
+      minutes: '{{ run_minutes | int }}'
+  - target:
+      entity_id: valve.garten_gardena_ventil_3
+    service: valve.close
+  mode: restart
+
+- id: '1759501200005'
+  alias: Garten_Gardena_Ventil_3_Laufhistorie
+  description: Schreibt letzten Start/Stop und kompakte Laufhistorie fuer Ventil 3.
+  triggers:
+  - entity_id: valve.garten_gardena_ventil_3
+    from: 'closed'
+    to: 'open'
+    trigger: state
+  - entity_id: valve.garten_gardena_ventil_3
+    from: 'open'
+    to: 'closed'
+    trigger: state
+  conditions: []
+  actions:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'open' }}"
+      sequence:
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_3_last_start
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+    - conditions:
+      - condition: template
+        value_template: "{{ trigger.to_state.state == 'closed' }}"
+      sequence:
+      - variables:
+          started_raw: "{{ states('input_text.gardena_ventil_3_last_start') }}"
+          started_ts: "{{ as_timestamp(strptime(started_raw, '%d.%m.%Y %H:%M'), 0) if started_raw not in ['unknown','unavailable','',None] else 0 }}"
+          duration_min: "{{ ((as_timestamp(now()) - started_ts) / 60) | round(0) if started_ts > 0 else 0 }}"
+          history_old: "{{ states('input_text.gardena_ventil_3_history') }}"
+          new_entry: "{{ now().strftime('%d.%m %H:%M') }} ({{ duration_min | int }} min)"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_3_last_stop
+        data:
+          value: "{{ now().strftime('%d.%m.%Y %H:%M') }}"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_3_last_duration
+        data:
+          value: "{{ duration_min | int }} min"
+      - service: input_text.set_value
+        target:
+          entity_id: input_text.gardena_ventil_3_history
+        data:
+          value: >
+            {% set old = history_old if history_old not in ['unknown','unavailable','',None] else '' %}
+            {% if old | length > 0 %}
+              {{ (new_entry ~ ' | ' ~ old)[:255] }}
+            {% else %}
+              {{ new_entry[:255] }}
+            {% endif %}
+  mode: queued

@@ -44,14 +44,24 @@ cards:
                     title: tägliche Zeitverteilung
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Header Style
 
-                                    
+                  # TV 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "TV"
+                      - entity: input_number.wohnzimmer_tv_minute_count_tv_2
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_tv_2
+                      - max: 100
+                      - icon: mdi:television-classic
+                      - color: green 
+
                   # Netflix 
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
                       - title: "Netflix"
-                      - entity: input_number.wohnzimmer_tv_minute_count_netflix
-                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_netflix
+                      - entity: input_number.wohnzimmer_tv_minute_count_netflix_2
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_netflix_2
                       - max: 100
                       - icon: mdi:netflix
                       - color: red
@@ -78,49 +88,48 @@ cards:
                       - icon: mdi:movie-filter
                       - color: cyan
 
-                 # Disney+ 
+                  # ARD 
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
-                      - title: "Disney+"
-                      - entity: input_number.wohnzimmer_tv_minute_count_disney
-                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_disney
+                      - title: "ARD Mediathek"
+                      - entity: input_number.wohnzimmer_tv_minute_count_ard
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_ard
                       - max: 100
-                      - icon: mdi:star-shooting
-                      - color: blue
-
-                  # PLEX 
+                      - icon: mdi:television-classic
+                      - color: blue        
+                  # ZDF 
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
-                      - title: "Plex"
-                      - entity: input_number.wohnzimmer_tv_minute_count_plex
-                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_plex
+                      - title: "ZDF Mediathek"
+                      - entity: input_number.wohnzimmer_tv_minute_count_zdf
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_zdf
                       - max: 100
-                      - icon: mdi:plex
-                      - color: yellow
+                      - icon: mdi:television-classic
+                      - color: amber        
                   
                   # HDMI 
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
                       - title: "HDMI"
-                      - entity: input_number.wohnzimmer_tv_minute_count_hdmi
-                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_hdmi
+                      - entity: input_number.wohnzimmer_tv_minute_count_hdmi_2
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_hdmi_2
                       - max: 100
                       - icon: mdi:hdmi-port
                       - color: grey
                   
-                  # TV 
+                  # HD+ 
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
-                      - title: "TV"
-                      - entity: input_number.wohnzimmer_tv_minute_count_tv
-                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_andere
+                      - title: "HD+"
+                      - entity: input_number.wohnzimmer_tv_minute_count_hdplus
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_hdplus
                       - max: 100
                       - icon: mdi:television-classic
-                      - color: green                 
+                      - color: darkgrey                                 
                   
                   # Andere 
                   - type: custom:decluttering-card
@@ -132,7 +141,39 @@ cards:
                       - max: 100
                       - icon: mdi:dots-horizontal
                       - color: purple
+                  
+                  # Disney+ 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Disney+"
+                      - entity: input_number.wohnzimmer_tv_minute_count_disney
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_disney
+                      - max: 100
+                      - icon: mdi:star-shooting
+                      - color: blue
 
+                  # Joyn 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Joyn"
+                      - entity: input_number.wohnzimmer_tv_minute_count_joyn
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_joyn
+                      - max: 100
+                      - icon: mdi:television-classic
+                      - color: purple
+
+                  # PLEX 
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Plex"
+                      - entity: input_number.wohnzimmer_tv_minute_count_plex
+                      - secondary_sensor: input_number.wohnzimmer_tv_minute_count_plex
+                      - max: 100
+                      - icon: mdi:plex
+                      - color: yellow
               # ++
               # ++ Kindersicherung
               # 

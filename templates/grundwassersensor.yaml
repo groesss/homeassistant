@@ -8,11 +8,86 @@
 #
 # Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
 - sensor:
+    - name: "Garten Grundwasser Alarm"
+      unique_id: garten_grundwasser_alarm
+      state: >
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set manual = [
+          'switch.garten_shelly_grundwassersensor',
+          'binary_sensor.garten_shelly_grundwasser'
+        ] %}
+        {% set ns = namespace(discovered='') %}
+        {% for s in states.binary_sensor %}
+          {% if ns.discovered == '' and 'shelly' in s.entity_id and 'grundwasser' in s.entity_id %}
+            {% set ns.discovered = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% if ns.discovered == '' %}
+          {% for s in states.switch %}
+            {% if ns.discovered == '' and 'shelly' in s.entity_id and 'grundwasser' in s.entity_id %}
+              {% set ns.discovered = s.entity_id %}
+            {% endif %}
+          {% endfor %}
+        {% endif %}
+        {% set candidate_ids = manual + ([ns.discovered] if ns.discovered else []) %}
+        {% set vals = candidate_ids | map('states') | reject('in', invalid) | list %}
+        {% set st = vals[0] if vals | length > 0 else 'off' %}
+        {{ 'on' if st | lower in ['on', 'true', '1'] else 'off' }}
+
+    - name: "Oelkeller Flutsensor Battery"
+      unique_id: oelkeller_flutsensor_battery
+      unit_of_measurement: "%"
+      state: >
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set manual = ['sensor.oelkeller_shellyflood_battery'] %}
+        {% set ns = namespace(discovered='') %}
+        {% for s in states.sensor %}
+          {% if ns.discovered == '' and 'shelly' in s.entity_id and 'flood' in s.entity_id and 'battery' in s.entity_id %}
+            {% set ns.discovered = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set candidate_ids = manual + ([ns.discovered] if ns.discovered else []) %}
+        {% set vals = candidate_ids | map('states') | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Oelkeller Flutsensor Temperature"
+      unique_id: oelkeller_flutsensor_temperature
+      unit_of_measurement: "°C"
+      state: >
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set manual = ['sensor.oelkeller_shellyflood_temperature'] %}
+        {% set ns = namespace(discovered='') %}
+        {% for s in states.sensor %}
+          {% if ns.discovered == '' and 'shelly' in s.entity_id and 'flood' in s.entity_id and 'temperature' in s.entity_id %}
+            {% set ns.discovered = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set candidate_ids = manual + ([ns.discovered] if ns.discovered else []) %}
+        {% set vals = candidate_ids | map('states') | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
     - name: "Garten Grundwasser Status"
       unique_id: "sensor.garten_grundwasser_status"
       state: >
-        {% if is_state('switch.garten_shelly_grundwassersensor', 'on') %}
+        {% if is_state('sensor.garten_grundwasser_alarm', 'on') %}
           Schwimmerschalter ausgelöst!
         {% else %}
           Alles im grünen Bereich
         {% endif %}
+
+- binary_sensor:
+    - name: "Oelkeller Flutsensor Flood"
+      unique_id: oelkeller_flutsensor_flood
+      state: >
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set manual = ['binary_sensor.oelkeller_shellyflood_flood'] %}
+        {% set ns = namespace(discovered='') %}
+        {% for s in states.binary_sensor %}
+          {% if ns.discovered == '' and 'shelly' in s.entity_id and 'flood' in s.entity_id %}
+            {% set ns.discovered = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set candidate_ids = manual + ([ns.discovered] if ns.discovered else []) %}
+        {% set vals = candidate_ids | map('states') | reject('in', invalid) | list %}
+        {% set st = vals[0] if vals | length > 0 else 'off' %}
+        {{ st | lower in ['on', 'true', '1'] }}

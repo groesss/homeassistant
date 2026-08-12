@@ -8,21 +8,122 @@
 # Namenskonvention: Alle unique_ids und Namen folgen dem Muster <raum>_<gerät>_<attribut>.
 # Konsistenz: Die Logik und Statusabbildung ist identisch zu den Templates für Backofen und Geschirrspüler.
 #
+# Bosch-Entity-Auflösung:
+# home_connect_alt generiert Entity-IDs in unterschiedlichen Schemata
+# (früher 'sensor.bosch_<id>_...', aktuell 'sensor.<id>_...'). Feste
+# Kandidatenlisten brechen daher bei jedem Schema-/ID-Wechsel. Deshalb wird das
+# verbundene Trockner-Gerät live über den '_connected'-Binary-Sensor
+# (state = on, Name enthält 'Trockner') gefunden und daraus die Basis-Entity-ID
+# abgeleitet. Der zentrale Resolver-Sensor 'Waschkeller Trockner Bosch Entity
+# Map' liefert die Zuordnung der logischen Schlüssel zu den aktuellen Entity-IDs
+# als JSON im Attribut 'map' (State = 'ok'/'none'; der 255-Zeichen-Limit des
+# States gilt nicht für Attribute). Roh-Aliase, Health und Powerstate lesen aus
+# diesem Attribut. Damit brechen nur noch die Schlüssel-Suffixe, wenn sich das
+# Gerät selbst neu paart - nicht mehr bei jedem ID-Schema-Wechsel.
+# Aktualisierung erfolgt über 5-Minuten-Herzschlag plus Neuerkennung bei
+# Änderungen an Binary-Sensoren.
+#
 # Änderungen an der Statuslogik oder Programmliste sollten immer synchron in allen Geräte-Templates erfolgen.
 
 - trigger:
-    - platform: state
-      entity_id:
-        - sensor.waschkeller_trockner_status_operationstate
-        - binary_sensor.waschkeller_trockner_status_doorstate
-        - sensor.waschkeller_trockner_active_program
+    - platform: homeassistant
+      event: start
+    - platform: time_pattern
+      minutes: '/5'
 
   sensor:
+    # Bosch-Entity-Resolver: State 'ok', wenn ein verbundener Trockner gefunden
+    # wurde. Die Entity-ID-Karte liegt im Attribut 'map' (JSON, wird von HA
+    # automatisch als Dict geparst). Leere Karte, wenn kein Gerät gefunden wird.
+    - name: "Waschkeller Trockner Bosch Entity Map"
+      unique_id: waschkeller_trockner_bosch_entity_map
+      icon: mdi:radio-tower
+      state: >-
+        {% set ns = namespace(base='') %}
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% for s in states.binary_sensor %}
+          {% if s.entity_id.endswith('_connected') and s.state == 'on' and 'Trockner' in (state_attr(s.entity_id, 'friendly_name') or '') %}
+            {% set b = s.entity_id.removeprefix('binary_sensor.').removesuffix('_connected') %}
+            {% if ns.base == '' and states('sensor.' ~ b ~ '_bsh_common_status_operationstate') not in invalid %}
+              {% set ns.base = b %}
+            {% endif %}
+          {% endif %}
+        {% endfor %}
+        {{ 'ok' if ns.base else 'none' }}
+      attributes:
+        map: >-
+          {% set ns = namespace(base='') %}
+          {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+          {% for s in states.binary_sensor %}
+            {% if s.entity_id.endswith('_connected') and s.state == 'on' and 'Trockner' in (state_attr(s.entity_id, 'friendly_name') or '') %}
+              {% set b = s.entity_id.removeprefix('binary_sensor.').removesuffix('_connected') %}
+              {% if ns.base == '' and states('sensor.' ~ b ~ '_bsh_common_status_operationstate') not in invalid %}
+                {% set ns.base = b %}
+              {% endif %}
+            {% endif %}
+          {% endfor %}
+          {% set b = ns.base %}
+          {% set m = {'powerstate': 'switch.' ~ b ~ '_bsh_common_setting_powerstate', 'operationstate': 'sensor.' ~ b ~ '_bsh_common_status_operationstate', 'doorstate': 'binary_sensor.' ~ b ~ '_bsh_common_status_doorstate', 'active_program': 'sensor.' ~ b ~ '_active_program', 'selected_program': 'sensor.' ~ b ~ '_selected_program', 'remainingprogramtime': 'sensor.' ~ b ~ '_bsh_common_option_remainingprogramtime', 'programprogress': 'sensor.' ~ b ~ '_bsh_common_option_programprogress', 'connected': 'binary_sensor.' ~ b ~ '_connected'} if b else {} %}
+          {{ m | to_json }}
+
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: time_pattern
+      minutes: '/5'
+    - platform: state
+      entity_id:
+        - sensor.waschkeller_trockner_bosch_entity_map
+
+  sensor:
+    # Stable alias layer: use these entities in UI/automations.
+    # Werte werden über den Bosch-Entity-Resolver bezogen.
+
+    - name: "Waschkeller Trockner Raw Operationstate"
+      unique_id: waschkeller_trockner_raw_operationstate
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('operationstate', '') %}
+        {% set st = states(e) if e else 'unknown' %}
+        {{ st if st not in ['unknown', 'unavailable', 'none', 'None', ''] else 'unknown' }}
+
+    - name: "Waschkeller Trockner Raw Doorstate"
+      unique_id: waschkeller_trockner_raw_doorstate
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('doorstate', '') %}
+        {% set st = states(e) if e else 'unknown' %}
+        {{ st if st not in ['unknown', 'unavailable', 'none', 'None', ''] else 'unknown' }}
+
+    - name: "Waschkeller Trockner Raw Active Program"
+      unique_id: waschkeller_trockner_raw_active_program
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('active_program', '') %}
+        {% set st = states(e) if e else 'unknown' %}
+        {{ st if st not in ['unknown', 'unavailable', 'none', 'None', ''] else 'unknown' }}
+
+    - name: "Waschkeller Trockner Remaining Program Time"
+      unique_id: waschkeller_trockner_remainingprogramtime
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('remainingprogramtime', '') %}
+        {% set st = states(e) if e else 'unknown' %}
+        {{ st if st not in ['unknown', 'unavailable', 'none', 'None', ''] else 'unknown' }}
+
+    - name: "Waschkeller Trockner Program Progress"
+      unique_id: waschkeller_trockner_program_progress
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('programprogress', '') %}
+        {% set st = states(e) if e else '0' %}
+        {{ st if st not in ['unknown', 'unavailable', 'none', 'None', ''] else '0' }}
+
     - name: "Waschkeller Trockner Status Text"
       unique_id: waschkeller_trockner_status_text
       state: >-
-        {% set op = states('sensor.waschkeller_trockner_status_operationstate') %}
-        {% set door = states('binary_sensor.waschkeller_trockner_status_doorstate') %}
+        {% set op = states('sensor.waschkeller_trockner_raw_operationstate') %}
+        {% set door = states('sensor.waschkeller_trockner_raw_doorstate') %}
         {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
 
         {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
@@ -52,7 +153,7 @@
     - name: "Waschkeller Trockner Aktives Programm Text"
       unique_id: waschkeller_trockner_aktives_programm_text
       state: >-
-        {% set op = states('sensor.waschkeller_trockner_active_program') %}
+        {% set op = states('sensor.waschkeller_trockner_raw_active_program') %}
         {% set program_map = {
           'LaundryCare.Dryer.Program.Cotton': 'Baumwolle',
           'LaundryCare.Dryer.Program.Synthetic': 'Pflegeleicht',
@@ -76,3 +177,72 @@
           {{ program_map.get(op, op) }}
         {% endif %}
 
+- switch:
+    - name: "Waschkeller Trockner Powerstate"
+      unique_id: waschkeller_trockner_powerstate
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('powerstate', '') %}
+        {% set st = states(e) if e else 'off' %}
+        {{ st if st in ['on', 'off'] else 'off' }}
+      turn_on:
+        - service: homeassistant.turn_on
+          target:
+            entity_id: >-
+              {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+              {{ m.get('powerstate', '') }}
+      turn_off:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: >-
+              {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+              {{ m.get('powerstate', '') }}
+
+# -----------------------------------------------------------------------------
+# Healthcheck: Bosch Dryer Entity Health
+# -----------------------------------------------------------------------------
+# Liefert 'on', solange mindestens eine gueltige Bosch-Trockner-Entity
+# vorhanden ist (Powerstate, Operationstate, Doorstate, Active Program,
+# Remaining Time, Program Progress). Wird von der Watchdog-Automation und
+# der Waschkeller-UI genutzt.
+#
+# Konsistenz: Resolver-Schluessel synchron zu den Raw-Alias-Sensoren oben halten.
+
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: time_pattern
+      minutes: '/5'
+    - platform: state
+      entity_id:
+        - sensor.waschkeller_trockner_bosch_entity_map
+        - sensor.waschkeller_trockner_raw_operationstate
+        - sensor.waschkeller_trockner_raw_doorstate
+        - sensor.waschkeller_trockner_raw_active_program
+        - sensor.waschkeller_trockner_remaining_program_time
+        - sensor.waschkeller_trockner_program_progress
+
+  binary_sensor:
+    - name: "Waschkeller Trockner Bosch Health"
+      unique_id: waschkeller_trockner_bosch_health
+      icon: mdi:check-circle
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set ns = namespace(found='') %}
+        {% for k in ['powerstate', 'operationstate', 'doorstate', 'active_program', 'remainingprogramtime', 'programprogress'] %}
+          {% set e = m.get(k, '') %}
+          {% if ns.found == '' and e and states(e) not in invalid %}
+            {% set ns.found = e %}
+          {% endif %}
+        {% endfor %}
+        {{ 'on' if ns.found != '' else 'off' }}
+
+    - name: "Waschkeller Trockner Bosch Connected"
+      unique_id: waschkeller_trockner_bosch_connected
+      icon: mdi:radio-tower
+      state: >-
+        {% set m = state_attr('sensor.waschkeller_trockner_bosch_entity_map', 'map') or {} %}
+        {% set e = m.get('connected', '') %}
+        {% set st = states(e) if e else 'off' %}
+        {{ 'on' if st == 'on' else 'off' }}

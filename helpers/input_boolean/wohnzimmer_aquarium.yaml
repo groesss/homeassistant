@@ -1,0 +1,4 @@
+wohnzimmer_aquarium_timer_active:
+  name: "Aquarium Zeitschaltuhr aktiv"
+  icon: mdi:clock-outline
+  initial: true

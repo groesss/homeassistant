@@ -1,5 +1,22 @@
 type: vertical-stack
 cards:
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.messages_has_acknowledged_errors_active
+        state: 'on'
+    card:
+      type: custom:mushroom-template-card
+      primary: Gelesene Fehler anzeigen
+      secondary: >
+        {{ states('sensor.messages_acknowledged_errors_active_count') | int(0) }} gelesene Fehlermeldung(en) aktiv. Tippen zum Ein-/Ausblenden.
+      icon: mdi:circle
+      icon_color: orange
+      tap_action:
+        action: call-service
+        service: input_boolean.toggle
+        target:
+          entity_id: input_boolean.messages_show_acknowledged
+
   # ++
   # ++ Flutsensor Messages
   #
@@ -88,3 +105,122 @@ cards:
       template: message_alert
       variables:
         - entity: sensor.arbeitszimmer_thermostat_batterie_message
+
+  # ++
+  # ++ Weitere Thermostat Batterie Messages
+  #
+  - type: conditional
+    conditions:
+      - entity: sensor.wohnzimmer_thermostat_1_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.wohnzimmer_thermostat_1_batterie_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.wohnzimmer_thermostat_2_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.wohnzimmer_thermostat_2_batterie_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.diele_thermostat_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.diele_thermostat_batterie_message
+
+  # ++
+  # ++ Gardena Ventil Batterie Messages
+  #
+  - type: conditional
+    conditions:
+      - entity: sensor.garten_gardena_ventil_1_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.garten_gardena_ventil_1_batterie_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.garten_gardena_ventil_2_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.garten_gardena_ventil_2_batterie_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.garten_gardena_ventil_3_batterie_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.garten_gardena_ventil_3_batterie_message
+
+  # ++
+  # ++ Solar Kommunikations-Messages
+  #
+  - type: conditional
+    conditions:
+      - entity: sensor.solar_wechselrichter_kommunikation_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.solar_wechselrichter_kommunikation_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.solar_batterie_kommunikation_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.solar_batterie_kommunikation_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.solar_wechselrichter_fehler_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.solar_wechselrichter_fehler_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.solar_slave_fehler_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.solar_slave_fehler_message
+
+  - type: conditional
+    conditions:
+      - entity: sensor.solar_can_timeout_message
+        state: 'True'
+    card:
+      type: custom:decluttering-card
+      template: message_alert
+      variables:
+        - entity: sensor.solar_can_timeout_message

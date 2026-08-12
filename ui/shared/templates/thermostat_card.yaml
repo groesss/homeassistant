@@ -41,7 +41,7 @@ thermostat_card:
           primary: '[[title]]'
           secondary: >-
             {{ state_attr('[[entity]]', 'temperature') }}°C - 
-            🔋{{ states('[[battery]]') | int }}%
+            🔋{{ states('[[battery]]') | int(0) }}%
             {% if is_state('[[child_lock]]', 'on') %} - 🔒{% endif %}
           icon: mdi:thermostat
           card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style

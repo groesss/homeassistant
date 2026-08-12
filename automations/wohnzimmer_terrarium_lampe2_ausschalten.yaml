@@ -19,7 +19,7 @@
   actions:
   - target:
       entity_id: switch.wohnzimmer_smartplug_terrarium_2
-    action: switch.turn_off
+    service: switch.turn_off
   - action: system_log.write
     data:
       message: '[Terrarium] Lampe ''Halogenlampe'' ausgeschaltet um {{ now().strftime(''%H:%M'')

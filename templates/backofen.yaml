@@ -16,13 +16,131 @@
         - sensor.kueche_backofen_status_operationstate
         - binary_sensor.kueche_backofen_status_doorstate
         - sensor.kueche_backofen_active_program
+        - sensor.kueche_backofen_option_remainingprogramtime
+        - sensor.kueche_backofen_option_programprogress
+        - sensor.kueche_backofen_status_currentcavitytemperature
+        - sensor.kueche_backofen_option_setpointtemperature
+    - platform: time_pattern
+      minutes: "/1"
 
   sensor:
+    # Stable alias layer: use these entities in UI/automations.
+    # If raw integration IDs change, only this file needs updates.
+    - name: "Kueche Backofen Raw Operationstate"
+      unique_id: kueche_backofen_raw_operationstate
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_status_operationstate' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_bsh_common_status_operationstate' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Backofen Raw Doorstate"
+      unique_id: kueche_backofen_raw_doorstate
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'binary_sensor.kueche_backofen_status_doorstate' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'binary_sensor.' ~ base ~ '_bsh_common_status_doorstate' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Backofen Raw Active Program"
+      unique_id: kueche_backofen_raw_active_program
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_active_program' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set vals = [states(old_id), states(ns.prog) if ns.prog else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Backofen Remaining Program Time"
+      unique_id: kueche_backofen_remainingprogramtime
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_option_remainingprogramtime' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_cooking_oven_option_remainingprogramtime' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Backofen Program Progress"
+      unique_id: kueche_backofen_program_progress
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_option_programprogress' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_cooking_oven_option_programprogress' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else '0' }}
+
+    - name: "Kueche Backofen Current Cavity Temperature"
+      unique_id: kueche_backofen_currentcavitytemperature
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_status_currentcavitytemperature' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_cooking_oven_status_currentcavitytemperature' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Backofen Setpoint Temperature"
+      unique_id: kueche_backofen_setpointtemperature
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_backofen_option_setpointtemperature' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_cooking_oven_' in s.entity_id and s.entity_id.endswith('_active_program') %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_cooking_oven_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_cooking_oven_option_setpointtemperature' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
     - name: "Kueche Backofen Status Text"
       unique_id: kueche_backofen_status_text
       state: >-
-        {% set op = states('sensor.kueche_backofen_status_operationstate') %}
-        {% set door = states('binary_sensor.kueche_backofen_status_doorstate') %}
+        {% set op = states('sensor.kueche_backofen_raw_operationstate') %}
+        {% set door = states('sensor.kueche_backofen_raw_doorstate') %}
         {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
 
         {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
@@ -52,7 +170,7 @@
     - name: "Kueche Backofen Aktives Programm Text"
       unique_id: kueche_backofen_aktives_programm_text
       state: >-
-        {% set op = states('sensor.kueche_backofen_active_program') %}
+        {% set op = states('sensor.kueche_backofen_raw_active_program') %}
         {% set program_map = {
           'Cooking.Oven.Program.HeatingMode.HotAir': 'Heißluft',
           'Cooking.Oven.Program.HeatingMode.TopBottomHeating': 'Ober-/Unterhitze',

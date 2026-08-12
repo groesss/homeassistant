@@ -1,0 +1,74 @@
+type: grid
+cards:
+  - type: heading
+    heading: Aquarium Steuerung
+    heading_style: subtitle
+    icon: mdi:fishbowl
+  - type: vertical-stack
+    cards:
+      - type: custom:stack-in-card
+        mode: vertical
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        cards:
+          - type: entities
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
+            entities:
+
+              # ++
+              # ++ Beleuchtung
+              # 
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Beleuchtung
+                  secondary: >
+                    {% if is_state('switch.kueche_smartplug_aquarium','on') %}
+                      Licht an
+                    {% else %}
+                      Licht aus
+                    {% endif %}
+                  icon: mdi:lightbulb-group
+                  icon_color: >
+                    {% if is_state('switch.kueche_smartplug_aquarium','on') %}
+                      yellow
+                    {% else %}
+                      grey
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                entities:
+                  - type: custom:stack-in-card
+                    mode: vertical
+                    card_mod:
+                      style: |
+                        ha-card {
+                          {% if is_state('input_boolean.kueche_aquarium_timer_active','off') %}
+                            opacity: 0.45;
+                            pointer-events: none;
+                            filter: grayscale(100%);
+                          {% endif %}
+                          background: transparent !important;
+                          box-shadow: none !important;
+                          border: none !important;
+                          padding: 6px 0 !important;
+                          margin: 0 !important;
+                          overflow: visible !important;
+                        }
+                    cards:
+                      - type: custom:mushroom-template-card
+                        primary: Aquarium Licht
+                        card_mod:
+                          style: |
+                            ha-card {
+                              border: none !important;
+                              box-shadow: none !important;
+                              background: transparent !important;
+                              border-radius: 0 !important;
+                              padding: 0 !important;
+                              margin: 0 0 0 -21px !important;
+                            }
+                      - type: custom:decluttering-card
+                        template: timer_row
+                        variables:
+                          - time_on: input_datetime.kueche_aquarium_licht_on
+                          - time_off: input_datetime.kueche_aquarium_licht_off
+                          - switch_entity: switch.kueche_smartplug_aquarium

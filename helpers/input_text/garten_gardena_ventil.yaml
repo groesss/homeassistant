@@ -1,0 +1,36 @@
+gardena_ventil_1_last_start:
+  name: Gardena Ventil 1 Letzter Start
+  max: 80
+gardena_ventil_1_last_stop:
+  name: Gardena Ventil 1 Letzter Stop
+  max: 80
+gardena_ventil_1_last_duration:
+  name: Gardena Ventil 1 Letzte Laufdauer
+  max: 40
+gardena_ventil_1_history:
+  name: Gardena Ventil 1 Historie
+  max: 255
+gardena_ventil_2_last_start:
+  name: Gardena Ventil 2 Letzter Start
+  max: 80
+gardena_ventil_2_last_stop:
+  name: Gardena Ventil 2 Letzter Stop
+  max: 80
+gardena_ventil_2_last_duration:
+  name: Gardena Ventil 2 Letzte Laufdauer
+  max: 40
+gardena_ventil_2_history:
+  name: Gardena Ventil 2 Historie
+  max: 255
+gardena_ventil_3_last_start:
+  name: Gardena Ventil 3 Letzter Start
+  max: 80
+gardena_ventil_3_last_stop:
+  name: Gardena Ventil 3 Letzter Stop
+  max: 80
+gardena_ventil_3_last_duration:
+  name: Gardena Ventil 3 Letzte Laufdauer
+  max: 40
+gardena_ventil_3_history:
+  name: Gardena Ventil 3 Historie
+  max: 255

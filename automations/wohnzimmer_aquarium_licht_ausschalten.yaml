@@ -1,0 +1,43 @@
+# ++
+# ++ Wohnzimmer Aquarium Licht - Ausschalten
+# ++
+# Schaltet die Aquarium-Beleuchtung zur geplanten Zeit aus, wenn der Timer aktiv ist.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: 'wohnzimmer_aquarium_licht_ausschalten'
+  alias: Wohnzimmer_Aquarium_Licht_Ausschalten
+  description: Schaltet Aquarium Licht zeitgesteuert aus
+  triggers:
+  - at: input_datetime.wohnzimmer_aquarium_licht_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_aquarium_timer_active
+    state: 'on'
+  actions:
+  - variables:
+      target_entity: switch.wohnzimmer_smartplug_aquarium
+      target_state: 'off'
+  - repeat:
+      count: 3
+      sequence:
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: '{{ target_entity }}'
+      - delay: '00:00:01'
+  - if:
+    - condition: template
+      value_template: "{{ not is_state(target_entity, target_state) }}"
+    then:
+    - data:
+        message: '[Wohnzimmer Aquarium] Licht konnte nach 3 Versuchen nicht ausgeschaltet werden. Zustand: {{ states(target_entity) }}'
+        level: warning
+      service: system_log.write
+    else:
+    - data:
+        message: '[Wohnzimmer Aquarium] Licht ausgeschaltet um {{ now().strftime(''%H:%M'') }}'
+        level: info
+      service: system_log.write
+  mode: single

@@ -9,3 +9,4 @@ sections:
     cards:
       - !include /config/ui/shared/messages.yaml
   - !include /config/ui/kueche/geraete.yaml
+  - !include /config/ui/kueche/aquarium.yaml

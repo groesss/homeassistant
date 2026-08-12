@@ -19,5 +19,5 @@
   actions:
   - target:
       entity_id: counter.wohnzimmer_tv_watch_minutes
-    action: counter.increment
+    service: counter.increment
   mode: single

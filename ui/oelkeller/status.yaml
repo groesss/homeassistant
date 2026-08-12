@@ -20,9 +20,9 @@ cards:
                   primary: Flutsensor
                   icon: mdi:water-alert-outline
                   icon_color: >
-                    {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                    {% if is_state('binary_sensor.oelkeller_flutsensor_flood', 'on') %}
                       red
-                    {% elif is_state('binary_sensor.oelkeller_shellyflood_flood', 'off') %}
+                    {% elif is_state('binary_sensor.oelkeller_flutsensor_flood', 'off') %}
                       green
                     {% else %}
                       grey
@@ -31,13 +31,13 @@ cards:
                 entities:
                   - type: custom:mushroom-template-card
                     primary: >
-                      {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                      {% if is_state('binary_sensor.oelkeller_flutsensor_flood', 'on') %}
                         ⚠️ Warnung!
                       {% else %}
                         ✅ Alles in Ordnung
                       {% endif %}
                     secondary: >
-                      {% if is_state('binary_sensor.oelkeller_shellyflood_flood', 'on') %}
+                      {% if is_state('binary_sensor.oelkeller_flutsensor_flood', 'on') %}
                         Der Flutsensor hat Wasser erkannt. Das Hauswasserwerk verliert Wasser.
                         Bitte überprüfe, ob der Ölkeller überschwemmt ist!
                       {% else %}

@@ -25,20 +25,20 @@
       sequence:
       - target:
           entity_id: input_boolean.wohnzimmer_terrarium_cooldown_active
-        action: input_boolean.turn_off
+        service: input_boolean.turn_off
       - data:
           message: '[Terrarium] Cooldown deaktiviert, da Warmup aktiviert wurde.'
           level: info
-        action: system_log.write
+        service: system_log.write
     - conditions:
       - condition: template
         value_template: "{{ trigger.entity_id == 'input_boolean.wohnzimmer_terrarium_cooldown_active' }}"
       sequence:
       - target:
           entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
-        action: input_boolean.turn_off
+        service: input_boolean.turn_off
       - data:
           message: '[Terrarium] Warmup deaktiviert, da Cooldown aktiviert wurde.'
           level: info
-        action: system_log.write
+        service: system_log.write
   mode: single

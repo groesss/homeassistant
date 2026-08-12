@@ -202,58 +202,58 @@
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_monday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_tuesday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_wednesday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_thursday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_friday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_saturday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
       - data:
           entity_id: text.arbeitszimmer_thermostat_weekly_schedule_sunday
           value: '{{ common_schedule }}'
-        action: text.set_value
+        service: text.set_value
     default:
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_monday
         value: '{{ monday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_tuesday
         value: '{{ tuesday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_wednesday
         value: '{{ wednesday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_thursday
         value: '{{ thursday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_friday
         value: '{{ friday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_saturday
         value: '{{ saturday_schedule }}'
-      action: text.set_value
+      service: text.set_value
     - data:
         entity_id: text.arbeitszimmer_thermostat_weekly_schedule_sunday
         value: '{{ sunday_schedule }}'
-      action: text.set_value
+      service: text.set_value
   mode: single

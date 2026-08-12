@@ -1,0 +1,44 @@
+# ++
+# ++ Küche Aquarium Licht - Ausschalten
+# ++
+# Schaltet die Aquarium-Beleuchtung zur geplanten Zeit aus, wenn der Timer aktiv ist.
+# Funktioniert nur, wenn der Timer aktiv und der manuelle Modus deaktiviert ist.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: 'kueche_aquarium_licht_ausschalten'
+  alias: Kueche_Aquarium_Licht_Ausschalten
+  description: Schaltet Aquarium Licht zeitgesteuert aus
+  triggers:
+  - at: input_datetime.kueche_aquarium_licht_off
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.kueche_aquarium_timer_active
+    state: 'on'
+  actions:
+  - variables:
+      target_entity: switch.kueche_smartplug_aquarium
+      target_state: 'off'
+  - repeat:
+      count: 3
+      sequence:
+      - action: switch.turn_off
+        continue_on_error: true
+        target:
+          entity_id: '{{ target_entity }}'
+      - delay: '00:00:01'
+  - if:
+    - condition: template
+      value_template: "{{ not is_state(target_entity, target_state) }}"
+    then:
+    - data:
+        message: '[Aquarium] Licht konnte nach 3 Versuchen nicht ausgeschaltet werden. Zustand: {{ states(target_entity) }}'
+        level: warning
+      service: system_log.write
+    else:
+    - data:
+        message: '[Aquarium] Licht ausgeschaltet um {{ now().strftime(''%H:%M'') }}'
+        level: info
+      service: system_log.write
+  mode: single

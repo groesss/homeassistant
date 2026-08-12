@@ -1,0 +1,43 @@
+# ++
+# ++ Wohnzimmer Aquarium Licht - Einschalten
+# ++
+# Schaltet die Aquarium-Beleuchtung zur geplanten Zeit ein, wenn der Timer aktiv ist.
+# Loggt die Aktion ins System Log.
+# ++
+
+- id: 'wohnzimmer_aquarium_licht_einschalten'
+  alias: Wohnzimmer_Aquarium_Licht_Einschalten
+  description: Schaltet Aquarium Licht zeitgesteuert ein
+  triggers:
+  - at: input_datetime.wohnzimmer_aquarium_licht_on
+    trigger: time
+  conditions:
+  - condition: state
+    entity_id: input_boolean.wohnzimmer_aquarium_timer_active
+    state: 'on'
+  actions:
+  - variables:
+      target_entity: switch.wohnzimmer_smartplug_aquarium
+      target_state: 'on'
+  - repeat:
+      count: 3
+      sequence:
+      - action: switch.turn_on
+        continue_on_error: true
+        target:
+          entity_id: '{{ target_entity }}'
+      - delay: '00:00:01'
+  - if:
+    - condition: template
+      value_template: "{{ not is_state(target_entity, target_state) }}"
+    then:
+    - data:
+        message: '[Wohnzimmer Aquarium] Licht konnte nach 3 Versuchen nicht eingeschaltet werden. Zustand: {{ states(target_entity) }}'
+        level: warning
+      service: system_log.write
+    else:
+    - data:
+        message: '[Wohnzimmer Aquarium] Licht eingeschaltet um {{ now().strftime(''%H:%M'') }}'
+        level: info
+      service: system_log.write
+  mode: single

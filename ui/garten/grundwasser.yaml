@@ -20,10 +20,10 @@ cards:
                   primary: Wasserstandssensor
                   icon: mdi:water-alert-outline
                   icon_color: >
-                    {% if is_state('binary_sensor.garten_shelly_grundwasser',
+                    {% if is_state('sensor.garten_grundwasser_alarm',
                     'off') %}
                       green
-                    {% elif is_state('binary_sensor.garten_shelly_grundwasser',
+                    {% elif is_state('sensor.garten_grundwasser_alarm',
                     'on') %}
                       red
                     {% else %}
@@ -33,14 +33,14 @@ cards:
                 entities:
                   - type: custom:mushroom-template-card
                     primary: >
-                      {% if is_state('switch.garten_shelly_grundwassersensor',
+                      {% if is_state('sensor.garten_grundwasser_alarm',
                       'on') %}
                         ⚠️ Grundwasser-Warnung!
                       {% else %}
                         ✅ Alles in Ordnung
                       {% endif %}
                     secondary: >
-                      {% if is_state('switch.garten_shelly_grundwassersensor',
+                      {% if is_state('sensor.garten_grundwasser_alarm',
                       'on') %}
                         Der Sensor im Grundwasserschacht hat ausgelöst.  
                         Bitte überprüfe, ob die Pumpe noch läuft!

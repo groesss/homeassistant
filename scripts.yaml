@@ -108,3 +108,100 @@ terrarium_warmup:
 
     '
   icon: mdi:radiator
+
+message_mark_read:
+  alias: Message Mark Read
+  description: Markiert eine ack-faehige Message als gelesen.
+  fields:
+    message_entity:
+      description: Entity-ID der Message (z. B. sensor.solar_can_timeout_message)
+      example: sensor.solar_can_timeout_message
+  sequence:
+    - variables:
+        key: "{{ state_attr(message_entity, 'message_ack_key') or message_entity }}"
+        current: "{{ states('input_text.messages_acknowledged') }}"
+    - condition: template
+      value_template: "{{ current is string and key is string and key | length > 0 }}"
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ ('|' ~ key ~ '|') not in current }}"
+          sequence:
+            - action: input_text.set_value
+              target:
+                entity_id: input_text.messages_acknowledged
+              data:
+                value: "{{ current ~ key ~ '|' }}"
+  mode: queued
+
+message_reset_read:
+  alias: Message Reset Read
+  description: Entfernt den Gelesen-Status einer Message.
+  fields:
+    message_entity:
+      description: Entity-ID der Message (z. B. sensor.solar_can_timeout_message)
+      example: sensor.solar_can_timeout_message
+  sequence:
+    - variables:
+        key: "{{ state_attr(message_entity, 'message_ack_key') or message_entity }}"
+        current: "{{ states('input_text.messages_acknowledged') }}"
+        marker: "{{ '|' ~ key ~ '|' }}"
+    - condition: template
+      value_template: "{{ current is string and marker is string and marker | length > 2 }}"
+    - action: input_text.set_value
+      target:
+        entity_id: input_text.messages_acknowledged
+      data:
+        value: >
+          {% set updated = current | replace(marker, '|') %}
+          {% if updated in ['', 'unknown', 'unavailable', 'None', 'none'] %}|{% else %}{{ updated }}{% endif %}
+  mode: queued
+
+aquarium_lighting_fallback:
+  alias: Aquarium Lighting Fallback
+  description: Setzt den Aquarium-Schalter direkt auf einen gewünschten Zustand, wenn der normale Schaltbefehl nicht wirkt.
+  fields:
+    target_entity:
+      description: Ziel-Entity des Schaltgeräts
+      example: switch.kueche_smartplug_aquarium
+    desired_state:
+      description: Zielzustand on oder off
+      example: on
+  sequence:
+    - variables:
+        target_entity: "{{ target_entity }}"
+        desired_state: "{{ desired_state | lower }}"
+    - choose:
+        - conditions: "{{ desired_state in ['on', 'off'] }}"
+          sequence:
+            - if:
+                - condition: template
+                  value_template: "{{ desired_state == 'on' }}"
+              then:
+                - action: switch.turn_on
+                  target:
+                    entity_id: "{{ target_entity }}"
+              else:
+                - action: switch.turn_off
+                  target:
+                    entity_id: "{{ target_entity }}"
+            - delay: '00:00:02'
+            - if:
+                - condition: template
+                  value_template: "{{ not is_state(target_entity, desired_state) }}"
+              then:
+                - action: switch.turn_on
+                  target:
+                    entity_id: "{{ target_entity }}"
+                  enabled: "{{ desired_state == 'on' }}"
+                - action: switch.turn_off
+                  target:
+                    entity_id: "{{ target_entity }}"
+                  enabled: "{{ desired_state == 'off' }}"
+            - delay: '00:00:02'
+            - action: logbook.log
+              data:
+                name: Aquarium Lighting Fallback
+                message: "Fallback für {{ target_entity }} auf {{ desired_state }}"
+                entity_id: "{{ target_entity }}"
+  mode: queued

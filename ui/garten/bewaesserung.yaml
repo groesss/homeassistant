@@ -13,17 +13,19 @@ cards:
           - type: entities
             card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
             entities:
-
               - type: custom:fold-entity-row
                 head:
                   type: custom:mushroom-template-card
                   primary: Gardena Ventil 1
                   secondary: >
-                    {% set batt =
-                    states('sensor.garten_gardena_ventil_1_battery') %} {% set
-                    moist = states('sensor.garten_gardena_ventil_1_moisture') %}
-                    Batterie: {{ batt if batt != 'unknown' else '-' }}% ·
-                    Feuchtigkeit: {{ moist if moist != 'unknown' else '-' }}%
+                    {% set batt = states('sensor.garten_gardena_ventil_1_battery') %}
+                    {% set state = states('valve.garten_gardena_ventil_1') %}
+                    {% set rain = states('number.garten_gardena_ventil_1_rain_pause') %}
+                    {% if state == 'open' %}
+                      Status: Gießt · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% else %}
+                      Status: Standby · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% endif %}
                   icon: mdi:water
                   icon_color: |
                     {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
@@ -33,51 +35,467 @@ cards:
                     {% endif %}
                   card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
                 entities:
-                  - entity: valve.garten_gardena_ventil_1
-                    name: Ventil Steuerung
-                  - entity: number.garten_gardena_ventil_1_manual_watering_time
-                    name: Manuelle Bewässerungszeit (min)
-                  - entity: number.garten_gardena_ventil_1_open_for
-                    name: Geöffnet für (min)
-                  - entity: number.garten_gardena_ventil_1_rain_pause
-                    name: Regenpause (h)
-                  - entity: number.garten_gardena_ventil_1_remaining_open_time
-                    name: Verbleibende Zeit (min)
-                  - entity: number.garten_gardena_ventil_1_seasonal_adjust
-                    name: Saisonale Anpassung (%)
-                  - entity: number.garten_gardena_ventil_1_sensor_threshold
-                    name: Sensor Schwelle
-                  - entity: sensor.garten_gardena_ventil_1_battery
-                    name: Ventil Batterie
-                  - entity: sensor.garten_gardena_ventil_1_moisture
-                    name: Bodenfeuchtigkeit
-                  - entity: sensor.garten_gardena_ventil_1_sensor_battery
-                    name: Sensor Batterie
-                  - entity: sensor.garten_gardena_ventil_1_sensor_timestamp
-                    name: Letzte Sensor-Aktualisierung
+                  - type: custom:mushroom-template-card
+                    entity: valve.garten_gardena_ventil_1
+                    primary: Ventil 1 (manuell)
+                    secondary: >
+                      {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
+                        EIN - Gießt jetzt
+                      {% else %}
+                        AUS - Standby
+                      {% endif %}
+                    icon: mdi:sprinkler-variant
+                    icon_color: >
+                      {% if is_state('valve.garten_gardena_ventil_1', 'open') %}
+                        yellow
+                      {% else %}
+                        grey
+                      {% endif %}
+                    tap_action:
+                      action: toggle
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Batterie"
+                      - entity: sensor.garten_gardena_ventil_1_battery
+                      - mode: battery
+
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                    cards:
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_1_rain_pause
+                        name: Regenpause
+                        icon: mdi:weather-rainy
+                        unit: ' d'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_1_manual_watering_time
+                        name: Manuell
+                        icon: mdi:timer-outline
+                        unit: ' min'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+
                   - type: custom:fold-entity-row
                     head:
                       type: section
-                      label: Zeitplan
+                      label: Zeitplan (readonly kompakt)
                     entities:
-                      - type: custom:stack-in-card
-                        mode: horizontal
-                        cards:
-                          - type: entities
-                            entities:
-                              - entity: input_boolean.gardena_mo
-                                name: Mo
-                              - entity: input_boolean.gardena_di
-                                name: Di
-                              - entity: input_boolean.gardena_mi
-                                name: Mi
-                          - type: entities
-                            entities:
-                              - entity: input_boolean.gardena_do
-                                name: Do
-                              - entity: input_boolean.gardena_fr
-                                name: Fr
-                              - entity: input_boolean.gardena_sa
-                                name: Sa
-                              - entity: input_boolean.gardena_so
-                                name: So
+                      - type: custom:mushroom-template-card
+                        primary: Slot 1
+                        secondary: >
+                          {{ states('input_datetime.gardena_morgen_start')[0:5] if states('input_datetime.gardena_morgen_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_dauer') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Slot 2
+                        secondary: >
+                          {{ states('input_datetime.gardena_abend_start')[0:5] if states('input_datetime.gardena_abend_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_dauer_2') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: indigo
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Bewässerungstage
+                        secondary: >
+                          {% set d = [] %}
+                          {% if is_state('input_boolean.gardena_mo', 'on') %}{% set d = d + ['Mo'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_di', 'on') %}{% set d = d + ['Di'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_mi', 'on') %}{% set d = d + ['Mi'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_do', 'on') %}{% set d = d + ['Do'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_fr', 'on') %}{% set d = d + ['Fr'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_sa', 'on') %}{% set d = d + ['Sa'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_so', 'on') %}{% set d = d + ['So'] %}{% endif %}
+                          {{ d | join(', ') if d | count > 0 else 'Keine Tage aktiv' }}
+                        icon: mdi:calendar-week
+                        icon_color: teal
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Historie letzte Laeufe
+                    entities:
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Start
+                        secondary: "{{ states('input_text.gardena_ventil_1_last_start') if states('input_text.gardena_ventil_1_last_start') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:play-circle-outline
+                        icon_color: green
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Stop
+                        secondary: "{{ states('input_text.gardena_ventil_1_last_stop') if states('input_text.gardena_ventil_1_last_stop') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:stop-circle-outline
+                        icon_color: orange
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laufdauer
+                        secondary: "{{ states('input_text.gardena_ventil_1_last_duration') if states('input_text.gardena_ventil_1_last_duration') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:timer-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laeufe
+                        secondary: "{{ states('input_text.gardena_ventil_1_history') if states('input_text.gardena_ventil_1_history') not in ['unknown','unavailable',''] else 'Noch keine Historie vorhanden' }}"
+                        icon: mdi:history
+                        icon_color: grey
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Gardena Ventil 2
+                  secondary: >
+                    {% set batt = states('sensor.garten_gardena_ventil_2_battery') %}
+                    {% set state = states('valve.garten_gardena_ventil_2') %}
+                    {% set rain = states('number.garten_gardena_ventil_2_rain_pause') %}
+                    {% if state == 'open' %}
+                      Status: Gießt · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% else %}
+                      Status: Standby · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% endif %}
+                  icon: mdi:water
+                  icon_color: |
+                    {% if is_state('valve.garten_gardena_ventil_2', 'open') %}
+                      blue
+                    {% else %}
+                      grey
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                entities:
+                  - type: custom:mushroom-template-card
+                    entity: valve.garten_gardena_ventil_2
+                    primary: Ventil 2 (manuell)
+                    secondary: >
+                      {% if is_state('valve.garten_gardena_ventil_2', 'open') %}
+                        EIN - Gießt jetzt
+                      {% else %}
+                        AUS - Standby
+                      {% endif %}
+                    icon: mdi:sprinkler-variant
+                    icon_color: >
+                      {% if is_state('valve.garten_gardena_ventil_2', 'open') %}
+                        yellow
+                      {% else %}
+                        grey
+                      {% endif %}
+                    tap_action:
+                      action: toggle
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Batterie"
+                      - entity: sensor.garten_gardena_ventil_2_battery
+                      - mode: battery
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                    cards:
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_2_rain_pause
+                        name: Regenpause
+                        icon: mdi:weather-rainy
+                        unit: ' d'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_2_manual_watering_time
+                        name: Manuell
+                        icon: mdi:timer-outline
+                        unit: ' min'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Zeitplan (readonly kompakt)
+                    entities:
+                      - type: custom:mushroom-template-card
+                        primary: Slot 1
+                        secondary: >
+                          {{ states('input_datetime.gardena_ventil_2_slot_1_start')[0:5] if states('input_datetime.gardena_ventil_2_slot_1_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_ventil_2_dauer_1') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Slot 2
+                        secondary: >
+                          {{ states('input_datetime.gardena_ventil_2_slot_2_start')[0:5] if states('input_datetime.gardena_ventil_2_slot_2_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_ventil_2_dauer_2') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: indigo
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Bewässerungstage
+                        secondary: >
+                          {% set d = [] %}
+                          {% if is_state('input_boolean.gardena_ventil_2_mo', 'on') %}{% set d = d + ['Mo'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_di', 'on') %}{% set d = d + ['Di'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_mi', 'on') %}{% set d = d + ['Mi'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_do', 'on') %}{% set d = d + ['Do'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_fr', 'on') %}{% set d = d + ['Fr'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_sa', 'on') %}{% set d = d + ['Sa'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_2_so', 'on') %}{% set d = d + ['So'] %}{% endif %}
+                          {{ d | join(', ') if d | count > 0 else 'Keine Tage aktiv' }}
+                        icon: mdi:calendar-week
+                        icon_color: teal
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Historie letzte Laeufe
+                    entities:
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Start
+                        secondary: "{{ states('input_text.gardena_ventil_2_last_start') if states('input_text.gardena_ventil_2_last_start') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:play-circle-outline
+                        icon_color: green
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Stop
+                        secondary: "{{ states('input_text.gardena_ventil_2_last_stop') if states('input_text.gardena_ventil_2_last_stop') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:stop-circle-outline
+                        icon_color: orange
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laufdauer
+                        secondary: "{{ states('input_text.gardena_ventil_2_last_duration') if states('input_text.gardena_ventil_2_last_duration') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:timer-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laeufe
+                        secondary: "{{ states('input_text.gardena_ventil_2_history') if states('input_text.gardena_ventil_2_history') not in ['unknown','unavailable',''] else 'Noch keine Historie vorhanden' }}"
+                        icon: mdi:history
+                        icon_color: grey
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  primary: Gardena Ventil 3
+                  secondary: >
+                    {% set batt = states('sensor.garten_gardena_ventil_3_battery') %}
+                    {% set state = states('valve.garten_gardena_ventil_3') %}
+                    {% set rain = states('number.garten_gardena_ventil_3_rain_pause') %}
+                    {% if state == 'open' %}
+                      Status: Gießt · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% else %}
+                      Status: Standby · Batterie: {{ batt if batt not in ['unknown','unavailable'] else '-' }}% · Regenpause: {{ rain if rain not in ['unknown','unavailable'] else '-' }} d
+                    {% endif %}
+                  icon: mdi:water
+                  icon_color: |
+                    {% if is_state('valve.garten_gardena_ventil_3', 'open') %}
+                      blue
+                    {% else %}
+                      grey
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                entities:
+                  - type: custom:mushroom-template-card
+                    entity: valve.garten_gardena_ventil_3
+                    primary: Ventil 3 (manuell)
+                    secondary: >
+                      {% if is_state('valve.garten_gardena_ventil_3', 'open') %}
+                        EIN - Gießt jetzt
+                      {% else %}
+                        AUS - Standby
+                      {% endif %}
+                    icon: mdi:sprinkler-variant
+                    icon_color: >
+                      {% if is_state('valve.garten_gardena_ventil_3', 'open') %}
+                        yellow
+                      {% else %}
+                        grey
+                      {% endif %}
+                    tap_action:
+                      action: toggle
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Batterie"
+                      - entity: sensor.garten_gardena_ventil_3_battery
+                      - mode: battery
+                  - type: custom:stack-in-card
+                    mode: horizontal
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                    cards:
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_3_rain_pause
+                        name: Regenpause
+                        icon: mdi:weather-rainy
+                        unit: ' d'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+                      - type: custom:numberbox-card
+                        entity: number.garten_gardena_ventil_3_manual_watering_time
+                        name: Manuell
+                        icon: mdi:timer-outline
+                        unit: ' min'
+                        step: 1
+                        speed: 250
+                        card_mod: !include /config/ui/shared/styles/flat_compact_nested.yaml
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Zeitplan (readonly kompakt)
+                    entities:
+                      - type: custom:mushroom-template-card
+                        primary: Slot 1
+                        secondary: >
+                          {{ states('input_datetime.gardena_ventil_3_slot_1_start')[0:5] if states('input_datetime.gardena_ventil_3_slot_1_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_ventil_3_dauer_1') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Slot 2
+                        secondary: >
+                          {{ states('input_datetime.gardena_ventil_3_slot_2_start')[0:5] if states('input_datetime.gardena_ventil_3_slot_2_start') not in ['unknown','unavailable',''] else '--:--' }} ·
+                          {{ states('input_number.gardena_ventil_3_dauer_2') | int(0) }} min
+                        icon: mdi:clock-outline
+                        icon_color: indigo
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Bewässerungstage
+                        secondary: >
+                          {% set d = [] %}
+                          {% if is_state('input_boolean.gardena_ventil_3_mo', 'on') %}{% set d = d + ['Mo'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_di', 'on') %}{% set d = d + ['Di'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_mi', 'on') %}{% set d = d + ['Mi'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_do', 'on') %}{% set d = d + ['Do'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_fr', 'on') %}{% set d = d + ['Fr'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_sa', 'on') %}{% set d = d + ['Sa'] %}{% endif %}
+                          {% if is_state('input_boolean.gardena_ventil_3_so', 'on') %}{% set d = d + ['So'] %}{% endif %}
+                          {{ d | join(', ') if d | count > 0 else 'Keine Tage aktiv' }}
+                        icon: mdi:calendar-week
+                        icon_color: teal
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                  - type: custom:fold-entity-row
+                    head:
+                      type: section
+                      label: Historie letzte Laeufe
+                    entities:
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Start
+                        secondary: "{{ states('input_text.gardena_ventil_3_last_start') if states('input_text.gardena_ventil_3_last_start') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:play-circle-outline
+                        icon_color: green
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzter Stop
+                        secondary: "{{ states('input_text.gardena_ventil_3_last_stop') if states('input_text.gardena_ventil_3_last_stop') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:stop-circle-outline
+                        icon_color: orange
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laufdauer
+                        secondary: "{{ states('input_text.gardena_ventil_3_last_duration') if states('input_text.gardena_ventil_3_last_duration') not in ['unknown','unavailable',''] else '-' }}"
+                        icon: mdi:timer-outline
+                        icon_color: blue
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+                      - type: custom:mushroom-template-card
+                        primary: Letzte Laeufe
+                        secondary: "{{ states('input_text.gardena_ventil_3_history') if states('input_text.gardena_ventil_3_history') not in ['unknown','unavailable',''] else 'Noch keine Historie vorhanden' }}"
+                        icon: mdi:history
+                        icon_color: grey
+                        tap_action:
+                          action: none
+                        hold_action:
+                          action: none
+                        card_mod: !include /config/ui/shared/styles/flat_compact.yaml

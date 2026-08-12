@@ -61,3 +61,43 @@ wohnzimmer_tv_minute_count_tv:
     step: 1
     unit_of_measurement: min
     mode: box
+
+wohnzimmer_tv_minute_count_andere:
+    name: TV Minuten Andere
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box
+
+wohnzimmer_tv_minute_count_ard:
+    name: TV Minuten ARD Mediathek
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box
+
+wohnzimmer_tv_minute_count_hdplus:
+    name: TV Minuten HD+
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box
+
+wohnzimmer_tv_minute_count_joyn:
+    name: TV Minuten Joyn
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box
+
+wohnzimmer_tv_minute_count_zdf:
+    name: TV Minuten ZDF
+    min: 0
+    max: 1440
+    step: 1
+    unit_of_measurement: min
+    mode: box

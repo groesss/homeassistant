@@ -1,0 +1,32 @@
+# ++
+# ++ Waschkeller Trockner Entity Watchdog
+# ++
+# Prueft regelmaessig, ob mindestens eine gueltige Bosch-Entity
+# fuer den Trockner verfuegbar ist (Powerstate, Operationstate,
+# Doorstate, Active Program, Remaining Time, Program Progress).
+# Wenn keine Entity verfuegbar ist, wird eine Warnung ins System-Log geschrieben.
+# Die Pruefung basiert auf dem Health-Binary-Sensor aus templates/trockner.yaml.
+# ++
+
+- id: 'waschkeller_trockner_entity_watchdog'
+  alias: Waschkeller_Trockner_Entity_Watchdog
+  description: Warnt, wenn keine gueltige Bosch-Trockner-Entity verfuegbar ist
+  triggers:
+  - trigger: homeassistant
+    event: start
+  - trigger: time_pattern
+    minutes: '/30'
+  conditions:
+  - condition: state
+    entity_id: binary_sensor.waschkeller_trockner_bosch_health
+    state: 'off'
+  actions:
+  - service: system_log.write
+    data:
+      level: warning
+      message: >-
+        [Trockner Watchdog] Keine gueltige Bosch-Trockner-Entity gefunden.
+        Geprueft: Powerstate, Operationstate, Doorstate, Active Program,
+        Remaining Time und Program Progress (Entity-Map des Resolver-Sensors
+        'Waschkeller Trockner Bosch Entity Map' ist leer).
+  mode: single

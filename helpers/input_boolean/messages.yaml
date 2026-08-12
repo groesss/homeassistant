@@ -1,0 +1,4 @@
+messages_show_acknowledged:
+  name: Gelesene Fehler anzeigen
+  icon: mdi:circle
+  initial: off

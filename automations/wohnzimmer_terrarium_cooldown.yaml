@@ -21,7 +21,7 @@
   - data:
       level: info
       message: '[COOLDOWN] Started'
-    action: system_log.write
+    service: system_log.write
   - variables:
       l1_on: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_on'') }}'
       l1_off: '{{ states(''input_datetime.wohnzimmer_terrarium_lampe1_off'') }}'
@@ -38,7 +38,7 @@
       message: '[COOLDOWN] Current hours: {{ min_current }}
 
         '
-    action: system_log.write
+    service: system_log.write
   - choose:
     - conditions:
       - condition: template
@@ -47,34 +47,34 @@
       - data:
           level: info
           message: '[COOLDOWN] Finished → Winter mode'
-        action: system_log.write
+        service: system_log.write
       - target:
           entity_id:
           - input_boolean.wohnzimmer_terrarium_cooldown_active
           - input_boolean.wohnzimmer_terrarium_timer_active
-        action: input_boolean.turn_off
+        service: input_boolean.turn_off
     default:
     - data:
         level: info
         message: '[COOLDOWN] Applying -1h'
-      action: system_log.write
+      service: system_log.write
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
         time: "{{ (strptime(l1_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
           }}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
         time: "{{ (strptime(l1_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
           }}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
         time: "{{ (strptime(l2_on,'%H:%M:%S') +\n    timedelta(minutes=30)).strftime('%H:%M:%S')
           }}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
         time: "{{ (strptime(l2_off,'%H:%M:%S') -\n    timedelta(minutes=30)).strftime('%H:%M:%S')
           }}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime

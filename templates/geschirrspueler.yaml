@@ -17,13 +17,100 @@
         - binary_sensor.kueche_geschirrspueler_status_doorstate
         # Optional: Wenn der Aktive Programm Sensor sofort reagieren soll
         - sensor.kueche_geschirrspueler_selected_program
+        - sensor.kueche_geschirrspueler_option_remainingprogramtime
+        - counter.kueche_geschirrspueler_option_programprogress
+        - sensor.kueche_geschirrspueler_option_programprogress
+        - switch.kueche_geschirrspueler_setting_powerstate
+    - platform: time_pattern
+      minutes: "/1"
 
   sensor:
+    # Stable alias layer: use these entities in UI/automations.
+    # If raw integration IDs change, only this file needs updates.
+    - name: "Kueche Geschirrspueler Raw Operationstate"
+      unique_id: kueche_geschirrspueler_raw_operationstate
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_geschirrspueler_status_operationstate' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_bsh_common_status_operationstate' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Geschirrspueler Raw Doorstate"
+      unique_id: kueche_geschirrspueler_raw_doorstate
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'binary_sensor.kueche_geschirrspueler_status_doorstate' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'binary_sensor.' ~ base ~ '_bsh_common_status_doorstate' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Geschirrspueler Raw Selected Program"
+      unique_id: kueche_geschirrspueler_raw_selected_program
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_geschirrspueler_selected_program' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set vals = [states(old_id), states(ns.prog) if ns.prog else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Geschirrspueler Remaining Program Time"
+      unique_id: kueche_geschirrspueler_remainingprogramtime
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'sensor.kueche_geschirrspueler_option_remainingprogramtime' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_dishcare_dishwasher_option_remainingprogramtime' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'unknown' }}
+
+    - name: "Kueche Geschirrspueler Program Progress"
+      unique_id: kueche_geschirrspueler_program_progress
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_counter = 'counter.kueche_geschirrspueler_option_programprogress' %}
+        {% set old_sensor = 'sensor.kueche_geschirrspueler_option_programprogress' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'sensor.' ~ base ~ '_dishcare_dishwasher_option_programprogress' if base else '' %}
+        {% set vals = [states(old_counter), states(old_sensor), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else '0' }}
+
     - name: "Kueche Geschirrspueler Status Text"
       unique_id: kueche_geschirrspueler_status_text
       state: >
-        {% set op = states('sensor.kueche_geschirrspueler_status_operationstate') %}
-        {% set door = states('binary_sensor.kueche_geschirrspueler_status_doorstate') %}
+        {% set op = states('sensor.kueche_geschirrspueler_raw_operationstate') %}
+        {% set door = states('sensor.kueche_geschirrspueler_raw_doorstate') %}
         {% set old = this.state if this.state not in ['unknown','unavailable',''] else 'Bereit' %}
 
         {% if op == 'BSH.Common.EnumType.OperationState.Run' %}
@@ -53,7 +140,7 @@
     - name: "Kueche Geschirrspueler Aktives Programm Text"
       unique_id: kueche_geschirrspueler_aktives_programm_text
       state: >
-        {% set op = states('sensor.kueche_geschirrspueler_selected_program') %}
+        {% set op = states('sensor.kueche_geschirrspueler_raw_selected_program') %}
         {% set program_map = {
           'Dishcare.Dishwasher.Program.Eco50': 'Eco 50 °C',
           'Dishcare.Dishwasher.Program.Auto2': 'Auto',
@@ -61,4 +148,69 @@
           'Dishcare.Dishwasher.Program.Schnell65': 'Schnell 65 °C',
           'Dishcare.Dishwasher.Program.Silent': 'Leise'
         } %}
-        {{ program_map.get(op, op) }}
+        {% if op in ['unknown', 'unavailable', '', None] %}
+          –
+        {% else %}
+          {{ program_map.get(op, op) }}
+        {% endif %}
+
+- switch:
+    - name: "Kueche Geschirrspueler Powerstate"
+      unique_id: kueche_geschirrspueler_powerstate
+      state: >-
+        {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+        {% set old_id = 'switch.kueche_geschirrspueler_setting_powerstate' %}
+        {% set ns = namespace(prog='') %}
+        {% for s in states.sensor %}
+          {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+            {% set ns.prog = s.entity_id %}
+          {% endif %}
+        {% endfor %}
+        {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+        {% set dyn_id = 'switch.' ~ base ~ '_bsh_common_setting_powerstate' if base else '' %}
+        {% set vals = [states(old_id), states(dyn_id) if dyn_id else 'unknown'] | reject('in', invalid) | list %}
+        {{ vals[0] if vals | length > 0 else 'off' }}
+      turn_on:
+        - service: homeassistant.turn_on
+          target:
+            entity_id: >-
+              {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+              {% set old_id = 'switch.kueche_geschirrspueler_setting_powerstate' %}
+              {% set ns = namespace(prog='') %}
+              {% for s in states.sensor %}
+                {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+                  {% set ns.prog = s.entity_id %}
+                {% endif %}
+              {% endfor %}
+              {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+              {% set dyn_id = 'switch.' ~ base ~ '_bsh_common_setting_powerstate' if base else '' %}
+              {% set choices = [old_id, dyn_id] if dyn_id else [old_id] %}
+              {% set ns2 = namespace(chosen='') %}
+              {% for e in choices %}
+                {% if ns2.chosen == '' and states(e) not in invalid %}
+                  {% set ns2.chosen = e %}
+                {% endif %}
+              {% endfor %}
+              {{ ns2.chosen if ns2.chosen != '' else old_id }}
+      turn_off:
+        - service: homeassistant.turn_off
+          target:
+            entity_id: >-
+              {% set invalid = ['unknown', 'unavailable', 'none', 'None', ''] %}
+              {% set old_id = 'switch.kueche_geschirrspueler_setting_powerstate' %}
+              {% set ns = namespace(prog='') %}
+              {% for s in states.sensor %}
+                {% if ns.prog == '' and s.entity_id.startswith('sensor.bosch_') and '_dishcare_dishwasher_' in s.entity_id and (s.entity_id.endswith('_selected_program') or s.entity_id.endswith('_active_program')) %}
+                  {% set ns.prog = s.entity_id %}
+                {% endif %}
+              {% endfor %}
+              {% set base = ns.prog.split('_dishcare_dishwasher_')[0].replace('sensor.', '') if ns.prog else '' %}
+              {% set dyn_id = 'switch.' ~ base ~ '_bsh_common_setting_powerstate' if base else '' %}
+              {% set choices = [old_id, dyn_id] if dyn_id else [old_id] %}
+              {% set ns2 = namespace(chosen='') %}
+              {% for e in choices %}
+                {% if ns2.chosen == '' and states(e) not in invalid %}
+                  {% set ns2.chosen = e %}
+                {% endif %}
+              {% endfor %}
+              {{ ns2.chosen if ns2.chosen != '' else old_id }}

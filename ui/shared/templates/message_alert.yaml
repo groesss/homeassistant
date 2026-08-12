@@ -1,50 +1,240 @@
-# ++
+﻿# ++
 # ++ Message Alert Template
 # ++
-# Beschreibung:
-#   Markdown-Karte für Benachrichtigungen und Warnmeldungen mit dynamischen 
-#   Emojis basierend auf dem Nachrichtentyp. Zeigt Titel und Inhalt einer 
-#   Message-Entität formatiert an.
-#
-# Verwendung:
-#   type: custom:decluttering-card
-#   template: message_alert
-#   variables:
-#     - entity: sensor.system_nachricht
-#
-# Variablen:
-#   - entity: Entity-ID der Message-Entität mit Attributen:
-#       - message_type: 'info', 'warning' oder 'error'
-#       - message_title: Überschrift der Nachricht
-#       - message: Nachrichteninhalt
-#
-# Nachrichtentypen und Emojis:
-#   - info: 💡 (Information)
-#   - warning: ⚠️ (Warnung)
-#   - error: ❌ (Fehler)
-#   - default: 🔔 (Benachrichtigung)
-#
-# Styling:
-#   - Verwendet message_alert.yaml Style
 
 message_alert:
   card:
-    type: markdown
-    entity: '[[entity]]'
-    content: >
-      {% set type = state_attr('[[entity]]','message_type') %}
+    type: custom:stack-in-card
+    card_mod:
+      style: |
+        ha-card {
+          {% set type = state_attr('[[entity]]','message_type') %}
+          {% set ack_enabled = (state_attr('[[entity]]','message_ack_enabled') | string | lower) in ['true', '1', 'on', 'yes'] %}
+          {% set is_ack = (state_attr('[[entity]]','is_acknowledged') | string | lower) in ['true', '1', 'on', 'yes'] %}
+          {% set show_ack = is_state('input_boolean.messages_show_acknowledged', 'on') %}
+          border-radius: 12px;
+          padding: 0;
+          padding-bottom: 8px;
+          margin-bottom: 12px;
+          {% if type == 'info' %}
+            border: 2px solid var(--info-color);
+            background: rgba(0, 128, 0, 0.1);
+            color: var(--info-color);
+          {% elif type == 'warning' %}
+            border: 2px solid var(--warning-color);
+            background: rgba(255, 165, 0, 0.1);
+            color: var(--warning-color);
+          {% elif type == 'error' %}
+            border: 2px solid var(--error-color);
+            background: rgba(255, 0, 0, 0.1);
+            color: var(--error-color);
+          {% endif %}
+          {% if type == 'error' and ack_enabled and is_ack and not show_ack %}
+          display: none;
+          {% endif %}
+        }
+    cards:
+      - type: markdown
+        entity: '[[entity]]'
+        content: >
+          {% set type = state_attr('[[entity]]','message_type') %}
+          {% set emoji = '🔔' %}
+          {% if type == 'info' %}{% set emoji = '💡' %}
+          {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+          {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
 
-      {% set emoji = '🔔' %}
+          **{{ emoji }} {{ state_attr('[[entity]]','message_title') }}**
 
-      {% if type == 'info' %}{% set emoji = '💡' %}
+          {{ state_attr('[[entity]]','message') }}
+        card_mod:
+          style: |
+            ha-card {
+              background: transparent;
+              border: none;
+              box-shadow: none;
+              margin: 0;
+              padding: 12px 12px 4px 12px;
+            }
 
-      {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+      - type: grid
+        columns: 3
+        square: false
+        card_mod:
+          style: |
+            ha-card {
+              background: transparent;
+              border: none;
+              box-shadow: none;
+              margin: 0 0 10px 0;
+              padding: 0;
+            }
+        cards:
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && !isAck);
+              ]]]
+          - type: custom:button-card
+            entity: '[[entity]]'
+            name: GELESEN
+            icon: mdi:check-circle
+            show_name: true
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              target:
+                entity_id: script.message_mark_read
+              data:
+                variables:
+                  message_entity: '[[entity]]'
+            styles:
+              card:
+                - padding: 3px 9px
+                - width: 140px
+                - justify-self: center
+                - margin-left: auto
+                - margin-right: auto
+                - border-radius: 999px
+                - background: '#ff9800'
+                - color: '#111111'
+                - box-shadow: none
+              icon:
+                - width: 14px
+                - color: '#111111'
+              name:
+                - font-size: 10px
+                - font-weight: 600
+                - color: '#111111'
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && !isAck);
+              ]]]
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && !isAck);
+              ]]]
 
-      {% elif type == 'error' %}{% set emoji = '❌' %}{% endif %}
+      - type: grid
+        columns: 3
+        square: false
+        card_mod:
+          style: |
+            ha-card {
+              background: transparent;
+              border: none;
+              box-shadow: none;
+              margin: 4px 0 18px 0;
+              padding: 0;
+            }
+        cards:
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && isAck);
+              ]]]
+          - type: custom:button-card
+            entity: '[[entity]]'
+            name: als ungelesen markieren
+            icon: mdi:restore
+            show_name: true
+            show_state: false
+            tap_action:
+              action: call-service
+              service: script.turn_on
+              target:
+                entity_id: script.message_reset_read
+              data:
+                variables:
+                  message_entity: '[[entity]]'
+            styles:
+              card:
+                - padding: 3px 9px
+                - width: 190px
+                - justify-self: center
+                - margin-left: auto
+                - margin-right: auto
+                - border-radius: 999px
+                - background: '#9e9e9e'
+                - color: '#111111'
+                - box-shadow: none
+              icon:
+                - width: 14px
+                - color: '#111111'
+              name:
+                - font-size: 10px
+                - font-weight: 600
+                - color: '#111111'
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && isAck);
+              ]]]
+          - type: custom:button-card
+            show_name: false
+            show_icon: false
+            styles:
+              card:
+                - background: transparent
+                - border: none
+                - box-shadow: none
+            hidden: |
+              [[[
+                const e = hass.states['[[entity]]'];
+                if (!e) return true;
+                const t = e.attributes.message_type;
+                const ackEnabled = [true, 'true', 'True', 1, '1'].includes(e.attributes.message_ack_enabled);
+                const isAck = [true, 'true', 'True', 1, '1'].includes(e.attributes.is_acknowledged);
+                return !(t === 'error' && ackEnabled && isAck);
+              ]]]
 
-      **{{ emoji }} {{
-      state_attr('[[entity]]','message_title')
-      }}**  
 
-      {{ state_attr('[[entity]]','message') }}
-    card_mod: !include /config/ui/shared/styles/message_alert.yaml # Message Alert Style
+
+
+

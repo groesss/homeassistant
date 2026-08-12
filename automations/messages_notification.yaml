@@ -13,7 +13,8 @@
   alias: Messages_Notification
   description: Sendet Push-Notifications für Geräte- und Sensor-Meldungen
   triggers:
-  - entity_id:
+  - trigger: state
+    entity_id:
     - sensor.kueche_geschirrspueler_message
     - sensor.kueche_backofen_message
     - sensor.waschkeller_trockner_message
@@ -21,31 +22,58 @@
     - sensor.oelkeller_flutsensor_message
     - sensor.oelkeller_flutsensor_batterie_message
     - sensor.arbeitszimmer_thermostat_batterie_message
+    - sensor.wohnzimmer_thermostat_1_batterie_message
+    - sensor.wohnzimmer_thermostat_2_batterie_message
+    - sensor.diele_thermostat_batterie_message
+    - sensor.garten_gardena_ventil_1_batterie_message
+    - sensor.garten_gardena_ventil_2_batterie_message
+    - sensor.garten_gardena_ventil_3_batterie_message
+#    - sensor.solar_wechselrichter_kommunikation_message
+#    - sensor.solar_batterie_kommunikation_message
+#    - sensor.solar_wechselrichter_fehler_message
+#    - sensor.solar_slave_fehler_message
+#    - sensor.solar_can_timeout_message
     to: 'True'
-    trigger: state
   variables:
     msg_sensor: '{{ trigger.entity_id }}'
+    msg_title: >-
+      {% set type = state_attr(msg_sensor, 'message_type') %}
+      {% set emoji = '🔔' %}
+      {% if type == 'info' %}{% set emoji = '💡' %}
+      {% elif type == 'warning' %}{% set emoji = '⚠️' %}
+      {% elif type == 'error' %}{% set emoji = '❌' %}
+      {% endif %}
+      {{ emoji }} {{ state_attr(msg_sensor, 'message_title') }}
+    msg_body: "{{ state_attr(msg_sensor, 'message') }}"
+    ack_enabled: "{{ (state_attr(msg_sensor, 'message_ack_enabled') | string | lower) in ['true', '1', 'on', 'yes'] }}"
+    ack_key: "{{ state_attr(msg_sensor, 'message_ack_key') or msg_sensor }}"
+    ack_store: "{{ states('input_text.messages_acknowledged') or '' }}"
+    # KORREKTUR: Prüft direkt, ob der Key im Text enthalten ist, ohne starre Pipes
+    is_ack: "{{ ack_key in ack_store }}"
   actions:
-  - data:
-      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
-        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
-        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
-        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
-        }}\n"
-      message: '{{ state_attr(msg_sensor,''message'') }}'
-      data:
-        ttl: 0
-        priority: high
-    action: notify.mobile_app_sm_g991b
-  - data:
-      title: "{% set type = state_attr(msg_sensor,'message_type') %} {% set emoji
-        = '\U0001F514' %} {% if type == 'info' %}{% set emoji = '\U0001F4A1' %} {%
-        elif type == 'warning' %}{% set emoji = '⚠️' %} {% elif type == 'error' %}{%
-        set emoji = '❌' %}{% endif %} {{ emoji }} {{ state_attr(msg_sensor,'message_title')
-        }}\n"
-      message: '{{ state_attr(msg_sensor,''message'') }}'
-      data:
-        ttl: 0
-        priority: high
-    action: notify.mobile_app_rmx3085
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: "{{ ack_enabled and is_ack }}"
+      sequence:
+      - action: logbook.log
+        data:
+          name: Messages_Notification
+          message: "Push unterdrueckt (gelesen): {{ ack_key }}"
+          entity_id: "{{ msg_sensor }}"
+    default:
+    - data:
+        title: "{{ msg_title }}"
+        message: "{{ msg_body }}"
+        data:
+          ttl: 0
+          priority: high
+      action: notify.mobile_app_sm_g991b
+    - data:
+        title: "{{ msg_title }}"
+        message: "{{ msg_body }}"
+        data:
+          ttl: 0
+          priority: high
+      action: notify.mobile_app_rmx3085
   mode: single

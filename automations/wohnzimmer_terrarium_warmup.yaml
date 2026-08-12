@@ -21,7 +21,7 @@
   - data:
       level: warning
       message: '[WARMUP] Started'
-    action: system_log.write
+    service: system_log.write
   - choose:
     - conditions:
       - condition: template
@@ -35,40 +35,40 @@
       - data:
           level: warning
           message: '[WARMUP] Max reached → stop'
-        action: system_log.write
+        service: system_log.write
       - target:
           entity_id: input_boolean.wohnzimmer_terrarium_warmup_active
-        action: input_boolean.turn_off
+        service: input_boolean.turn_off
     default:
     - data:
         level: warning
         message: '[WARMUP] Applying +1h'
-      action: system_log.write
+      service: system_log.write
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe1_on
         time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_on')
           %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
           - timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
           endif %}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe1_off
         time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe1_off')
           %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
           + timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
           endif %}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe2_on
         time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_on')
           %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
           - timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
           endif %}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
     - data:
         entity_id: input_datetime.wohnzimmer_terrarium_lampe2_off
         time: "\n{% set t = states('input_datetime.wohnzimmer_terrarium_lampe2_off')
           %}\n{% if t not in ['unknown','unavailable',''] %}\n  {{ (strptime(t,'%H:%M:%S')
           + timedelta(minutes=30)).strftime('%H:%M:%S') }}\n{% else %}\n  {{ t }}\n{%
           endif %}\n"
-      action: input_datetime.set_datetime
+      service: input_datetime.set_datetime
