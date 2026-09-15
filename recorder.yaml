@@ -1,9 +1,11 @@
 include:
   entities:
-    - binary_sensor.pumpe_lauft
+    # ── Pumpe ──
+    - binary_sensor.pumpe_laeuft
     - sensor.garten_smartplug_pumpe_power
     - sensor.garten_smartplug_pumpe_current
     - sensor.garten_smartplug_pumpe_voltage
+    # ── RCT Solar ──
     - sensor.ps_10_0_hc2g_rct_power_storage_generator_a_power
     - sensor.ps_10_0_hc2g_rct_power_storage_generator_b_power
     - sensor.ps_8_0_18fc_rct_power_storage_slave_generator_a_power
@@ -17,4 +19,46 @@ include:
     - sensor.ps_10_0_hc2g_rct_power_storage_grid_power_p3
     - sensor.ps_10_0_hc2g_rct_power_storage_inverter_ac_power
     - sensor.ps_8_0_18fc_rct_power_storage_slave_inverter_ac_power
+    # ── Waschkeller: ANTELA Smart Plug Links ──
+    - sensor.waschkeller_waschmaschine_links_power
+    - sensor.waschkeller_waschmaschine_links_current
+    - sensor.waschkeller_waschmaschine_links_voltage
+    - sensor.waschkeller_waschmaschine_links_status
+    - sensor.waschkeller_waschmaschine_links_message
+    - switch.waschkeller_waschmaschine_links
+    # ── Waschkeller: ANTELA Smart Plug Rechts ──
+    - sensor.waschkeller_waschmaschine_rechts_power
+    - sensor.waschkeller_waschmaschine_rechts_current
+    - sensor.waschkeller_waschmaschine_rechts_voltage
+    - sensor.waschkeller_waschmaschine_rechts_status
+    - sensor.waschkeller_waschmaschine_rechts_message
+    - switch.waschkeller_waschmaschine_rechts
+    # ── Washdata: Waschmaschine Links ──
+    - sensor.waschmaschine_links_zustand
+    - sensor.waschmaschine_links_programm
+    - sensor.waschmaschine_links_aktuelle_phase
+    - sensor.waschmaschine_links_verbleibende_zeit
+    - sensor.waschmaschine_links_gesamtdauer
+    - sensor.waschmaschine_links_fortschritt
+    - sensor.waschmaschine_links_aktuelle_leistung
+    - sensor.waschmaschine_links_verstrichene_zeit
+    - sensor.waschmaschine_links_zyklusanzahl
+    - sensor.waschmaschine_links_energie_gesamt
+    - sensor.waschmaschine_links_empfohlene_einstellungen
+    - binary_sensor.waschmaschine_links_laeuft
+    - select.waschmaschine_links_zyklusprogramm
+    # ── Washdata: Waschmaschine Rechts ──
+    - sensor.waschmaschine_rechts_zustand
+    - sensor.waschmaschine_rechts_programm
+    - sensor.waschmaschine_rechts_aktuelle_phase
+    - sensor.waschmaschine_rechts_verbleibende_zeit
+    - sensor.waschmaschine_rechts_gesamtdauer
+    - sensor.waschmaschine_rechts_fortschritt
+    - sensor.waschmaschine_rechts_aktuelle_leistung
+    - sensor.waschmaschine_rechts_verstrichene_zeit
+    - sensor.waschmaschine_rechts_zyklusanzahl
+    - sensor.waschmaschine_rechts_energie_gesamt
+    - sensor.waschmaschine_rechts_empfohlene_einstellungen
+    - binary_sensor.waschmaschine_rechts_laeuft
+    - select.waschmaschine_rechts_zyklusprogramm
 

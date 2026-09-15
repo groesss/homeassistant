@@ -145,7 +145,13 @@
           'Dishcare.Dishwasher.Program.Eco50': 'Eco 50 °C',
           'Dishcare.Dishwasher.Program.Auto2': 'Auto',
           'Dishcare.Dishwasher.Program.Intensiv70': 'Intensiv 70 °C',
+          'Dishcare.Dishwasher.Program.Kurz60': 'Kurz 60 °C',
           'Dishcare.Dishwasher.Program.Schnell65': 'Schnell 65 °C',
+          'Dishcare.Dishwasher.Program.Quick45': 'Express 45 °C',
+          'Dishcare.Dishwasher.Program.Glas40': 'Glas 40 °C',
+          'Dishcare.Dishwasher.Program.NightWash': 'Nachtreinigung',
+          'Dishcare.Dishwasher.Program.PreRinse': 'Vorspülen',
+          'Dishcare.Dishwasher.Program.MachineCare': 'Maschinenpflege',
           'Dishcare.Dishwasher.Program.Silent': 'Leise'
         } %}
         {% if op in ['unknown', 'unavailable', '', None] %}

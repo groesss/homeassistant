@@ -186,6 +186,7 @@
           'Cooking.Oven.Program.HeatingMode.BottomHeating': 'Unterhitze',
           'Cooking.Oven.Program.HeatingMode.KeepWarm': 'Warmhalten',
           'Cooking.Oven.Program.HeatingMode.PreheatOvenware': 'Geschirr vorwärmen',
+          'Cooking.Oven.Program.HeatingMode.PreHeating': 'Vorheizen',
           'Cooking.Oven.Program.SubsequentMode.ContinueCooking': 'Programm verlängert'
         } %}
 
