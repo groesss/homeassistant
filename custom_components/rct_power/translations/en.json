@@ -1,0 +1,30 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "description": "If you need help with the configuration have a look here: https://github.com/weltenwort/home-assistant-rct-power-integration",
+        "data": {
+          "model": "Model",
+          "hostname": "Host name",
+          "port": "Port"
+        }
+      }
+    },
+    "error": {
+      "connect": "Failed to connect to {hostname}:{port}."
+    },
+    "abort": {
+      "single_instance_allowed": "Only a single instance is allowed."
+    }
+  },
+  "options": {
+    "step": {
+      "user": {
+        "data": {
+          "objects": "Enabled objects",
+          "scan_interval": "Polling interval"
+        }
+      }
+    }
+  }
+}

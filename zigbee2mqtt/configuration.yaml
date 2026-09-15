@@ -47,10 +47,20 @@ homeassistant:
   enabled: true
 devices:
   '0x20a716fffef5eb3c':
-    friendly_name: '0x20a716fffef5eb3c'
+    friendly_name: Arbeitszimmer_thermostat
   '0xc09b9efffe4a8803':
-    friendly_name: '0xc09b9efffe4a8803'
+    friendly_name: diele_thermostat
   '0xc09b9efffe4a8250':
-    friendly_name: '0xc09b9efffe4a8250'
+    friendly_name: wohnzimmer_thermostat_2
   '0xc09b9efffe4a46bf':
-    friendly_name: '0xc09b9efffe4a46bf'
+    friendly_name: wohnzimmer_thermostat_1
+  '0xa4c13879004064c6':
+    friendly_name: kueche_aquarium_steckdose
+  '0x00158d00013cd689':
+    friendly_name: wohnzimmer_paulmann_Lampe
+  '0xa4c1385b6ff8c823':
+    friendly_name: wohnzimmer_aquarium_steckdose
+  '0xa4c138ad7386cc64':
+    friendly_name: wohnzimmer_terrarium_steckdose_1
+  '0xa4c1382e3c38e776':
+    friendly_name: wohnzimmer_terrarium_steckdose_2

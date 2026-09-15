@@ -18,7 +18,7 @@
     state: 'on'
   actions:
   - target:
-      entity_id: switch.wohnzimmer_smartplug_terrarium_2
+      entity_id: switch.wohnzimmer_terrarium_steckdose_2
     service: switch.turn_off
   - action: system_log.write
     data:

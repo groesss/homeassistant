@@ -7,49 +7,38 @@ cards:
     cards:
       - type: custom:stack-in-card
         mode: vertical
-        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
         cards:
           - type: entities
-            card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
             entities:
 
               # ++
               # ++ Wäschetrockner
-              # 
+              #
               - type: custom:fold-entity-row
                 head:
                   type: custom:mushroom-template-card
                   entity: sensor.waschkeller_trockner_status_text
-                  primary: 🧺 Wäschetrockner
+                  primary: 🧺 Wäschetrockner Rechts (Bosch)
                   icon: mdi:tumble-dryer
                   icon_color: >
-                    {% set status =
-                    states('sensor.waschkeller_trockner_status_text') %} {% if
-                    status == 'Läuft' %}
-                      orange
-                    {% elif status in ['Fertig', 'Bereit'] %}
-                      green
-                    {% elif status == 'Pausiert' %}
-                      yellow
-                    {% elif status == 'Gestoppt' %}
-                      red
-                    {% elif status == 'Ausgeschaltet' %}
-                      grey
-                    {% else %}
-                      blue
-                    {% endif %}
-                  secondary: '{{ states(''sensor.waschkeller_trockner_status_text'') }}'
-                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                    {% set status = states('sensor.waschkeller_trockner_status_text') %}
+                    {% if status == 'Läuft' %}orange
+                    {% elif status in ['Fertig', 'Bereit'] %}green
+                    {% elif status == 'Pausiert' %}yellow
+                    {% elif status == 'Gestoppt' %}red
+                    {% elif status == 'Ausgeschaltet' %}grey
+                    {% else %}blue{% endif %}
+                  secondary: "{{ states('sensor.waschkeller_trockner_status_text') }}"
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
                 entities:
-                  # Status
                   - type: custom:mushroom-template-card
                     primary: >-
-                      Status: {{
-                      states('sensor.waschkeller_trockner_status_text') }}
+                      Status: {{ states('sensor.waschkeller_trockner_status_text') }}
                     secondary: >
-                      {% set time =
-                      states('sensor.waschkeller_trockner_remaining_program_time')
-                      %} {% if time in ['unknown', 'unavailable', '', None] %}
+                      {% set time = states('sensor.waschkeller_trockner_remaining_program_time') %}
+                      {% if time in ['unknown', 'unavailable', '', None] %}
                         -
                       {% else %}
                         {% set end = as_timestamp(time) %}
@@ -63,18 +52,14 @@ cards:
                         {% endif %}
                       {% endif %}
                     icon: mdi:tumble-dryer
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-                  # Programm
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
                   - type: custom:mushroom-template-card
                     primary: Programm
-                    secondary: >
-                      {{
-                      states('sensor.waschkeller_trockner_aktives_programm_text')
-                      }}
+                    secondary: "{{ states('sensor.waschkeller_trockner_aktives_programm_text') }}"
                     icon: mdi:playlist-play
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
-                                    
-                 # Fortschritt
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
                   - type: custom:decluttering-card
                     template: progress_bar
                     variables:
@@ -82,12 +67,178 @@ cards:
                       - entity: sensor.waschkeller_trockner_program_progress
                       - max: 100
                       - icon: mdi:progress-clock
-                                    
-                  # Wäschetrockner Ein/Aus
+
                   - type: custom:mushroom-entity-card
                     entity: switch.waschkeller_trockner_powerstate
                     name: Wäschetrockner
                     icon: mdi:tumble-dryer
                     tap_action:
                       action: toggle
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              # ++
+              # ++ Waschmaschine Rechts (Mitte)
+              #
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  entity: sensor.waschkeller_waschmaschine_rechts_status
+                  primary: 🧺 Waschmaschine Mitte (Bosch)
+                  icon: mdi:washing-machine
+                  icon_color: >
+                    {% set s = states('sensor.waschkeller_waschmaschine_rechts_status') %}
+                    {% if s == 'Laeuft' %}orange
+                    {% elif s == 'Fertig' %}green
+                    {% elif s == 'Bereit' %}yellow
+                    {% else %}grey{% endif %}
+                  layout: horizontal
+                  secondary: >
+                    {% set s = states('sensor.waschkeller_waschmaschine_rechts_status') %}
+                    {% if s == 'Laeuft' %}
+                      {{ states('sensor.waschmaschine_rechts_aktuelle_phase') }}
+                      · {{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) | round(0) }}%
+                      · Noch {{ states('sensor.waschmaschine_rechts_verbleibende_zeit') }}
+                    {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
+                    {% elif s == 'Bereit' %}Bereit
+                    {% else %}Aus{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Fortschritt"
+                      - entity: sensor.waschmaschine_rechts_fortschritt
+                      - max: 100
+                      - icon: mdi:progress-clock
+
+                  - type: custom:mushroom-template-card
+                    primary: Restzeit
+                    secondary: >
+                      {% set r = states('sensor.waschmaschine_rechts_verbleibende_zeit') %}
+                      {% if r not in ['unknown', 'none', 'unavailable'] %}
+                        {{ r }}
+                      {% else %}
+                        –
+                      {% endif %}
+                    icon: mdi:timer-sand
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Phase
+                    secondary: >
+                      {% set p = states('sensor.waschmaschine_rechts_aktuelle_phase') %}
+                      {{ p if p not in ['off', 'unknown', 'none'] else '–' }}
+                    icon: mdi:rotate-3d-variant
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Programm
+                    secondary: >
+                      {% set p = states('sensor.waschmaschine_rechts_programm') %}
+                      {{ p if p not in ['off', 'unknown', 'none'] else '–' }}
+                    icon: mdi:playlist-play
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Energie
+                    secondary: >
+                      {{ states('sensor.waschmaschine_rechts_energie_gesamt') }} kWh
+                    icon: mdi:lightning-bolt
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Zyklen heute
+                    secondary: "{{ states('sensor.waschmaschine_rechts_zyklusanzahl') }}"
+                    icon: mdi:counter
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+              # ++
+              # ++ Waschmaschine Links (AEG)
+              #
+              - type: custom:fold-entity-row
+                head:
+                  type: custom:mushroom-template-card
+                  entity: sensor.waschkeller_waschmaschine_links_status
+                  primary: 🧺 Waschmaschine Links (AEG)
+                  icon: mdi:washing-machine
+                  icon_color: >
+                    {% set s = states('sensor.waschkeller_waschmaschine_links_status') %}
+                    {% if s == 'Laeuft' %}orange
+                    {% elif s == 'Fertig' %}green
+                    {% elif s == 'Bereit' %}yellow
+                    {% else %}grey{% endif %}
+                  layout: horizontal
+                  secondary: >
+                    {% set s = states('sensor.waschkeller_waschmaschine_links_status') %}
+                    {% if s == 'Laeuft' %}
+                      {{ states('sensor.waschmaschine_links_aktuelle_phase') }}
+                      · {{ states('sensor.waschmaschine_links_fortschritt') | float(0) | round(0) }}%
+                      · Noch {{ states('sensor.waschmaschine_links_verbleibende_zeit') }}
+                    {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
+                    {% elif s == 'Bereit' %}Bereit
+                    {% else %}Aus{% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
+                entities:
+                  - type: custom:decluttering-card
+                    template: progress_bar
+                    variables:
+                      - title: "Fortschritt"
+                      - entity: sensor.waschmaschine_links_fortschritt
+                      - max: 100
+                      - icon: mdi:progress-clock
+
+                  - type: custom:mushroom-template-card
+                    primary: Restzeit
+                    secondary: >
+                      {% set r = states('sensor.waschmaschine_links_verbleibende_zeit') %}
+                      {% if r not in ['unknown', 'none', 'unavailable'] %}
+                        {{ r }}
+                      {% else %}
+                        –
+                      {% endif %}
+                    icon: mdi:timer-sand
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Phase
+                    secondary: >
+                      {% set p = states('sensor.waschmaschine_links_aktuelle_phase') %}
+                      {{ p if p not in ['off', 'unknown', 'none'] else '–' }}
+                    icon: mdi:rotate-3d-variant
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Programm
+                    secondary: >
+                      {% set p = states('sensor.waschmaschine_links_programm') %}
+                      {{ p if p not in ['off', 'unknown', 'none'] else '–' }}
+                    icon: mdi:playlist-play
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Energie
+                    secondary: >
+                      {{ states('sensor.waschmaschine_links_energie_gesamt') }} kWh
+                    icon: mdi:lightning-bolt
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Zyklen heute
+                    secondary: "{{ states('sensor.waschmaschine_links_zyklusanzahl') }}"
+                    icon: mdi:counter
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+      # ++
+      # ++ History (außerhalb fold-entity-row)
+      #
+      - type: history-graph
+        title: Letzte 24h
+        hours_to_show: 24
+        entities:
+          - entity: sensor.waschkeller_trockner_program_progress
+            name: Trockner (Rechts)
+          - entity: binary_sensor.waschmaschine_rechts_lauft
+            name: WM (Mitte)
+          - entity: binary_sensor.waschmaschine_links_lauft
+            name: WM (Links)
+          

@@ -18,7 +18,7 @@
     state: 'on'
   actions:
   - variables:
-      target_entity: switch.kueche_smartplug_aquarium
+      target_entity: switch.0xa4c13879004064c6
       target_state: 'off'
   - repeat:
       count: 3

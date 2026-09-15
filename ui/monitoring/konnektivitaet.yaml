@@ -206,41 +206,41 @@ cards:
       - type: custom:mushroom-template-card
         primary: Steckdose Terrarium 1
         secondary: >
-          {% set s = states('switch.wohnzimmer_smartplug_terrarium_1') %}
+          {% set s = states('switch.0xa4c138ad7386cc64') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
         icon: mdi:leaf
         icon_color: >
-          {% set s = states('switch.wohnzimmer_smartplug_terrarium_1') %}
+          {% set s = states('switch.0xa4c138ad7386cc64') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
 
       - type: custom:mushroom-template-card
         primary: Steckdose Terrarium 2
         secondary: >
-          {% set s = states('switch.wohnzimmer_smartplug_terrarium_2') %}
+          {% set s = states('switch.wohnzimmer_terrarium_steckdose_2') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
         icon: mdi:leaf
         icon_color: >
-          {% set s = states('switch.wohnzimmer_smartplug_terrarium_2') %}
+          {% set s = states('switch.wohnzimmer_terrarium_steckdose_2') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
 
       - type: custom:mushroom-template-card
         primary: Aquarium Wohnzimmer
         secondary: >
-          {% set s = states('switch.wohnzimmer_smartplug_aquarium') %}
+          {% set s = states('switch.0xa4c1385b6ff8c823') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
         icon: mdi:fish
         icon_color: >
-          {% set s = states('switch.wohnzimmer_smartplug_aquarium') %}
+          {% set s = states('switch.0xa4c1385b6ff8c823') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
 
       - type: custom:mushroom-template-card
         primary: Aquarium Küche
         secondary: >
-          {% set s = states('switch.kueche_smartplug_aquarium') %}
+          {% set s = states('switch.0xa4c13879004064c6') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
         icon: mdi:fish
         icon_color: >
-          {% set s = states('switch.kueche_smartplug_aquarium') %}
+          {% set s = states('switch.0xa4c13879004064c6') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
 
       - type: custom:mushroom-template-card

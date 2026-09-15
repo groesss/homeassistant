@@ -29,6 +29,36 @@
         message: "Der Backofen hat sein Programm beendet!"
         message_type: "info"
 
+    - name: "Waschkeller Waschmaschine Links Message"
+      unique_id: waschkeller_waschmaschine_links_message
+      state: "{{ states('sensor.waschkeller_waschmaschine_links_status') == 'Fertig' }}"
+      icon: mdi:washing-machine
+      attributes:
+        message_title: "Waschmaschine Links fertig"
+        message: >
+          {% set phase = state_attr('sensor.waschkeller_waschmaschine_links_status', 'phase') %}
+          {% set energie = state_attr('sensor.waschkeller_waschmaschine_links_status', 'energie') %}
+          Die Waschmaschine links ist fertig
+          {%- if phase and phase != 'unknown' %} ({{ phase }}){% endif -%}
+          {%- if energie and energie|float(0) > 0 %} · {{ energie }} kWh verbraucht{% endif -%}.
+          Kann ausgeräumt werden!
+        message_type: "info"
+
+    - name: "Waschkeller Waschmaschine Rechts Message"
+      unique_id: waschkeller_waschmaschine_rechts_message
+      state: "{{ states('sensor.waschkeller_waschmaschine_rechts_status') == 'Fertig' }}"
+      icon: mdi:washing-machine
+      attributes:
+        message_title: "Waschmaschine Rechts fertig"
+        message: >
+          {% set phase = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'phase') %}
+          {% set energie = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'energie') %}
+          Die Waschmaschine rechts ist fertig
+          {%- if phase and phase != 'unknown' %} ({{ phase }}){% endif -%}
+          {%- if energie and energie|float(0) > 0 %} · {{ energie }} kWh verbraucht{% endif -%}.
+          Kann ausgeräumt werden!
+        message_type: "info"
+
     - name: "Waschkeller Trockner Message"
       unique_id: waschkeller_trockner_message
       state: "{{ states('sensor.waschkeller_trockner_status_text') == 'Fertig' }}"

@@ -35,7 +35,7 @@
         {% endif %}
   - target:
       entity_id: valve.garten_gardena_ventil_1
-    service: valve.open
+    service: valve.open_valve
   - data:
       message: 'Gardena Ventil geöffnet um {{ now().strftime(''%H:%M'') }} für {{
         run_minutes | int }} Minuten.
@@ -47,7 +47,7 @@
       minutes: '{{ run_minutes | int }}'
   - target:
       entity_id: valve.garten_gardena_ventil_1
-    service: valve.close
+    service: valve.close_valve
   - data:
       message: Gardena Ventil geschlossen um {{ now().strftime('%H:%M') }}
       level: info
@@ -134,12 +134,12 @@
         {% endif %}
   - target:
       entity_id: valve.garten_gardena_ventil_2
-    service: valve.open
+    service: valve.open_valve
   - delay:
       minutes: '{{ run_minutes | int }}'
   - target:
       entity_id: valve.garten_gardena_ventil_2
-    service: valve.close
+    service: valve.close_valve
   mode: restart
 
 - id: '1759501200003'
@@ -222,12 +222,12 @@
         {% endif %}
   - target:
       entity_id: valve.garten_gardena_ventil_3
-    service: valve.open
+    service: valve.open_valve
   - delay:
       minutes: '{{ run_minutes | int }}'
   - target:
       entity_id: valve.garten_gardena_ventil_3
-    service: valve.close
+    service: valve.close_valve
   mode: restart
 
 - id: '1759501200005'

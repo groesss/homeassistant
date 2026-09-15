@@ -114,15 +114,15 @@ cards:
                   primary: Lampen
                   secondary: >
                     {{ expand([
-                      'switch.wohnzimmer_smartplug_terrarium_1',
-                      'switch.wohnzimmer_smartplug_terrarium_2'
+                      'switch.0xa4c138ad7386cc64',
+                      'switch.wohnzimmer_terrarium_steckdose_2'
                     ]) | selectattr('state','eq','on') | list | count }}
                     von 2 an
                   icon: mdi:lightbulb-group
                   icon_color: >
                     {% set lights = [
-                      'switch.wohnzimmer_smartplug_terrarium_1',
-                      'switch.wohnzimmer_smartplug_terrarium_2'
+                      'switch.0xa4c138ad7386cc64',
+                      'switch.wohnzimmer_terrarium_steckdose_2'
                     ] %} 
 
                     {% if lights | select('is_state','on') | list |
@@ -168,7 +168,7 @@ cards:
                         variables:
                           - time_on: input_datetime.wohnzimmer_terrarium_lampe1_on
                           - time_off: input_datetime.wohnzimmer_terrarium_lampe1_off
-                          - switch_entity: switch.wohnzimmer_smartplug_terrarium_1
+                          - switch_entity: switch.0xa4c138ad7386cc64
                       - type: custom:mushroom-template-card
                         primary: Halogenlampe
                         card_mod:
@@ -186,7 +186,7 @@ cards:
                         variables:
                           - time_on: input_datetime.wohnzimmer_terrarium_lampe2_on
                           - time_off: input_datetime.wohnzimmer_terrarium_lampe2_off
-                          - switch_entity: switch.wohnzimmer_smartplug_terrarium_2
+                          - switch_entity: switch.wohnzimmer_terrarium_steckdose_2
 
           - type: markdown
             content: >

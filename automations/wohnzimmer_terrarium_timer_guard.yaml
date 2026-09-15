@@ -16,8 +16,8 @@
   actions:
   - target:
       entity_id:
-      - switch.wohnzimmer_smartplug_terrarium_1
-      - switch.wohnzimmer_smartplug_terrarium_2
+      - switch.wohnzimmer_terrarium_steckdose_1
+      - switch.wohnzimmer_terrarium_steckdose_2
     service: switch.turn_off
   - data:
       message: '[Timer Guard] Timer deaktiviert – Lampen ausgeschaltet'

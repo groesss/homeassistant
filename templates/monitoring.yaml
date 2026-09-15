@@ -38,10 +38,10 @@
         - binary_sensor.oelkeller_shellyflood_flood
         - switch.wohnzimmer_smartplug_tv
         - switch.garten_smartplug_pumpe
-        - switch.wohnzimmer_smartplug_terrarium_1
-        - switch.wohnzimmer_smartplug_terrarium_2
-        - switch.wohnzimmer_smartplug_aquarium
-        - switch.kueche_smartplug_aquarium
+        - switch.0xa4c138ad7386cc64
+        - switch.wohnzimmer_terrarium_steckdose_2
+        - switch.0xa4c1385b6ff8c823
+        - switch.0xa4c13879004064c6
         - binary_sensor.zigbee2mqtt_bridge_connection_state
         - light.wohnzimmer
         - binary_sensor.diskstation_sicherheitsstatus
@@ -73,10 +73,10 @@
           'Shelly Flood': [('binary_sensor.oelkeller_shellyflood_flood', 'avail')],
           'Steckdose TV': [('switch.wohnzimmer_smartplug_tv', 'avail')],
           'Steckdose Pumpe': [('switch.garten_smartplug_pumpe', 'avail')],
-          'Steckdose Terrarium 1': [('switch.wohnzimmer_smartplug_terrarium_1', 'avail')],
-          'Steckdose Terrarium 2': [('switch.wohnzimmer_smartplug_terrarium_2', 'avail')],
-          'Aquarium Wohnzimmer': [('switch.wohnzimmer_smartplug_aquarium', 'avail')],
-          'Aquarium Küche': [('switch.kueche_smartplug_aquarium', 'avail')],
+          'Steckdose Terrarium 1': [('switch.0xa4c138ad7386cc64', 'avail')],
+          'Steckdose Terrarium 2': [('switch.wohnzimmer_terrarium_steckdose_2', 'avail')],
+          'Aquarium Wohnzimmer': [('switch.0xa4c1385b6ff8c823', 'avail')],
+          'Aquarium Küche': [('switch.0xa4c13879004064c6', 'avail')],
           'Zigbee Bridge': [('binary_sensor.zigbee2mqtt_bridge_connection_state', 'on')],
           'Hue Bridge': [('light.wohnzimmer', 'avail')],
           'Synology': [('binary_sensor.diskstation_sicherheitsstatus', 'avail')]
@@ -125,10 +125,10 @@
             'Shelly Flood': [('binary_sensor.oelkeller_shellyflood_flood', 'avail')],
             'Steckdose TV': [('switch.wohnzimmer_smartplug_tv', 'avail')],
             'Steckdose Pumpe': [('switch.garten_smartplug_pumpe', 'avail')],
-            'Steckdose Terrarium 1': [('switch.wohnzimmer_smartplug_terrarium_1', 'avail')],
-            'Steckdose Terrarium 2': [('switch.wohnzimmer_smartplug_terrarium_2', 'avail')],
-            'Aquarium Wohnzimmer': [('switch.wohnzimmer_smartplug_aquarium', 'avail')],
-            'Aquarium Küche': [('switch.kueche_smartplug_aquarium', 'avail')],
+            'Steckdose Terrarium 1': [('switch.0xa4c138ad7386cc64', 'avail')],
+            'Steckdose Terrarium 2': [('switch.wohnzimmer_terrarium_steckdose_2', 'avail')],
+            'Aquarium Wohnzimmer': [('switch.0xa4c1385b6ff8c823', 'avail')],
+            'Aquarium Küche': [('switch.0xa4c13879004064c6', 'avail')],
             'Zigbee Bridge': [('binary_sensor.zigbee2mqtt_bridge_connection_state', 'on')],
             'Hue Bridge': [('light.wohnzimmer', 'avail')],
             'Synology': [('binary_sensor.diskstation_sicherheitsstatus', 'avail')]

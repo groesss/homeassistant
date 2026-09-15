@@ -17,6 +17,8 @@
     entity_id:
     - sensor.kueche_geschirrspueler_message
     - sensor.kueche_backofen_message
+    - sensor.waschkeller_waschmaschine_links_message
+    - sensor.waschkeller_waschmaschine_rechts_message
     - sensor.waschkeller_trockner_message
     - sensor.garten_grundwasser_message
     - sensor.oelkeller_flutsensor_message
@@ -28,6 +30,7 @@
     - sensor.garten_gardena_ventil_1_batterie_message
     - sensor.garten_gardena_ventil_2_batterie_message
     - sensor.garten_gardena_ventil_3_batterie_message
+    - sensor.pumpe_message
 #    - sensor.solar_wechselrichter_kommunikation_message
 #    - sensor.solar_batterie_kommunikation_message
 #    - sensor.solar_wechselrichter_fehler_message

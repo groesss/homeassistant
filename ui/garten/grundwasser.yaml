@@ -8,10 +8,10 @@ cards:
     cards:
       - type: custom:stack-in-card
         mode: vertical
-        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml # Stack Wrapper Style
+        card_mod: !include /config/ui/shared/styles/stack_wrapper.yaml
         cards:
           - type: entities
-            card_mod: !include /config/ui/shared/styles/entities_flat.yaml # Entities Flat Style
+            card_mod: !include /config/ui/shared/styles/entities_flat.yaml
             entities:
 
               - type: custom:fold-entity-row
@@ -20,73 +20,85 @@ cards:
                   primary: Wasserstandssensor
                   icon: mdi:water-alert-outline
                   icon_color: >
-                    {% if is_state('sensor.garten_grundwasser_alarm',
-                    'off') %}
-                      green
-                    {% elif is_state('sensor.garten_grundwasser_alarm',
-                    'on') %}
+                    {% if is_state('sensor.garten_grundwasser_alarm', 'on') %}
                       red
                     {% else %}
-                      grey
+                      green
                     {% endif %}
-                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
                 entities:
                   - type: custom:mushroom-template-card
                     primary: >
-                      {% if is_state('sensor.garten_grundwasser_alarm',
-                      'on') %}
+                      {% if is_state('sensor.garten_grundwasser_alarm', 'on') %}
                         ⚠️ Grundwasser-Warnung!
                       {% else %}
                         ✅ Alles in Ordnung
                       {% endif %}
                     secondary: >
-                      {% if is_state('sensor.garten_grundwasser_alarm',
-                      'on') %}
+                      {% if is_state('sensor.garten_grundwasser_alarm', 'on') %}
                         Der Sensor im Grundwasserschacht hat ausgelöst.  
                         Bitte überprüfe, ob die Pumpe noch läuft!
                       {% else %}
                         Der Grundwassersensor zeigt keine Probleme.
                       {% endif %}
-                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml # Card Compact Style
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
 
               - type: custom:fold-entity-row
                 head:
                   type: custom:mushroom-template-card
                   primary: Pumpe
                   icon: mdi:pump
-                  icon_color: |
-                    {% if is_state('binary_sensor.pumpe_lauft', 'on') %}
+                  icon_color: >
+                    {% if is_state('binary_sensor.pumpe_laeuft', 'on') %}
                       orange
                     {% else %}
                       grey
                     {% endif %}
-                  card_mod: !include /config/ui/shared/styles/card_header.yaml # Header Style
+                  secondary: >
+                    {% if is_state('binary_sensor.pumpe_laeuft', 'on') %}
+                      Läuft · {{ states('sensor.garten_smartplug_pumpe_power') | float(0) | round(0) }} W
+                    {% else %}
+                      Aus
+                      {% set last = states('sensor.pumpe_zuletzt_eingeschaltet') %}
+                      {% if last not in ['unknown', 'unavailable', 'Noch nie', ''] %}
+                        · Zuletzt: {{ last }}
+                      {% endif %}
+                    {% endif %}
+                  card_mod: !include /config/ui/shared/styles/card_header.yaml
                 entities:
-                  - type: custom:stack-in-card
-                    mode: vertical
-                    cards:
-                      - type: entities
-                        entities:
-                          - entity: binary_sensor.pumpe_lauft
-                            name: Pumpe Status
-                          - type: custom:fold-entity-row
-                            head:
-                              type: section
-                              label: Leistungsdaten
-                            entities:
-                              - entity: sensor.garten_smartplug_pumpe_current
-                                name: Strom (A)
-                              - entity: sensor.garten_smartplug_pumpe_voltage
-                                name: Spannung (V)
-                              - entity: sensor.garten_smartplug_pumpe_power
-                                name: Leistung (W)
-                          - entity: sensor.garten_smartplug_pumpe_laufzeit_tag
-                            name: Laufzeit heute
-                          - entity: sensor.garten_smartplug_pumpe_laufzeit_woche
-                            name: Laufzeit diese Woche
-                      - type: history-graph
-                        name: Pumpenlauf Historie (7 Tage)
-                        entities:
-                          - binary_sensor.pumpe_lauft
-                        hours_to_show: 168
-                        refresh_interval: 60
+                  - type: custom:mushroom-template-card
+                    primary: >
+                      Status: {{ 'Läuft' if is_state('binary_sensor.pumpe_laeuft', 'on') else 'Aus' }}
+                    secondary: >
+                      {% set power = states('sensor.garten_smartplug_pumpe_power') | float(0) %}
+                      {% if power > 0 %}
+                        {{ power | round(0) }} W
+                      {% else %}
+                        Kein Verbrauch
+                      {% endif %}
+                    icon: mdi:pump
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-entity-card
+                    entity: switch.garten_smartplug_pumpe
+                    name: Steckdose
+                    icon: mdi:power-plug
+                    tap_action:
+                      action: toggle
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Zuletzt eingeschaltet
+                    secondary: >
+                      {% set v = states('sensor.pumpe_zuletzt_eingeschaltet') %}
+                      {{ v if v not in ['unknown', 'unavailable'] else '–' }}
+                    icon: mdi:clock-outline
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml
+
+                  - type: custom:mushroom-template-card
+                    primary: Zuletzt ausgeschaltet
+                    secondary: >
+                      {% set v = states('sensor.pumpe_zuletzt_ausgeschaltet') %}
+                      {{ v if v not in ['unknown', 'unavailable'] else '–' }}
+                    icon: mdi:clock-outline
+                    card_mod: !include /config/ui/shared/styles/flat_compact.yaml

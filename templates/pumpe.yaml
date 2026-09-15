@@ -1,31 +1,51 @@
-## Datei: templates/pumpe.yaml
+# Datei: templates/pumpe.yaml
 # Beschreibung:
-# Dieses Template definiert einen Binary Sensor für den Status der Gartenpumpe.
-# Der Sensor ist 'on', wenn die Leistung über 5W liegt, und 'off', wenn nicht.
-# Die Verfügbarkeit prüft, ob der Leistungssensor gültige Werte liefert.
+# Status-Template fuer die Gartenpumpe (ANTELA Smart Steckdose).
+# Die Pumpe ist eine Notpumpe bei Hochwasser, nur 2-3x/Jahr aktiv.
 #
-# Namenskonvention: unique_id folgt dem Muster <raum>_<gerät>_<attribut>.
-# Konsistenz: Die Logik ist auf die Pumpenautomatisierung und UI abgestimmt.
-#
-# Änderungen an der Logik sollten immer mit den zugehörigen Automatisierungen und UI-Elementen abgestimmt werden.
-binary_sensor:
-  - name: "Pumpe läuft"
-    unique_id: "garten_smartplug_pumpe_status"
-    device_class: power
-    state: >
-      {{ states('sensor.garten_smartplug_pumpe_power')|float > 5 }}
-    availability: >
-      {{ states('sensor.garten_smartplug_pumpe_power') not in ['unknown', 'unavailable', 'None'] }}
+# Sensoren:
+# - binary_sensor.pumpe_laeuft: on/off basierend auf Power > 5W
+# - sensor.pumpe_last_on: Timestamp des letzten Einschaltens
+# - sensor.pumpe_last_off: Timestamp des letzten Ausschaltens
+# - sensor.pumpe_message: Boolean fuer Notification (True wenn Pumpe gerade laeuft)
 
+- binary_sensor:
+    - name: "Pumpe läuft"
+      unique_id: "garten_pumpe_lauft"
+      device_class: power
+      state: >
+        {{ states('sensor.garten_smartplug_pumpe_power') | float(0) > 5 }}
+      availability: >
+        {{ states('sensor.garten_smartplug_pumpe_power') not in ['unknown', 'unavailable', 'None'] }}
 
+- sensor:
+    - name: "Pumpe zuletzt eingeschaltet"
+      unique_id: "garten_pumpe_last_on"
+      icon: mdi:clock-outline
+      state: >
+        {% if is_state('binary_sensor.pumpe_laeuft', 'on') %}
+          {{ now().strftime('%d.%m.%Y %H:%M') }}
+        {% else %}
+          {{ this.state if this.state not in ['unknown', 'unavailable', ''] else 'Noch nie' }}
+        {% endif %}
 
-              #    - type: custom:decluttering-card
-              #      template: progress_bar
-              #      variables:
-              #        - name: "Fortschritt"
-              #        - value: "{{ states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) }}"
-              #        - max: "100"
-              #        - color: "{{ 'grey' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 1 else 'red' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 25 else 'orange' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 75 else 'green' }}"
-              #        - icon: "mdi:progress-clock"
-              #        - icon_color: "{{ 'grey' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 1 else 'red' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 25 else 'orange' if states('sensor.kueche_geschirrspueler_option_programprogress') | float(0) < 75 else 'green' }}"
-              #        - unit: "%"
+    - name: "Pumpe zuletzt ausgeschaltet"
+      unique_id: "garten_pumpe_last_off"
+      icon: mdi:clock-outline
+      state: >
+        {% if is_state('binary_sensor.pumpe_laeuft', 'off') and this.state not in ['unknown', 'unavailable', ''] %}
+          {{ this.state }}
+        {% elif is_state('binary_sensor.pumpe_laeuft', 'off') %}
+          {{ now().strftime('%d.%m.%Y %H:%M') }}
+        {% else %}
+          {{ this.state if this.state not in ['unknown', 'unavailable', ''] else 'Noch nie' }}
+        {% endif %}
+
+    - name: "Pumpe Message"
+      unique_id: "garten_pumpe_message"
+      icon: mdi:alert-circle-outline
+      state: "{{ is_state('binary_sensor.pumpe_laeuft', 'on') }}"
+      attributes:
+        message_title: "Grundwasserpumpe aktiv!"
+        message: "Die Pumpe im Grundwasserschacht laeuft. Bitte ueberpruefe den Wasserstand!"
+        message_type: "warning"

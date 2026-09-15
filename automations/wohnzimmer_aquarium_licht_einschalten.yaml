@@ -17,7 +17,7 @@
     state: 'on'
   actions:
   - variables:
-      target_entity: switch.wohnzimmer_smartplug_aquarium
+      target_entity: switch.0xa4c1385b6ff8c823
       target_state: 'on'
   - repeat:
       count: 3

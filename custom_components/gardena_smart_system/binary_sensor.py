@@ -1,61 +1,91 @@
-"""Support for Gardena Smart System websocket connection status."""
+"""Support for Gardena Smart System binary sensors."""
+from __future__ import annotations
+
+import logging
+from typing import Any
+
 from homeassistant.components.binary_sensor import (
     BinarySensorDeviceClass,
     BinarySensorEntity,
 )
-
-from custom_components.gardena_smart_system import GARDENA_SYSTEM
+from homeassistant.config_entries import ConfigEntry
+from homeassistant.core import HomeAssistant
+from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import DOMAIN
+from .coordinator import GardenaSmartSystemCoordinator
+from .entities import GardenaOnlineEntity, GardenaEntity
+
+_LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_entry(hass, config_entry, async_add_entities):
-    """Perform the setup for Gardena websocket connection status."""
-    async_add_entities(
-        [SmartSystemWebsocketStatus(hass.data[DOMAIN][GARDENA_SYSTEM].smart_system)],
-        True,
-    )
+async def async_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+) -> None:
+    """Set up Gardena Smart System binary sensors."""
+    coordinator: GardenaSmartSystemCoordinator = hass.data[DOMAIN][entry.entry_id]
+
+    entities = []
+
+    for location in coordinator.locations.values():
+        for device in location.devices.values():
+            entities.append(GardenaOnlineBinarySensor(coordinator, device))
+
+    entities.append(GardenaWebSocketConnectedSensor(coordinator, entry.entry_id))
+
+    async_add_entities(entities)
 
 
-class SmartSystemWebsocketStatus(BinarySensorEntity):
-    """Representation of Gardena Smart System websocket connection status."""
+class GardenaOnlineBinarySensor(GardenaOnlineEntity, BinarySensorEntity):
+    """Representation of a Gardena device online status sensor."""
 
-    def __init__(self, smart_system) -> None:
-        """Initialize the binary sensor."""
-        super().__init__()
-        self._unique_id = "smart_gardena_websocket_status"
-        self._name = "Gardena Smart System connection"
-        self._smart_system = smart_system
+    def __init__(self, coordinator: GardenaSmartSystemCoordinator, device) -> None:
+        """Initialize the online status sensor."""
+        super().__init__(coordinator, device)
+        self._attr_name = f"{device.name} Online"
 
-    async def async_added_to_hass(self):
-        """Subscribe to events."""
-        self._smart_system.add_ws_status_callback(self.update_callback)
+
+class GardenaWebSocketConnectedSensor(GardenaEntity, BinarySensorEntity):
+    """Binary sensor indicating whether the Gardena WebSocket is connected."""
+
+    _attr_device_class = BinarySensorDeviceClass.CONNECTIVITY
+
+    def __init__(self, coordinator: GardenaSmartSystemCoordinator, entry_id: str) -> None:
+        """Initialize the WebSocket connectivity sensor."""
+        from .models import GardenaDevice
+        dummy_device = GardenaDevice(
+            id=f"websocket_status_{entry_id}",
+            name="WebSocket Status",
+            model_type="WebSocket Client",
+            serial="websocket",
+            services={},
+            location_id=""
+        )
+        super().__init__(coordinator, dummy_device, "WEBSOCKET")
+        self._attr_name = "Gardena WebSocket Connected"
+        self._attr_unique_id = f"gardena_websocket_connected_{entry_id}"
 
     @property
-    def name(self):
-        """Return the name of the device."""
-        return self._name
-
-    @property
-    def unique_id(self) -> str:
-        """Return a unique ID."""
-        return self._unique_id
+    def available(self) -> bool:
+        """Return True if entity is available."""
+        return True
 
     @property
     def is_on(self) -> bool:
-        """Return the status of the sensor."""
-        return self._smart_system.is_ws_connected
-
-    @property
-    def should_poll(self) -> bool:
-        """No polling needed for a sensor."""
+        """Return True if WebSocket is connected."""
+        if self.coordinator.websocket_client:
+            return self.coordinator.websocket_client.is_connected
         return False
 
-    def update_callback(self, status):
-        """Call update for Home Assistant when the device is updated."""
-        self.schedule_update_ha_state(True)
-
     @property
-    def device_class(self):
-        """Return the class of this device, from component DEVICE_CLASSES."""
-        return BinarySensorDeviceClass.CONNECTIVITY
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return entity specific state attributes."""
+        attrs = super().extra_state_attributes
+        if self.coordinator.websocket_client:
+            attrs.update({
+                "reconnect_attempts": self.coordinator.websocket_client.reconnect_attempts,
+            })
+        return attrs
+

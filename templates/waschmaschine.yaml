@@ -1,0 +1,96 @@
+# Datei: templates/waschmaschine.yaml
+# Beschreibung:
+# Status-Template für Washdata-Integration.
+# "Fertig" ist sticky — bleibt bis nächste Wasch beginnt oder Leistung auf 0W geht.
+
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sensor.waschmaschine_links_zustand
+    - platform: state
+      entity_id: sensor.waschkeller_waschmaschine_links_power
+    - platform: time_pattern
+      minutes: '/1'
+
+  sensor:
+    - name: "Waschkeller Waschmaschine Links Status"
+      unique_id: waschkeller_waschmaschine_links_status
+      icon: mdi:washing-machine
+      state: >-
+        {% set z = states('sensor.waschmaschine_links_zustand') %}
+        {% set power = states('sensor.waschkeller_waschmaschine_links_power') | float(0) %}
+        {% set old = this.state if this.state not in ['unknown', 'unavailable', ''] else 'Aus' %}
+
+        {% if z == 'running' %}
+          Laeuft
+        {% elif z in ['finished', 'clean', 'ending'] %}
+          Fertig
+        {% elif old == 'Fertig' %}
+          {% if z == 'running' %}
+            Laeuft
+          {% elif power < 1 %}
+            Aus
+          {% else %}
+            Fertig
+          {% endif %}
+        {% elif z in ['idle', 'starting', 'paused', 'user_paused', 'delay_wait'] %}
+          Bereit
+        {% else %}
+          Aus
+        {% endif %}
+      attributes:
+        zustand: "{{ states('sensor.waschmaschine_links_zustand') }}"
+        phase: "{{ states('sensor.waschmaschine_links_aktuelle_phase') }}"
+        fortschritt: "{{ states('sensor.waschmaschine_links_fortschritt') | float(0) }}"
+        verbleibende_zeit: "{{ states('sensor.waschmaschine_links_verbleibende_zeit') }}"
+        verstrichene_zeit: "{{ states('sensor.waschmaschine_links_verstrichene_zeit') }}"
+        gesamtdauer: "{{ states('sensor.waschmaschine_links_gesamtdauer') }}"
+        energie: "{{ states('sensor.waschmaschine_links_energie_gesamt') }}"
+        programm: "{{ states('sensor.waschmaschine_links_programm') }}"
+
+- trigger:
+    - platform: homeassistant
+      event: start
+    - platform: state
+      entity_id: sensor.waschmaschine_rechts_zustand
+    - platform: state
+      entity_id: sensor.waschkeller_waschmaschine_rechts_power
+    - platform: time_pattern
+      minutes: '/1'
+
+  sensor:
+    - name: "Waschkeller Waschmaschine Rechts Status"
+      unique_id: waschkeller_waschmaschine_rechts_status
+      icon: mdi:washing-machine
+      state: >-
+        {% set z = states('sensor.waschmaschine_rechts_zustand') %}
+        {% set power = states('sensor.waschkeller_waschmaschine_rechts_power') | float(0) %}
+        {% set old = this.state if this.state not in ['unknown', 'unavailable', ''] else 'Aus' %}
+
+        {% if z == 'running' %}
+          Laeuft
+        {% elif z in ['finished', 'clean', 'ending'] %}
+          Fertig
+        {% elif old == 'Fertig' %}
+          {% if z == 'running' %}
+            Laeuft
+          {% elif power < 1 %}
+            Aus
+          {% else %}
+            Fertig
+          {% endif %}
+        {% elif z in ['idle', 'starting', 'paused', 'user_paused', 'delay_wait'] %}
+          Bereit
+        {% else %}
+          Aus
+        {% endif %}
+      attributes:
+        zustand: "{{ states('sensor.waschmaschine_rechts_zustand') }}"
+        phase: "{{ states('sensor.waschmaschine_rechts_aktuelle_phase') }}"
+        fortschritt: "{{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) }}"
+        verbleibende_zeit: "{{ states('sensor.waschmaschine_rechts_verbleibende_zeit') }}"
+        verstrichene_zeit: "{{ states('sensor.waschmaschine_rechts_verstrichene_zeit') }}"
+        gesamtdauer: "{{ states('sensor.waschmaschine_rechts_gesamtdauer') }}"
+        energie: "{{ states('sensor.waschmaschine_rechts_energie_gesamt') }}"
+        programm: "{{ states('sensor.waschmaschine_rechts_programm') }}"
