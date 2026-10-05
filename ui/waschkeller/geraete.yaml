@@ -96,25 +96,26 @@ cards:
                     {% set s = states('sensor.waschkeller_waschmaschine_rechts_status') %}
                     {% if s == 'Laeuft' %}
                       {% set prog = states('sensor.waschmaschine_rechts_programm') %}
-                      {% set phase = states('sensor.waschmaschine_rechts_aktuelle_phase') %}
-                      {% set phasen_map = {
-                        'prewash': 'Vorwäsche',
-                        'washing': 'Waschen',
-                        'rinsing': 'Spülen',
-                        'spinning': 'Schleudern',
-                        'draining': 'Pumpen',
-                        'soak': 'Einweichen',
-                        'delicate': 'Feinwäsche',
-                        'final rinse': 'Nachspülen',
-                        'rinse': 'Spülen',
-                        'spin': 'Schleudern',
-                        'cooldown': 'Abkühlen',
-                        'drying': 'Trocknen',
-                        'finish': 'Ende',
-                        'idle': 'Bereit'
-                      } %}
-                      {% set phase_de = phasen_map.get(phase | lower, phase) if phase else '' %}
-                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }}{% if phase_de %} ({{ phase_de }}){% endif %} {{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) | round(0) }}% noch {{ states('sensor.waschmaschine_rechts_verbleibende_zeit') | replace('m',' min') | replace('h','h ') }}
+                      {% set rest = states('sensor.waschmaschine_rechts_verbleibende_zeit') %}
+                      {% set rest_fmt = rest %}
+                      {% if rest and ':' in rest|string %}
+                        {# ISO/HH:MM:SS? meist MM:SS oder H:MM:SS, aber Washdata gibt oft lesbar, fallback #}
+                        {% set parts = rest|string.split(':') %}
+                        {% if parts | length == 2 %}
+                          {% set rest_fmt = parts[0] ~ ' min' if parts[0] != '0' else parts[1] ~ ' min' %}
+                        {% elif parts | length == 3 %}
+                          {% set h = parts[0] | int(0) %}
+                          {% set m = parts[1] | int(0) %}
+                          {% if h > 0 and m > 0 %}{% set rest_fmt = h ~ 'h ' ~ m ~ ' min' %}{% elif h > 0 %}{% set rest_fmt = h ~ 'h' %}{% else %}{% set rest_fmt = m ~ ' min' %}{% endif %}
+                        {% endif %}
+                      {% elif rest and 'h' in rest|string and 'm' in rest|string %}
+                        {% set rest_fmt = rest|string | replace('m',' min') %}
+                      {% elif rest and 'm' in rest|string %}
+                        {% set rest_fmt = rest|string | replace('m',' min') %}
+                      {% elif rest and rest|regex_match('^[0-9]+$') %}
+                        {% set rest_fmt = rest ~ ' min' %}
+                      {% endif %}
+                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }} {{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) | round(0) }}% noch {{ rest_fmt }}
                     {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
                     {% elif s == 'Bereit' %}Bereit
                     {% else %}Aus{% endif %}
@@ -132,11 +133,18 @@ cards:
                     primary: Restzeit
                     secondary: >
                       {% set r = states('sensor.waschmaschine_rechts_verbleibende_zeit') %}
-                      {% if r not in ['unknown', 'none', 'unavailable'] %}
-                        {{ r }}
-                      {% else %}
-                        –
+                      {% set rfmt = r %}
+                      {% if r and ':' in r|string %}
+                        {% set parts = r|string.split(':') %}
+                        {% if parts | length == 2 %}
+                          {% set m = parts[0] | int(0) %}{% set rfmt = m ~ ' min' %}
+                        {% elif parts | length == 3 %}
+                          {% set h = parts[0] | int(0) %}{% set m = parts[1] | int(0) %}
+                          {% if h>0 and m>0 %}{% set rfmt = h ~ 'h ' ~ m ~ ' min' %}{% elif h>0 %}{% set rfmt = h ~ 'h' %}{% else %}{% set rfmt = m ~ ' min' %}{% endif %}
+                        {% endif %}
+                      {% elif r and r|string | regex_match('^[0-9]+$') %}{% set rfmt = r ~ ' min' %}
                       {% endif %}
+                      {% if r not in ['unknown', 'none', 'unavailable'] %}{{ rfmt }}{% else %}–{% endif %}
                     icon: mdi:timer-sand
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml
 
@@ -189,25 +197,26 @@ cards:
                     {% set s = states('sensor.waschkeller_waschmaschine_links_status') %}
                     {% if s == 'Laeuft' %}
                       {% set prog = states('sensor.waschmaschine_links_programm') %}
-                      {% set phase = states('sensor.waschmaschine_links_aktuelle_phase') %}
-                      {% set phasen_map = {
-                        'prewash': 'Vorwäsche',
-                        'washing': 'Waschen',
-                        'rinsing': 'Spülen',
-                        'spinning': 'Schleudern',
-                        'draining': 'Pumpen',
-                        'soak': 'Einweichen',
-                        'delicate': 'Feinwäsche',
-                        'final rinse': 'Nachspülen',
-                        'rinse': 'Spülen',
-                        'spin': 'Schleudern',
-                        'cooldown': 'Abkühlen',
-                        'drying': 'Trocknen',
-                        'finish': 'Ende',
-                        'idle': 'Bereit'
-                      } %}
-                      {% set phase_de = phasen_map.get(phase | lower, phase) if phase else '' %}
-                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }}{% if phase_de %} ({{ phase_de }}){% endif %} {{ states('sensor.waschmaschine_links_fortschritt') | float(0) | round(0) }}% noch {{ states('sensor.waschmaschine_links_verbleibende_zeit') | replace('m',' min') | replace('h','h ') }}
+                      {% set rest = states('sensor.waschmaschine_links_verbleibende_zeit') %}
+                      {% set rest_fmt = rest %}
+                      {% if rest and ':' in rest|string %}
+                        {% set parts = rest|string.split(':') %}
+                        {% if parts | length == 2 %}
+                          {% set m = parts[0] | int(0) %}
+                          {% set rest_fmt = m ~ ' min' %}
+                        {% elif parts | length == 3 %}
+                          {% set h = parts[0] | int(0) %}
+                          {% set m = parts[1] | int(0) %}
+                          {% if h > 0 and m > 0 %}{% set rest_fmt = h ~ 'h ' ~ m ~ ' min' %}{% elif h > 0 %}{% set rest_fmt = h ~ 'h' %}{% else %}{% set rest_fmt = m ~ ' min' %}{% endif %}
+                        {% endif %}
+                      {% elif rest and 'h' in rest|string and 'm' in rest|string %}
+                        {% set rest_fmt = rest|string | replace('m',' min') %}
+                      {% elif rest and 'm' in rest|string %}
+                        {% set rest_fmt = rest|string | replace('m',' min') %}
+                      {% elif rest and rest|regex_match('^[0-9]+$') %}
+                        {% set rest_fmt = rest ~ ' min' %}
+                      {% endif %}
+                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }} {{ states('sensor.waschmaschine_links_fortschritt') | float(0) | round(0) }}% noch {{ rest_fmt }}
                     {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
                     {% elif s == 'Bereit' %}Bereit
                     {% else %}Aus{% endif %}
@@ -225,11 +234,18 @@ cards:
                     primary: Restzeit
                     secondary: >
                       {% set r = states('sensor.waschmaschine_links_verbleibende_zeit') %}
-                      {% if r not in ['unknown', 'none', 'unavailable'] %}
-                        {{ r }}
-                      {% else %}
-                        –
+                      {% set rfmt = r %}
+                      {% if r and ':' in r|string %}
+                        {% set parts = r|string.split(':') %}
+                        {% if parts | length == 2 %}
+                          {% set m = parts[0] | int(0) %}{% set rfmt = m ~ ' min' %}
+                        {% elif parts | length == 3 %}
+                          {% set h = parts[0] | int(0) %}{% set m = parts[1] | int(0) %}
+                          {% if h>0 and m>0 %}{% set rfmt = h ~ 'h ' ~ m ~ ' min' %}{% elif h>0 %}{% set rfmt = h ~ 'h' %}{% else %}{% set rfmt = m ~ ' min' %}{% endif %}
+                        {% endif %}
+                      {% elif r and r|string | regex_match('^[0-9]+$') %}{% set rfmt = r ~ ' min' %}
                       {% endif %}
+                      {% if r not in ['unknown', 'none', 'unavailable'] %}{{ rfmt }}{% else %}–{% endif %}
                     icon: mdi:timer-sand
                     card_mod: !include /config/ui/shared/styles/flat_compact.yaml
 
