@@ -37,11 +37,15 @@
         message_title: "Waschmaschine Links fertig"
         message: >
           {% set phase = state_attr('sensor.waschkeller_waschmaschine_links_status', 'phase') %}
+          {% set programm = state_attr('sensor.waschkeller_waschmaschine_links_status', 'programm') %}
+          {% set dauer = state_attr('sensor.waschkeller_waschmaschine_links_status', 'gesamtdauer') %}
           {% set energie = state_attr('sensor.waschkeller_waschmaschine_links_status', 'energie') %}
-          Die Waschmaschine links ist fertig
-          {%- if phase and phase != 'unknown' %} ({{ phase }}){% endif -%}
-          {%- if energie and energie|float(0) > 0 %} · {{ energie }} kWh verbraucht{% endif -%}.
-          Kann ausgeräumt werden!
+          Die Waschmaschine links
+          {%- if programm and programm not in ['unknown', 'unavailable', 'none', ''] %} - {{ programm }}{% endif -%}
+          {%- if phase and phase != 'unknown' and phase not in ['Fertig', 'finished', 'clean', 'ending'] %} ({{ phase }}){% endif -%}
+          ist fertig.
+          {%- if dauer and dauer not in ['unknown', 'unavailable', 'none', ''] %} (Dauer {{ dauer }}){% endif -%}.
+          Sie kann nun ausgeräumt werden!
         message_type: "info"
 
     - name: "Waschkeller Waschmaschine Rechts Message"
@@ -52,11 +56,15 @@
         message_title: "Waschmaschine Rechts fertig"
         message: >
           {% set phase = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'phase') %}
+          {% set programm = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'programm') %}
+          {% set dauer = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'gesamtdauer') %}
           {% set energie = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'energie') %}
-          Die Waschmaschine rechts ist fertig
-          {%- if phase and phase != 'unknown' %} ({{ phase }}){% endif -%}
-          {%- if energie and energie|float(0) > 0 %} · {{ energie }} kWh verbraucht{% endif -%}.
-          Kann ausgeräumt werden!
+          Die Waschmaschine rechts
+          {%- if programm and programm not in ['unknown', 'unavailable', 'none', ''] %} - {{ programm }}{% endif -%}
+          {%- if phase and phase != 'unknown' and phase not in ['Fertig', 'finished', 'clean', 'ending'] %} ({{ phase }}){% endif -%}
+          ist fertig.
+          {%- if dauer and dauer not in ['unknown', 'unavailable', 'none', ''] %} (Dauer {{ dauer }}){% endif -%}.
+          Sie kann nun ausgeräumt werden!
         message_type: "info"
 
     - name: "Waschkeller Trockner Message"

@@ -95,9 +95,26 @@ cards:
                   secondary: >
                     {% set s = states('sensor.waschkeller_waschmaschine_rechts_status') %}
                     {% if s == 'Laeuft' %}
-                      {{ states('sensor.waschmaschine_rechts_aktuelle_phase') }}
-                      · {{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) | round(0) }}%
-                      · Noch {{ states('sensor.waschmaschine_rechts_verbleibende_zeit') }}
+                      {% set prog = states('sensor.waschmaschine_rechts_programm') %}
+                      {% set phase = states('sensor.waschmaschine_rechts_aktuelle_phase') %}
+                      {% set phasen_map = {
+                        'prewash': 'Vorwäsche',
+                        'washing': 'Waschen',
+                        'rinsing': 'Spülen',
+                        'spinning': 'Schleudern',
+                        'draining': 'Pumpen',
+                        'soak': 'Einweichen',
+                        'delicate': 'Feinwäsche',
+                        'final rinse': 'Nachspülen',
+                        'rinse': 'Spülen',
+                        'spin': 'Schleudern',
+                        'cooldown': 'Abkühlen',
+                        'drying': 'Trocknen',
+                        'finish': 'Ende',
+                        'idle': 'Bereit'
+                      } %}
+                      {% set phase_de = phasen_map.get(phase | lower, phase) if phase else '' %}
+                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }}{% if phase_de %} ({{ phase_de }}){% endif %} {{ states('sensor.waschmaschine_rechts_fortschritt') | float(0) | round(0) }}% noch {{ states('sensor.waschmaschine_rechts_verbleibende_zeit') | replace('m',' min') | replace('h','h ') }}
                     {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
                     {% elif s == 'Bereit' %}Bereit
                     {% else %}Aus{% endif %}
@@ -171,9 +188,26 @@ cards:
                   secondary: >
                     {% set s = states('sensor.waschkeller_waschmaschine_links_status') %}
                     {% if s == 'Laeuft' %}
-                      {{ states('sensor.waschmaschine_links_aktuelle_phase') }}
-                      · {{ states('sensor.waschmaschine_links_fortschritt') | float(0) | round(0) }}%
-                      · Noch {{ states('sensor.waschmaschine_links_verbleibende_zeit') }}
+                      {% set prog = states('sensor.waschmaschine_links_programm') %}
+                      {% set phase = states('sensor.waschmaschine_links_aktuelle_phase') %}
+                      {% set phasen_map = {
+                        'prewash': 'Vorwäsche',
+                        'washing': 'Waschen',
+                        'rinsing': 'Spülen',
+                        'spinning': 'Schleudern',
+                        'draining': 'Pumpen',
+                        'soak': 'Einweichen',
+                        'delicate': 'Feinwäsche',
+                        'final rinse': 'Nachspülen',
+                        'rinse': 'Spülen',
+                        'spin': 'Schleudern',
+                        'cooldown': 'Abkühlen',
+                        'drying': 'Trocknen',
+                        'finish': 'Ende',
+                        'idle': 'Bereit'
+                      } %}
+                      {% set phase_de = phasen_map.get(phase | lower, phase) if phase else '' %}
+                      {{ prog if prog not in ['unknown','unavailable','none',''] else '' }}{% if phase_de %} ({{ phase_de }}){% endif %} {{ states('sensor.waschmaschine_links_fortschritt') | float(0) | round(0) }}% noch {{ states('sensor.waschmaschine_links_verbleibende_zeit') | replace('m',' min') | replace('h','h ') }}
                     {% elif s == 'Fertig' %}Fertig · Ausgeräumt!
                     {% elif s == 'Bereit' %}Bereit
                     {% else %}Aus{% endif %}

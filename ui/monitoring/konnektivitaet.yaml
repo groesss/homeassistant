@@ -206,11 +206,11 @@ cards:
       - type: custom:mushroom-template-card
         primary: Steckdose Terrarium 1
         secondary: >
-          {% set s = states('switch.0xa4c138ad7386cc64') %}
+          {% set s = states('switch.wohnzimmer_terrarium_steckdose_1') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}Verbunden{% else %}Getrennt{% endif %}
         icon: mdi:leaf
         icon_color: >
-          {% set s = states('switch.0xa4c138ad7386cc64') %}
+          {% set s = states('switch.wohnzimmer_terrarium_steckdose_1') %}
           {% if s not in ['unavailable', 'unknown', 'none', 'None', ''] %}green{% else %}red{% endif %}
 
       - type: custom:mushroom-template-card
