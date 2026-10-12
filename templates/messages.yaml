@@ -38,10 +38,7 @@
         message: >
           {% set programm = state_attr('sensor.waschkeller_waschmaschine_links_status', 'programm') %}
           {% set dauer = state_attr('sensor.waschkeller_waschmaschine_links_status', 'gesamtdauer') %}
-          Die Waschmaschine links
-          {%- if programm and programm not in ['unknown', 'unavailable', 'none', ''] %} - {{ programm }}{% endif -%}
-          ist fertig.
-          {%- if dauer and dauer not in ['unknown', 'unavailable', 'none', ''] %} (Dauer {{ dauer }}){% endif -%}.
+          Die Waschmaschine links - {{ programm if programm and programm not in ['unknown','unavailable','none',''] else 'Programm unbekannt' }} - ist fertig.{% if dauer and dauer not in ['unknown','unavailable','none',''] %} (Dauer {{ dauer }}){% endif %}.
           Sie kann nun ausgeräumt werden!
         message_type: "info"
 
@@ -54,10 +51,7 @@
         message: >
           {% set programm = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'programm') %}
           {% set dauer = state_attr('sensor.waschkeller_waschmaschine_rechts_status', 'gesamtdauer') %}
-          Die Waschmaschine rechts
-          {%- if programm and programm not in ['unknown', 'unavailable', 'none', ''] %} - {{ programm }}{% endif -%}
-          ist fertig.
-          {%- if dauer and dauer not in ['unknown', 'unavailable', 'none', ''] %} (Dauer {{ dauer }}){% endif -%}.
+          Die Waschmaschine rechts - {{ programm if programm and programm not in ['unknown','unavailable','none',''] else 'Programm unbekannt' }} - ist fertig.{% if dauer and dauer not in ['unknown','unavailable','none',''] %} (Dauer {{ dauer }}){% endif %}.
           Sie kann nun ausgeräumt werden!
         message_type: "info"
 
